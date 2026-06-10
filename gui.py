@@ -50,7 +50,7 @@ QMainWindow {{ background: {C_BG}; }}
 QTabWidget {{ background: {C_BG}; }}
 QTabWidget::pane {{ background: {C_BG}; border: 1px solid {C_BORDER}; border-radius: 8px; }}
 QWidget#tab_content {{ background: transparent; }}
-QTabBar::tab {{ background: {C_BORDER}; color: {C_TEXT2}; padding: 8px 18px; margin-right: 2px; border-top-left-radius: 6px; border-top-right-radius: 6px; font-size: 13px; }}
+QTabBar::tab {{ background: {C_BORDER}; color: {C_TEXT2}; padding: 6px 14px; margin-right: 2px; border-top-left-radius: 6px; border-top-right-radius: 6px; font-size: 12px; }}
 QTabBar::tab:selected {{ background: {C_CARD}; color: {C_PRI}; font-weight: bold; }}
 QPushButton {{ background: {C_PRI}; color: #fff; border: none; padding: 6px 14px; border-radius: 5px; font-size: 12px; }}
 QPushButton:hover {{ background: {C_PRI_D}; }}
@@ -62,8 +62,10 @@ QLineEdit {{ background: {C_CARD}; border: 1px solid {C_BORDER}; border-radius: 
 QComboBox {{ background: {C_CARD}; border: 1px solid {C_BORDER}; border-radius: 4px; padding: 4px 7px; color: {C_TEXT}; }}
 QLabel {{ color: {C_TEXT}; }}
 QTextEdit {{ background: #f1f5f9; border: 1px solid {C_BORDER}; border-radius: 6px; color: {C_TEXT}; font-family: Consolas; }}
-QScrollBar:vertical {{ background: {C_BG}; width: 8px; border-radius: 4px; }}
-QScrollBar::handle:vertical {{ background: #cbd5e1; border-radius: 4px; min-height: 20px; }}
+QScrollBar:vertical {{ background: {C_BG}; width: 6px; border-radius: 3px; }}
+QScrollBar::handle:vertical {{ background: #cbd5e1; border-radius: 3px; min-height: 20px; }}
+QScrollBar:horizontal {{ background: {C_BG}; height: 6px; border-radius: 3px; }}
+QScrollBar::handle:horizontal {{ background: #cbd5e1; border-radius: 3px; min-width: 20px; }}
 QFrame#card {{ background: {C_CARD}; border: 1px solid {C_BORDER}; border-radius: 8px; }}
 QFrame#sep {{ background: {C_BORDER}; max-height: 1px; }}
 QFrame#row {{ background: {C_CARD}; border: 1px solid {C_BORDER}; border-radius: 5px; }}
@@ -78,7 +80,7 @@ QMainWindow {{ background: {C_BG_D}; }}
 QTabWidget {{ background: {C_BG_D}; }}
 QTabWidget::pane {{ background: {C_BG_D}; border: 1px solid {C_BORDER_D}; border-radius: 8px; }}
 QWidget#tab_content {{ background: transparent; }}
-QTabBar::tab {{ background: {C_BORDER_D}; color: {C_TEXT2_D}; padding: 8px 18px; margin-right: 2px; border-top-left-radius: 6px; border-top-right-radius: 6px; font-size: 13px; }}
+QTabBar::tab {{ background: {C_BORDER_D}; color: {C_TEXT2_D}; padding: 6px 14px; margin-right: 2px; border-top-left-radius: 6px; border-top-right-radius: 6px; font-size: 12px; }}
 QTabBar::tab:selected {{ background: {C_CARD_D}; color: {C_PRI_L}; font-weight: bold; }}
 QPushButton {{ background: {C_PRI}; color: #fff; border: none; padding: 6px 14px; border-radius: 5px; font-size: 12px; }}
 QPushButton:hover {{ background: {C_PRI_D}; }}
@@ -90,8 +92,10 @@ QLineEdit {{ background: {C_BG_D}; border: 1px solid {C_BORDER_D}; border-radius
 QComboBox {{ background: {C_BG_D}; border: 1px solid {C_BORDER_D}; border-radius: 4px; padding: 4px 7px; color: {C_TEXT_D}; }}
 QLabel {{ color: {C_TEXT_D}; }}
 QTextEdit {{ background: {C_BG_D}; border: 1px solid {C_BORDER_D}; border-radius: 6px; color: #e2e8f0; font-family: Consolas; }}
-QScrollBar:vertical {{ background: {C_BG_D}; width: 8px; border-radius: 4px; }}
-QScrollBar::handle:vertical {{ background: #475569; border-radius: 4px; min-height: 20px; }}
+QScrollBar:vertical {{ background: {C_BG_D}; width: 6px; border-radius: 3px; }}
+QScrollBar::handle:vertical {{ background: #475569; border-radius: 3px; min-height: 20px; }}
+QScrollBar:horizontal {{ background: {C_BG_D}; height: 6px; border-radius: 3px; }}
+QScrollBar::handle:horizontal {{ background: #475569; border-radius: 3px; min-width: 20px; }}
 QFrame#card {{ background: {C_CARD_D}; border: 1px solid {C_BORDER_D}; border-radius: 8px; }}
 QFrame#sep {{ background: {C_BORDER_D}; max-height: 1px; }}
 QFrame#row {{ background: {C_CARD_D}; border: 1px solid {C_BORDER_D}; border-radius: 5px; }}
@@ -164,7 +168,7 @@ def _fmt_slot(s):
         df = d.strftime("%d/%m/%Y")
     except Exception:
         df = s.get("date", "?")
-    return f"{df}  {s.get('start', '?')} - {s.get('end', '?')}"
+    return f"🕐 {df}  {s.get('start', '?')} - {s.get('end', '?')}"
 
 # ── Toast ────────────────────────────────────────────────────────────────
 class Toast(QFrame):
@@ -433,12 +437,12 @@ class App(QMainWindow):
 
         # Header bar
         self.header_bar = QFrame()
-        self.header_bar.setFixedHeight(48)
+        self.header_bar.setFixedHeight(40)
         hdr_lay = QHBoxLayout(self.header_bar)
         hdr_lay.setContentsMargins(20, 0, 20, 0)
 
         title = QLabel("📋  Generador Cuadrante Tareas Profesorado")
-        title.setStyleSheet("color: white; font-size: 16px; font-weight: bold;")
+        title.setStyleSheet("color: white; font-size: 14px; font-weight: bold;")
         hdr_lay.addWidget(title)
 
         hdr_lay.addStretch()
@@ -482,11 +486,10 @@ class App(QMainWindow):
         sa, tab = self._tab_widget(True)
         self.tabs.addTab(sa, "🏠 Proyecto")
         v = QVBoxLayout(tab)
-        v.setContentsMargins(20, 16, 20, 16)
-        v.setSpacing(8)
+        v.setContentsMargins(16, 12, 16, 12)
+        v.setSpacing(6)
 
         # Heading
-        v.addWidget(QLabel("🏠 Seleccionar proyecto"))
         # Selector row
         sel = QHBoxLayout()
         self.project_selector = QComboBox()
@@ -523,7 +526,7 @@ class App(QMainWindow):
         self.info_need_hours = QLabel("⏰ 0h necesarias (min)")
         for lbl in [self.info_teachers, self.info_needs, self.info_slots, self.info_need_slots, self.info_hours, self.info_need_hours]:
             stats.addWidget(lbl)
-            stats.addSpacing(18)
+            stats.addSpacing(12)
         stats.addStretch()
         v.addLayout(stats)
 
@@ -541,16 +544,12 @@ class App(QMainWindow):
         btn_csv.setObjectName("secondary")
         btn_csv.clicked.connect(self._export_csv)
         bf.addWidget(btn_csv)
-        btn_undo = QPushButton("↩️")
-        btn_undo.setFixedWidth(36)
+        btn_undo = QPushButton("↩️ Deshacer")
         btn_undo.setObjectName("secondary")
-        btn_undo.setToolTip("Deshacer")
         btn_undo.clicked.connect(self._undo)
         bf.addWidget(btn_undo)
-        btn_redo = QPushButton("🔁")
-        btn_redo.setFixedWidth(36)
+        btn_redo = QPushButton("🔁 Rehacer")
         btn_redo.setObjectName("secondary")
-        btn_redo.setToolTip("Rehacer")
         btn_redo.clicked.connect(self._redo)
         bf.addWidget(btn_redo)
         self._dirty_label = QLabel("")
@@ -580,8 +579,8 @@ class App(QMainWindow):
         sa, tab = self._tab_widget(True)
         self.tabs.addTab(sa, "👨‍🏫 Profes")
         v = QVBoxLayout(tab)
-        v.setContentsMargins(20, 16, 20, 16)
-        v.setSpacing(8)
+        v.setContentsMargins(16, 12, 16, 12)
+        v.setSpacing(6)
 
         hint = QLabel("Los profesores se guardan automáticamente y se comparten entre proyectos")
         hint.setStyleSheet(f"color: {C_SLATE};")
@@ -713,8 +712,8 @@ class App(QMainWindow):
         sa, tab = self._tab_widget(True)
         self.tabs.addTab(sa, "📋 Necesidades")
         v = QVBoxLayout(tab)
-        v.setContentsMargins(20, 16, 20, 16)
-        v.setSpacing(8)
+        v.setContentsMargins(16, 12, 16, 12)
+        v.setSpacing(6)
 
         ie_needs = QHBoxLayout()
         btn_imp_n = QPushButton("📥 Importar necesidades...")
@@ -787,8 +786,8 @@ class App(QMainWindow):
         sa, tab = self._tab_widget(True)
         self.tabs.addTab(sa, "⚙️ Generar")
         v = QVBoxLayout(tab)
-        v.setContentsMargins(20, 16, 20, 16)
-        v.setSpacing(8)
+        v.setContentsMargins(16, 12, 16, 12)
+        v.setSpacing(6)
 
         v.addWidget(QLabel("⚙️ Generar cuadrante de apoyo"))
 
@@ -820,76 +819,80 @@ class App(QMainWindow):
 
     # ── Schedule Tab ───────────────────────────────────────────────────
     def _build_schedule_tab(self):
-        sa, tab = self._tab_widget(True)
-        self.tabs.addTab(sa, "📅 Cuadrante")
+        w, tab = self._tab_widget(False)
+        self.tabs.addTab(w, "📅 Cuadrante")
         v = QVBoxLayout(tab)
-        v.setContentsMargins(20, 16, 20, 16)
-        v.setSpacing(8)
+        v.setContentsMargins(16, 12, 16, 12)
+        v.setSpacing(6)
 
-        bf = QHBoxLayout()
+        # ── Toolbar: fila 1 — botones de acción ──
+        tb1 = QHBoxLayout()
+        tb1.setSpacing(6)
         self.open_btn = QPushButton("🌐 Abrir en navegador")
         self.open_btn.setObjectName("secondary")
         self.open_btn.clicked.connect(self._open_html)
         self.open_btn.setEnabled(False)
-        bf.addWidget(self.open_btn)
+        tb1.addWidget(self.open_btn)
 
-        self.open_folder_btn = QPushButton("📂 Abrir carpeta")
+        self.open_folder_btn = QPushButton("📂 Carpeta")
         self.open_folder_btn.setObjectName("secondary")
         self.open_folder_btn.clicked.connect(self._open_folder)
         self.open_folder_btn.setEnabled(False)
-        bf.addWidget(self.open_folder_btn)
+        tb1.addWidget(self.open_folder_btn)
 
         self.stats_btn = QPushButton("📊 Stats")
         self.stats_btn.setObjectName("secondary")
         self.stats_btn.clicked.connect(self._show_stats)
         self.stats_btn.setEnabled(False)
-        bf.addWidget(self.stats_btn)
+        tb1.addWidget(self.stats_btn)
 
-        self.compact_btn = QPushButton("📅 Vista compacta")
+        self.compact_btn = QPushButton("📅 Cambiar a vista compacta")
         self.compact_btn.setObjectName("secondary")
         self.compact_btn.clicked.connect(self._toggle_compact_view)
         self.compact_btn.setEnabled(False)
-        bf.addWidget(self.compact_btn)
+        tb1.addWidget(self.compact_btn)
 
-        self.lock_regenerate_btn = QPushButton("🔒 Regenerar con bloqueos")
+        self.lock_regenerate_btn = QPushButton("🔒 Regen. bloqueos")
         self.lock_regenerate_btn.setObjectName("secondary")
         self.lock_regenerate_btn.clicked.connect(self._regenerate_with_locks)
         self.lock_regenerate_btn.setEnabled(False)
-        bf.addWidget(self.lock_regenerate_btn)
+        tb1.addWidget(self.lock_regenerate_btn)
 
         self.png_btn = QPushButton("🖼️ PNG")
         self.png_btn.setObjectName("secondary")
         self.png_btn.clicked.connect(self._export_png)
         self.png_btn.setEnabled(False)
-        bf.addWidget(self.png_btn)
+        tb1.addWidget(self.png_btn)
+        tb1.addStretch()
+        v.addLayout(tb1)
 
-        bf.addSpacing(24)
-
-        # Navegación entre opciones
+        # ── Toolbar: fila 2 — navegación ──
+        tb2 = QHBoxLayout()
+        tb2.setSpacing(6)
         self.nav_prev_btn = QPushButton("◀")
-        self.nav_prev_btn.setFixedWidth(36)
+        self.nav_prev_btn.setFixedWidth(32)
         self.nav_prev_btn.setObjectName("secondary")
         self.nav_prev_btn.clicked.connect(self._prev_option)
         self.nav_prev_btn.setEnabled(False)
-        bf.addWidget(self.nav_prev_btn)
+        tb2.addWidget(self.nav_prev_btn)
 
         self.nav_label = QLabel("")
         self.nav_label.setStyleSheet(f"font-weight: bold; color: {C_PRI}; font-size: 13px;")
-        bf.addWidget(self.nav_label)
+        tb2.addWidget(self.nav_label)
 
         self.nav_next_btn = QPushButton("▶")
-        self.nav_next_btn.setFixedWidth(36)
+        self.nav_next_btn.setFixedWidth(32)
         self.nav_next_btn.setObjectName("secondary")
         self.nav_next_btn.clicked.connect(self._next_option)
         self.nav_next_btn.setEnabled(False)
-        bf.addWidget(self.nav_next_btn)
+        tb2.addWidget(self.nav_next_btn)
 
-        bf.addStretch()
+        tb2.addStretch()
 
         self.cal_summary = QLabel("")
         self.cal_summary.setStyleSheet(f"color: {C_SLATE};")
-        bf.addWidget(self.cal_summary)
-        v.addLayout(bf)
+        tb2.addWidget(self.cal_summary)
+        v.addLayout(tb2)
 
         self.cal_scroll = QScrollArea()
         self.cal_scroll.setWidgetResizable(True)
@@ -1777,7 +1780,7 @@ class App(QMainWindow):
         self.open_folder_btn.setEnabled(True)
         self.stats_btn.setEnabled(True)
         self.compact_btn.setEnabled(True)
-        self.compact_btn.setText("📅 Vista normal" if self._compact_view else "📅 Vista compacta")
+        self.compact_btn.setText("📅 Cambiar a vista normal" if self._compact_view else "📅 Cambiar a vista compacta")
         self.lock_regenerate_btn.setEnabled(bool(self._locked_assignments))
         self.png_btn.setEnabled(True)
 
@@ -1835,26 +1838,26 @@ class App(QMainWindow):
             col = QFrame()
             col.setObjectName("card")
             col.setStyleSheet("")
-            col.setMinimumWidth(260)
+            col.setMinimumWidth(190)
             col_v = QVBoxLayout(col)
-            col_v.setContentsMargins(8, 8, 8, 8)
-            col_v.setSpacing(6)
+            col_v.setContentsMargins(6, 6, 6, 6)
+            col_v.setSpacing(4)
 
             # Day header
             hdr_frame = QFrame()
             hdr_color = C_PRI
             hdr_frame.setStyleSheet(f"background: {hdr_color}; border-radius: 6px;")
-            hdr_frame.setFixedHeight(64)
+            hdr_frame.setFixedHeight(48)
             hdr_v = QVBoxLayout(hdr_frame)
-            hdr_v.setContentsMargins(0, 6, 0, 4)
+            hdr_v.setContentsMargins(0, 4, 0, 2)
             hdr_v.setSpacing(0)
             num_lbl = QLabel(day_num)
             num_lbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
-            num_lbl.setStyleSheet("color: white; font-size: 24px; font-weight: bold;")
+            num_lbl.setStyleSheet("color: white; font-size: 20px; font-weight: bold;")
             hdr_v.addWidget(num_lbl)
             name_lbl = QLabel(day_name[:3].upper())
             name_lbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
-            name_lbl.setStyleSheet("color: rgba(255,255,255,0.8); font-size: 10px; font-weight: bold;")
+            name_lbl.setStyleSheet("color: rgba(255,255,255,0.8); font-size: 9px; font-weight: bold;")
             hdr_v.addWidget(name_lbl)
             col_v.addWidget(hdr_frame)
 
@@ -1866,7 +1869,7 @@ class App(QMainWindow):
             if not day_needs:
                 empty = QLabel("—")
                 empty.setAlignment(Qt.AlignmentFlag.AlignCenter)
-                empty.setStyleSheet(f"color: {C_SLATE}; padding: 20px;")
+                empty.setStyleSheet(f"color: {C_SLATE}; padding: 12px;")
                 col_v.addWidget(empty)
             else:
                 for ni, g in day_needs:
@@ -1877,22 +1880,22 @@ class App(QMainWindow):
                     card.setObjectName("card")
                     card.setStyleSheet("")
                     card_v = QVBoxLayout(card)
-                    card_v.setContentsMargins(8, 6, 8, 6)
+                    card_v.setContentsMargins(6, 4, 6, 4)
                     card_v.setSpacing(2)
 
                     # Time badge
                     time_lbl = QLabel(f"{n['start']} - {n['end']}")
                     time_lbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
-                    time_lbl.setStyleSheet(f"background: {C_PRI}; color: white; border-radius: 4px; padding: 2px; font-weight: bold; font-size: 10px;")
+                    time_lbl.setStyleSheet(f"background: {C_PRI}; color: white; border-radius: 4px; padding: 2px; font-weight: bold; font-size: 9px;")
                     card_v.addWidget(time_lbl)
 
                     name_lbl = QLabel(n["name"])
                     name_lbl.setWordWrap(True)
-                    name_lbl.setStyleSheet("font-weight: bold; font-size: 12px;")
+                    name_lbl.setStyleSheet("font-weight: bold; font-size: 11px;")
                     card_v.addWidget(name_lbl)
 
                     req_lbl = QLabel(f"min {n['min']} · max {n['max']}")
-                    req_lbl.setStyleSheet(f"color: {C_SLATE}; font-size: 10px;")
+                    req_lbl.setStyleSheet(f"color: {C_SLATE}; font-size: 9px;")
                     card_v.addWidget(req_lbl)
 
                     if assigned:
@@ -1908,7 +1911,7 @@ class App(QMainWindow):
                             tlabel.setCursor(Qt.CursorShape.PointingHandCursor)
                             tlabel.setToolTip("Clic para bloquear/desbloquear esta asignación")
                             tlabel_inner = QLabel(f"  {lock_char}  {tname}  ")
-                            tlabel_inner.setStyleSheet(f"color: {c}; background: {self._rgba(c, 0.12)}; border-radius: 4px; padding: 1px 6px; font-weight: bold; font-size: 10px;")
+                            tlabel_inner.setStyleSheet(f"color: {c}; background: {self._rgba(c, 0.12)}; border-radius: 4px; padding: 1px 4px; font-weight: bold; font-size: 9px;")
                             tlabel_lyt = QVBoxLayout(tlabel)
                             tlabel_lyt.setContentsMargins(0, 0, 0, 0)
                             tlabel_lyt.addWidget(tlabel_inner)

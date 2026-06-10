@@ -151,20 +151,24 @@ Archivo JSON con un array de objetos necesidad:
 | 📤 **Exportar JSON** | Profesores, necesidades o proyecto completo |
 | 📊 **Exportar CSV** | Botón en pestaña Proyecto |
 | 📈 **Panel de estadísticas** | Botón 📊 Stats en pestaña Cuadrante |
-| 📅 **Vista compacta/normal** | Botón en pestaña Cuadrante |
-| ↩️ **Deshacer/Rehacer** | Botones ↩️🔁 en pestaña Proyecto (hasta 50 estados) |
+| 📅 **Vista compacta/normal** | Botón "Cambiar a vista compacta/normal" en pestaña Cuadrante |
+| ↩️ **Deshacer/Rehacer** | Botones "↩️ Deshacer / 🔁 Rehacer" en pestaña Proyecto (hasta 50 estados) |
 | 💾 **Auto-guardado** | Cada 2 minutos si hay cambios sin guardar |
 | 🔁 **10 opciones navegables** | ◀ ▶ en pestaña Cuadrante |
 | 🗃️ **Plantillas de horarios** | Guardar/cargar franjas de un profesor como plantilla |
 | ✅ **Validación previa** | Antes de generar, avisa si hay necesidades sin cobertura |
 | ⚠️ **Advertencias de cobertura** | Muestra qué necesidades no pueden cubrirse y horas insuficientes |
+| 🖼️ **Exportar PNG** | Captura del cuadrante como imagen |
+| 🕐 **Icono en franjas** | Las franjas de disponibilidad muestran 🕐 |
+| 🔒 **Bloquear asignaciones** | Clic en profesor en cuadrante → 🔒, botón "Regenerar con bloqueos" |
+| 🌓 **Tema claro/oscuro** | Botón en cabecera |
 
 ## Archivos del proyecto
 
 | Archivo | Propósito |
 |---|---|
 | `main.py` | Punto de entrada |
-| `gui.py` | Interfaz PyQt6 (~1700 líneas) |
+| `gui.py` | Interfaz PyQt6 (~2025 líneas) |
 | `scheduler.py` | Modelo CP-SAT (variables, restricciones, solver) |
 | `seed_data.py` | Datos ficticios de demostración |
 | `html_exporter.py` | Exportación a HTML con correos |

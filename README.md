@@ -31,7 +31,7 @@
 | 📅 **Vista calendario** | Visualización por días con tarjetas de tareas — modo compacto y normal |
 | 🖼️ **Exportar PNG** | Captura el cuadrante como imagen PNG |
 | 🌓 **Tema claro/oscuro** | Conmutación instantánea con un solo clic |
-| ↩️🔁 **Deshacer/Rehacer** | Hasta 50 estados de deshacer en edición |
+| ↩️🔁 **Deshacer/Rehacer** | Botones con texto, hasta 50 estados de deshacer en edición |
 | 🔍 **Búsqueda y filtros** | Filtra profesores y necesidades por texto |
 | 📥📤 **Importar / Exportar JSON** | Profesores, necesidades o proyectos completos desde cualquier pestaña |
 | 📊 **Exportar CSV** | Exporta asignaciones a CSV |
@@ -123,7 +123,7 @@ Maximizar Σ x[n, p]
 
 ```
 GeneradorCuadranteTareasProfesorado/
-├── gui.py              # 🖥️ Interfaz gráfica PyQt6 (~2000 líneas)
+├── gui.py              # 🖥️ Interfaz gráfica PyQt6 (~2025 líneas)
 ├── scheduler.py        # 🧠 Modelo CP-SAT con OR-Tools
 ├── html_exporter.py    # 📄 Generación HTML (cuadrante + correos)
 ├── seed_data.py        # 🌱 Datos de ejemplo XarxaLlibres
