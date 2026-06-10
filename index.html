@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Generador Cuadrante Tareas Profesorado</title>
+<style>
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+  :root {
+    --bg: #f1f5f9;
+    --card: #ffffff;
+    --border: #e2e8f0;
+    --text: #0f172a;
+    --text2: #475569;
+    --muted: #94a3b8;
+    --accent: #6366f1;
+    --accent-d: #4f46e5;
+  }
+  body {
+    font-family: 'Segoe UI', -apple-system, 'Helvetica Neue', Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+  }
+  header {
+    background: linear-gradient(135deg, #1e293b, #0f172a);
+    color: #fff;
+    padding: 48px 20px 40px;
+    text-align: center;
+  }
+  header h1 { font-size: 2.4rem; font-weight: 800; letter-spacing: -0.5px; }
+  header p { font-size: 1.15rem; color: #cbd5e1; margin-top: 8px; max-width: 650px; margin: 8px auto 0; }
+  header .badges { margin-top: 24px; }
+  .btn {
+    display: inline-block;
+    background: var(--accent);
+    color: #fff;
+    padding: 12px 28px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin: 4px 6px;
+    transition: background 0.15s;
+    border: 2px solid var(--accent);
+  }
+  .btn:hover { background: var(--accent-d); border-color: var(--accent-d); text-decoration: none; }
+  .btn-outline { background: transparent; border-color: #fff; color: #fff; }
+  .btn-outline:hover { background: #fff; color: #0f172a; border-color: #fff; }
+  .container { max-width: 960px; margin: 0 auto; padding: 40px 20px; }
+  h2 {
+    font-size: 1.4rem; font-weight: 700; margin: 36px 0 14px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  h2::after {
+    content: ''; flex: 1; height: 2px;
+    background: linear-gradient(to right, #cbd5e1, transparent); margin-left: 12px;
+  }
+  h3 { font-size: 1rem; font-weight: 600; margin: 20px 0 8px; }
+  p { margin-bottom: 12px; color: var(--text2); }
+  ul, ol { margin: 6px 0 14px 22px; color: var(--text2); }
+  li { margin-bottom: 3px; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  code {
+    background: #e2e8f0; padding: 2px 7px; border-radius: 4px;
+    font-size: 0.88em; color: var(--text);
+  }
+  pre {
+    background: #1e293b; color: #e2e8f0; padding: 16px 20px;
+    border-radius: 10px; overflow-x: auto; margin: 14px 0;
+    font-size: 0.85rem; line-height: 1.45;
+  }
+
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px; margin: 20px 0;
+  }
+  .feature-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 10px; padding: 18px 16px;
+    transition: box-shadow 0.15s;
+  }
+  .feature-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,.06); }
+  .feature-card .icon { font-size: 1.6rem; margin-bottom: 6px; }
+  .feature-card h4 { font-size: 0.92rem; font-weight: 600; margin-bottom: 3px; }
+  .feature-card p { font-size: 0.82rem; color: var(--muted); margin: 0; line-height: 1.5; }
+
+  .workflow { margin: 16px 0; }
+  .workflow-item {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 12px 14px; background: var(--card);
+    border: 1px solid var(--border); border-radius: 8px;
+    margin-bottom: 6px;
+  }
+  .workflow-num {
+    width: 28px; height: 28px; background: var(--accent); color: #fff;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 0.85rem; flex-shrink: 0;
+  }
+  .workflow-item p { margin: 0; flex: 1; }
+
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 0.9rem; }
+  th { text-align: left; padding: 8px 10px; border-bottom: 2px solid var(--border); color: var(--text2); font-weight: 600; }
+  td { padding: 7px 10px; border-bottom: 1px solid var(--border); }
+
+  footer {
+    text-align: center; padding: 32px 20px;
+    color: var(--muted); font-size: 0.85rem;
+    border-top: 1px solid var(--border); margin-top: 40px;
+  }
+  footer a { color: var(--accent); }
+
+  @media (max-width: 600px) {
+    header h1 { font-size: 1.6rem; }
+    header { padding: 32px 16px 24px; }
+    .feature-grid { grid-template-columns: 1fr; }
+    pre { font-size: 0.75rem; padding: 10px 12px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>📋 Generador Cuadrante Tareas</h1>
+  <p>Asigna profesores a tareas de apoyo mediante optimización combinatoria CP-SAT</p>
+  <div class="badges">
+    <a class="btn" href="https://github.com/sergarb1/GeneradorCuadranteTareas">🌟 Ver en GitHub</a>
+    <a class="btn btn-outline" href="#instalacion">🚀 Instalar</a>
+    <a class="btn btn-outline" href="manual/">📖 Manual</a>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- About -->
+  <h2>✨ ¿Qué hace?</h2>
+  <p>
+    Aplicación de escritorio que genera cuadrantes de asignación de profesorado a tareas
+    respetando disponibilidad horaria, límites de carga, solapamientos y mínimos/máximos
+    de profesores por tarea. Usa <strong>Google OR-Tools CP-SAT</strong> para optimización combinatoria.
+  </p>
+
+  <div class="feature-grid">
+    <div class="feature-card"><div class="icon">👨‍🏫</div><h4>Profesores globales</h4><p>Disponibilidad compartida entre todos los proyectos</p></div>
+    <div class="feature-card"><div class="icon">📋</div><h4>Necesidades por proyecto</h4><p>Cada proyecto define sus tareas con fechas y horas</p></div>
+    <div class="feature-card"><div class="icon">🧠</div><h4>CP-SAT Optimizer</h4><p>Google OR-Tools encuentra la asignación óptima</p></div>
+    <div class="feature-card"><div class="icon">🎯</div><h4>1-50 opciones</h4><p>Configura variantes y navega entre ellas con ◀ ▶</p></div>
+    <div class="feature-card"><div class="icon">🔒</div><h4>Bloquear asignaciones</h4><p>Fija un profesor a una tarea y regenera el resto</p></div>
+    <div class="feature-card"><div class="icon">🖱️</div><h4>Asignación manual</h4><p>Menú contextual para añadir o quitar profesores</p></div>
+    <div class="feature-card"><div class="icon">📝</div><h4>Editar desde cuadrante</h4><p>Menú contextual → editar necesidad sin cambiar de pestaña</p></div>
+    <div class="feature-card"><div class="icon">🔄</div><h4>Arrastrar profesor</h4><p>Arrastra un profesor de una tarea a otra para reasignarlo</p></div>
+    <div class="feature-card"><div class="icon">📋</div><h4>Duplicar día</h4><p>Copia necesidades de una fecha a otra</p></div>
+    <div class="feature-card"><div class="icon">📥📤</div><h4>Importar / Exportar</h4><p>JSON, CSV, DOCX, ICS, Markdown</p></div>
+    <div class="feature-card"><div class="icon">💾</div><h4>Persistencia local</h4><p>Opciones guardadas al proyecto, persisten al recargar</p></div>
+    <div class="feature-card"><div class="icon">🎨</div><h4>Colores y turnos</h4><p>Color HEX personalizado + turno mañana/tarde</p></div>
+    <div class="feature-card"><div class="icon">📧</div><h4>Email del profesor</h4><p>Campo opcional, se usa como ATTENDEE en ICS</p></div>
+    <div class="feature-card"><div class="icon">📊</div><h4>Estadísticas</h4><p>Genera HTML con carga, cobertura y horas totales</p></div>
+    <div class="feature-card"><div class="icon">🌓</div><h4>Tema claro/oscuro</h4><p>3 modos: claro → oscuro → ♿ alto contraste</p></div>
+    <div class="feature-card"><div class="icon">📅</div><h4>Vista calendario</h4><p>Compacta o normal, profesores coloreados</p></div>
+    <div class="feature-card"><div class="icon">🖨️</div><h4>Exportación HTML</h4><p>5 vistas: Cuadrante, Profesor, Tarea, Word, Impresión</p></div>
+    <div class="feature-card"><div class="icon">✅</div><h4>Validación previa</h4><p>Avisa si faltan profes u horas antes de generar</p></div>
+    <div class="feature-card"><div class="icon">⏳</div><h4>Loading animado</h4><p>Spinner mientras el solver piensa — evita dobles clics</p></div>
+    <div class="feature-card"><div class="icon">⌨️</div><h4>Atajos de teclado</h4><p>Ctrl+S, Z, Y, N, D, F1 — productividad total</p></div>
+    <div class="feature-card"><div class="icon">💬</div><h4>Tooltips y barra</h4><p>Tooltips en todos los botones + barra de estado inferior</p></div>
+  </div>
+
+  <!-- Workflow -->
+  <h2>📖 Flujo de trabajo</h2>
+  <div class="workflow">
+    <div class="workflow-item"><div class="workflow-num">1</div><p><strong>👨‍🏫 Profes</strong> — Añade profesores con disponibilidad, turno y color</p></div>
+    <div class="workflow-item"><div class="workflow-num">2</div><p><strong>🏠 Proyecto</strong> — Crea o selecciona un proyecto</p></div>
+    <div class="workflow-item"><div class="workflow-num">3</div><p><strong>📋 Necesidades</strong> — Define tareas con fecha, hora y mínimo/máximo</p></div>
+    <div class="workflow-item"><div class="workflow-num">4</div><p><strong>⚙️ Generar</strong> — Configura 1-50 opciones, el solver calcula</p></div>
+    <div class="workflow-item"><div class="workflow-num">5</div><p><strong>🔒 Cuadrante</strong> — Bloquea, navega entre opciones, exporta</p></div>
+  </div>
+
+  <!-- Install -->
+  <h2 id="instalacion">📦 Instalación</h2>
+
+  <h3>Requisitos</h3>
+  <ul>
+    <li><strong>Python 3.11+</strong> — <a href="https://python.org/downloads">descargar</a></li>
+    <li><strong>pip</strong> (incluido con Python)</li>
+  </ul>
+
+  <h3>Pasos</h3>
+  <pre>git clone https://github.com/sergarb1/GeneradorCuadranteTareas.git
+cd GeneradorCuadranteTareas
+pip install -r requirements.txt
+python main.py</pre>
+
+  <h3>Lanzadores rápidos</h3>
+  <table>
+    <tr><th>Sistema</th><th>Ejecutar</th></tr>
+    <tr><td>🪟 Windows</td><td>Doble clic en <code>lanzar.bat</code></td></tr>
+    <tr><td>🐧 Linux / macOS</td><td><code>bash lanzar.sh</code></td></tr>
+  </table>
+
+  <!-- Structure -->
+  <h2>📁 Estructura</h2>
+  <pre>GeneradorCuadranteTareas/
+├── gui.py              # Interfaz PyQt6 (~3500 líneas)
+├── scheduler.py        # Modelo CP-SAT
+├── html_exporter.py    # Exportación HTML
+├── seed_data.py        # Datos de ejemplo (15 profes, 50 tareas)
+├── main.py             # Punto de entrada
+├── teachers.json       # Profesores (se crea al usar)
+├── AGENTS.md           # Guía para IA
+├── projects/           # Proyectos guardados
+├── output/             # HTML / ICS generados
+├── manual/             # Manual de usuario
+├── lanzar.bat / .sh    # Lanzadores
+├── index.html          # Esta página
+└── requirements.txt    # Dependencias</pre>
+
+  <!-- Solver -->
+  <h2>🧠 Solver CP-SAT</h2>
+  <p>El modelo de optimización combinatoria con Google OR-Tools:</p>
+  <pre>Variables:  x[necesidad, profesor] ∈ {0, 1}
+
+Restricciones:
+  • Cada necesidad recibe entre min y max profesores
+  • Profesor disponible en la franja horaria
+  • Sin solapamientos para un mismo profesor
+  • Horas totales ≤ límite del profesor
+  • Horas por día ≤ límite diario
+
+Objetivo:  Maximizar Σ x (más asignaciones posible)</pre>
+
+  <!-- Tech -->
+  <h2>🛠️ Tecnologías</h2>
+  <ul>
+    <li><strong>Python 3.11+</strong></li>
+    <li><strong>PyQt6</strong> — Interfaz gráfica con Fusion style</li>
+    <li><strong>OR-Tools CP-SAT</strong> — Optimización combinatoria de Google</li>
+  </ul>
+
+  <!-- Features Detail -->
+  <h2>📋 Funcionalidades</h2>
+
+  <h3>👨‍🏫 Profesores</h3>
+  <ul>
+    <li>Globales (compartidos entre todos los proyectos)</li>
+    <li>Turno preferente: Cualquiera / Mañana / Tarde</li>
+    <li>Color HEX personalizado con selector visual</li>
+    <li>Email opcional (se usa como ATTENDEE en ICS)</li>
+    <li>Límite de horas semanales y por día</li>
+    <li>Franjas con botones predefinidos (Mañana, Tarde, Completo)</li>
+    <li>Franjas personalizadas y plantillas de horarios</li>
+    <li>Duplicar profesor, duplicar franja, duplicar a otro día</li>
+    <li>Búsqueda y filtro, importar/exportar JSON</li>
+  </ul>
+
+  <h3>📋 Necesidades</h3>
+  <ul>
+    <li>Tareas con fecha, inicio, fin, mínimo/máximo de profesores</li>
+    <li>Etiquetas para filtrar por categoría</li>
+    <li>Duplicar necesidad, duplicar a otro día</li>
+    <li>Búsqueda y filtro por nombre, fecha o etiqueta</li>
+    <li>Importar/exportar JSON</li>
+  </ul>
+
+  <h3>🧠 Solver</h3>
+  <ul>
+    <li>1-50 opciones con distintas semillas de búsqueda</li>
+    <li>Loading animado con spinner</li>
+    <li>Validación previa con advertencias</li>
+    <li>Bloqueo de asignaciones con regeneración</li>
+    <li>Asignación manual desde menú contextual</li>
+    <li>10 segundos máximos por opción</li>
+  </ul>
+
+  <h3>📅 Cuadrante</h3>
+  <ul>
+    <li>Vista calendario por día con tarjetas coloreadas</li>
+    <li>Vista normal / compacta</li>
+    <li>Navegación entre opciones con ◀ ▶</li>
+    <li>Bloquear/desbloquear asignaciones con un clic</li>
+    <li>Asignación manual y arrastrar profesor</li>
+    <li>Editar necesidad desde el cuadrante</li>
+    <li>Duplicar día</li>
+    <li>Estadísticas en navegador</li>
+    <li>Toolbar: Generar HTML · Acciones · Exportar</li>
+  </ul>
+
+  <h3>📤 Exportación</h3>
+  <ul>
+    <li><strong>HTML</strong> con 5 vistas: Cuadrante, Profesor, Tarea, Word, Impresión</li>
+    <li><strong>DOCX</strong>: documento Word con solo cuadrantes</li>
+    <li><strong>ICS</strong>: calendario con ATTENDEE por profesor</li>
+    <li><strong>Markdown</strong>: tablas por día</li>
+    <li><strong>CSV</strong>: datos tabulares</li>
+    <li><strong>JSON</strong>: profesores, necesidades o proyecto completo</li>
+    <li>Correos integrados en HTML con botón copiar</li>
+  </ul>
+
+  <h3>🎨 Interfaz</h3>
+  <ul>
+    <li>Tema claro / oscuro / alto contraste</li>
+    <li>Deshacer/Rehacer (hasta 50 estados)</li>
+    <li>Auto-guardado cada 2 minutos</li>
+    <li>Tooltips descriptivos en todos los botones</li>
+    <li>Barra de estado inferior con atajos</li>
+    <li>Atajos: Ctrl+S, Ctrl+Z, Ctrl+Y, Ctrl+N, Ctrl+D, F1, Esc</li>
+    <li>Diálogo de bienvenida interactivo</li>
+    <li>Ayuda integrada (botón 📖 + F1)</li>
+  </ul>
+
+  <!-- License -->
+  <h2>📄 Licencia</h2>
+  <p>Proyecto educativo de código abierto. Distribuido bajo licencia AGPL v3.</p>
+
+</div>
+
+<footer>
+  <p><a href="https://github.com/sergarb1/GeneradorCuadranteTareas">GitHub</a> &middot; <a href="manual/">Manual</a></p>
+</footer>
+
+</body>
+</html>
