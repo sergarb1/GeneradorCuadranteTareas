@@ -237,13 +237,38 @@
     </div>
     <div class="feature-card">
       <div class="icon">🎯</div>
-      <h4>Múltiples opciones</h4>
-      <p>Genera 5 variantes y elige la que más te guste</p>
+      <h4>10 opciones navegables</h4>
+      <p>El solver genera 10 variantes; cambia entre ellas con ◀ ▶</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon">🔒</div>
+      <h4>Bloquear asignaciones</h4>
+      <p>Fija un profe a una tarea y regenera el resto automáticamente</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon">📥</div>
+      <h4>Importar / Exportar</h4>
+      <p>JSON, CSV y PNG desde cualquier pestaña</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon">💾</div>
+      <h4>Persistencia local</h4>
+      <p>Opciones guardadas al proyecto, persisten al recargar</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon">🎨</div>
+      <h4>Colores y turnos</h4>
+      <p>Color HEX personalizado + turno mañana/tarde por profesor</p>
     </div>
     <div class="feature-card">
       <div class="icon">📧</div>
       <h4>Correos integrados</h4>
       <p>Mensajes individuales + resumen general, copia al portapapeles</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon">📊</div>
+      <h4>Estadísticas</h4>
+      <p>Panel con carga por profesor, cobertura y horas totales</p>
     </div>
     <div class="feature-card">
       <div class="icon">🌓</div>
@@ -253,12 +278,22 @@
     <div class="feature-card">
       <div class="icon">📅</div>
       <h4>Vista calendario</h4>
-      <p>Visualización por días con tarjetas de tareas</p>
+      <p>Compacta o normal, con profes coloreados por tarea</p>
     </div>
     <div class="feature-card">
       <div class="icon">🖨️</div>
       <h4>Exportación HTML</h4>
       <p>Imprimible como PDF, listo para compartir</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon">🖼️</div>
+      <h4>Exportar PNG</h4>
+      <p>Captura el cuadrante como imagen</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon">✅</div>
+      <h4>Validación previa</h4>
+      <p>Antes de generar avisa si faltan profes u horas</p>
     </div>
   </div>
 
@@ -267,23 +302,23 @@
   <div class="workflow">
     <div class="workflow-item">
       <div class="workflow-num">1</div>
-      <p><strong>👨‍🏫 Profes</strong> &mdash; Añade profesores con su disponibilidad horaria y límites de carga</p>
+      <p><strong>👨‍🏫 Profes</strong> &mdash; Añade profesores con disponibilidad, turno y color (o importa JSON)</p>
     </div>
     <div class="workflow-item">
       <div class="workflow-num">2</div>
-      <p><strong>🏠 Proyecto</strong> &mdash; Crea o selecciona un proyecto (duplica existentes para variantes)</p>
+      <p><strong>🏠 Proyecto</strong> &mdash; Crea o selecciona un proyecto (o importa proyecto completo JSON)</p>
     </div>
     <div class="workflow-item">
       <div class="workflow-num">3</div>
-      <p><strong>📋 Necesidades</strong> &mdash; Añade tareas con fecha, hora y mínimo/máximo de profesores</p>
+      <p><strong>📋 Necesidades</strong> &mdash; Añade tareas con fecha, hora y mínimo/máximo (o importa JSON)</p>
     </div>
     <div class="workflow-item">
       <div class="workflow-num">4</div>
-      <p><strong>⚙️ Generar</strong> &mdash; El solver CP-SAT genera 5 opciones y tú eliges la mejor</p>
+      <p><strong>⚙️ Generar</strong> &mdash; El solver genera 10 opciones con validación previa</p>
     </div>
     <div class="workflow-item">
       <div class="workflow-num">5</div>
-      <p><strong>📅 Cuadrante</strong> &mdash; Abre el HTML en el navegador, copia los correos, imprime como PDF</p>
+      <p><strong>🔒 Cuadrante</strong> &mdash; Bloquea profes a tareas (clic), regenera, exporta HTML/PNG/CSV</p>
     </div>
   </div>
 
@@ -306,7 +341,8 @@ GeneradorCuadranteTareasProfesorado/
 ├── seed_data.py        #   Datos de ejemplo
 ├── main.py             #   Punto de entrada
 ├── teachers.json       #   Profesores (se crea al usar)
-├── projects/           #   Proyectos guardados
+├── AGENTS.md           #   Guía para IA y esquemas de datos
+├── projects/           #   Proyectos guardados + opciones generadas
 ├── output/             #   HTML generados
 ├── lanzar.bat          #   Lanzador Windows
 └── README.md           #   Documentación</pre>

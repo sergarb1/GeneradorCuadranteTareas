@@ -22,8 +22,8 @@
 # -----------------------------------------------------------------------------
 SEED_TEACHERS = [
     {
-        # --- Marta Soler: disponibilidad mixta (mañana y tarde) ---
-        "name": "Marta Soler",
+        # --- Ana Alumnez: disponibilidad mixta (mañana y tarde) ---
+        "name": "Ana Alumnez",
         "max_hours": 20,              # Límite total de horas en la semana
         "max_hours_per_day": 6,       # Máximo de horas en un mismo día
         "time_slots": [
@@ -44,8 +44,8 @@ SEED_TEACHERS = [
         ],
     },
     {
-        # --- Pere Verdú: disponible toda la mañana (8-15) toda la semana ---
-        "name": "Pere Verdú",
+        # --- Carlos Profesorez: disponible toda la mañana (8-15) toda la semana ---
+        "name": "Carlos Profesorez",
         "max_hours": 25,
         "max_hours_per_day": 7,
         "time_slots": [
@@ -57,8 +57,8 @@ SEED_TEACHERS = [
         ],
     },
     {
-        # --- Neus Giner: solo por la tarde (16-20), menos días ---
-        "name": "Neus Giner",
+        # --- Maria Inventadez: solo por la tarde (16-20), menos días ---
+        "name": "Maria Inventadez",
         "max_hours": 12,
         "max_hours_per_day": 4,
         "time_slots": [
@@ -70,8 +70,8 @@ SEED_TEACHERS = [
         ],
     },
     {
-        # --- Vicent Marí: mixto, con jornada intensiva ambos turnos ---
-        "name": "Vicent Marí",
+        # --- Jose Ficticiez: mixto, con jornada intensiva ambos turnos ---
+        "name": "Jose Ficticiez",
         "max_hours": 20,
         "max_hours_per_day": 6,
         "time_slots": [
@@ -86,8 +86,8 @@ SEED_TEACHERS = [
         ],
     },
     {
-        # --- Carme Bosch: mixto con horario partido ---
-        "name": "Carme Bosch",
+        # --- Laura Ejemplarez: mixto con horario partido ---
+        "name": "Laura Ejemplarez",
         "max_hours": 18,
         "max_hours_per_day": 6,
         "time_slots": [
@@ -103,8 +103,8 @@ SEED_TEACHERS = [
         ],
     },
     {
-        # --- Joan Puig: jornada partida (8-12 y 14-18), máxima carga ---
-        "name": "Joan Puig",
+        # --- David Simuladez: jornada partida (8-12 y 14-18), máxima carga ---
+        "name": "David Simuladez",
         "max_hours": 25,
         "max_hours_per_day": 8,
         "time_slots": [
@@ -122,8 +122,8 @@ SEED_TEACHERS = [
         ],
     },
     {
-        # --- Anna Figueres: solo mañanas reducidas (9-12) ---
-        "name": "Anna Figueres",
+        # --- Sofia Irrealmez: solo mañanas reducidas (9-12) ---
+        "name": "Sofia Irrealmez",
         "max_hours": 10,
         "max_hours_per_day": 4,
         "time_slots": [
@@ -135,8 +135,8 @@ SEED_TEACHERS = [
         ],
     },
     {
-        # --- Toni Ramón: solo tardes (14-19) toda la semana ---
-        "name": "Toni Ramón",
+        # --- Pablo Fingirez: solo tardes (14-19) toda la semana ---
+        "name": "Pablo Fingirez",
         "max_hours": 18,
         "max_hours_per_day": 6,
         "time_slots": [

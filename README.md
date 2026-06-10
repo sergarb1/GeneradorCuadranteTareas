@@ -22,14 +22,25 @@
 | 👨‍🏫 **Profesores globales** | Los profesores y su disponibilidad se guardan en `teachers.json` y se comparten entre todos los proyectos |
 | 📋 **Necesidades por proyecto** | Cada proyecto define sus propias tareas con fecha, hora y rango de profesores necesarios |
 | 🧠 **Optimización CP-SAT** | Google OR-Tools genera la mejor asignación posible maximizando el número total de asignaciones |
-| 🎯 **Múltiples opciones** | El solver genera **5 variantes distintas** (cambiando la semilla de búsqueda) y **tú eliges la que más te guste** |
+| 🎯 **10 opciones navegables** | El solver genera **10 variantes** y cambias entre ellas con ◀ ▶ sin perder ninguna |
+| 🔒 **Bloquear asignaciones** | Fija un profesor a una tarea (clic en el cuadrante) y regenera el resto |
 | 🚫 **Sin solapamientos** | Un profesor no puede estar en dos sitios a la vez |
 | ⏱ **Límites personalizados** | Horas máximas totales y por día para cada profesor |
-| 📧 **Correos integrados** | Genera un mensaje de correo **general** para todo el equipo y **correos individuales** para cada profesor con copia al portapapeles |
-| 📅 **Vista calendario** | Visualización por días con tarjetas de tareas y colores por profesor |
+| 🎨 **Colores y turnos** | Color HEX personalizado + turno (mañana/tarde/cualquiera) por profesor |
+| 📧 **Correos integrados** | Genera correo **general** para el equipo y **correos individuales** para cada profesor |
+| 📅 **Vista calendario** | Visualización por días con tarjetas de tareas — modo compacto y normal |
+| 🖼️ **Exportar PNG** | Captura el cuadrante como imagen PNG |
 | 🌓 **Tema claro/oscuro** | Conmutación instantánea con un solo clic |
-| 📋 **Proyectos duplicables** | Copia proyectos base y modifícalos para crear variantes |
+| ↩️🔁 **Deshacer/Rehacer** | Hasta 50 estados de deshacer en edición |
+| 🔍 **Búsqueda y filtros** | Filtra profesores y necesidades por texto |
+| 📥📤 **Importar / Exportar JSON** | Profesores, necesidades o proyectos completos desde cualquier pestaña |
+| 📊 **Exportar CSV** | Exporta asignaciones a CSV |
+| 📈 **Panel de estadísticas** | Carga por profesor, cobertura, horas totales |
+| ✅ **Validación previa** | Antes de generar, avisa si hay necesidades sin cobertura |
+| 💾 **Auto-guardado** | Cada 2 minutos si hay cambios sin guardar |
+| 🗃️ **Plantillas de horarios** | Guarda/carga patrones de disponibilidad de un profesor |
 | 🖨️ **Exportación HTML** | Vista optimizada para impresión como PDF desde el navegador |
+| 💾 **Persistencia local** | Las opciones generadas se guardan al proyecto y persisten al recargar |
 
 ---
 
@@ -61,11 +72,12 @@ O haz doble clic en `lanzar.bat` (Windows).
 ### Flujo de trabajo
 
 ```
-1. 👨‍🏫 Profes     →  Añade profesores con su disponibilidad horaria
-2. 🏠 Proyecto     →  Crea o selecciona un proyecto
-3. 📋 Necesidades  →  Añade tareas con fecha, hora y mínimo/máximo de profes
-4. ⚙️ Generar      →  El solver genera 5 opciones, tú eliges la mejor
-5. 📅 Cuadrante    →  Abre el HTML, copia correos, imprime como PDF
+1. 👨‍🏫 Profes     →  Añade profesores con disponibilidad, turno y color (o importa JSON)
+2. 🏠 Proyecto     →  Crea o selecciona un proyecto (o importa proyecto completo)
+3. 📋 Necesidades  →  Añade tareas con fecha, hora y mínimo/máximo (o importa JSON)
+4. ⚙️ Generar      →  El solver genera 10 opciones (con validación previa)
+5. 🔒 Cuadrante    →  Bloquea profes a tareas (clic) y regenera si es necesario
+6. 📅 Navega       →  Cambia entre opciones con ◀ ▶, exporta HTML/PNG/CSV
 ```
 
 ### Datos de ejemplo
@@ -111,13 +123,14 @@ Maximizar Σ x[n, p]
 
 ```
 GeneradorCuadranteTareasProfesorado/
-├── gui.py              # 🖥️ Interfaz gráfica PyQt6 (1300+ líneas)
+├── gui.py              # 🖥️ Interfaz gráfica PyQt6 (~2000 líneas)
 ├── scheduler.py        # 🧠 Modelo CP-SAT con OR-Tools
 ├── html_exporter.py    # 📄 Generación HTML (cuadrante + correos)
 ├── seed_data.py        # 🌱 Datos de ejemplo XarxaLlibres
 ├── main.py             # 🚀 Punto de entrada
 ├── teachers.json       # 👨‍🏫 Profesores (se crea al usar)
-├── projects/           # 📂 Proyectos guardados
+├── AGENTS.md           # 🤖 Guía para IA y esquemas de datos
+├── projects/           # 📂 Proyectos guardados + opciones generadas
 ├── output/             # 📁 HTML generados
 ├── lanzar.bat          # 🏃 Lanzador Windows
 ├── index.html          # 🌐 Página del proyecto

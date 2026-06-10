@@ -1,0 +1,175 @@
+# Generador Cuadrante Tareas Profesorado — Guía para IA
+
+## Resumen del proyecto
+
+Aplicación de escritorio (Python + PyQt6) que asigna profesores a tareas de apoyo usando optimización combinatoria con Google OR-Tools CP-SAT. Genera 10 opciones de cuadrante horario navegables, con persistencia local, importación/exportación JSON, y validación previa.
+
+## Esquemas de datos
+
+### Profesor (`teachers.json` y seed_data.py)
+
+```python
+{
+    "name": str,                    # Nombre completo (único)
+    "max_hours": int,               # Límite total semanal en horas
+    "max_hours_per_day": int,       # Límite máximo por día en horas
+    "turno": str,                   # "Cualquiera" | "Mañana" | "Tarde"
+    "color": str,                   # Color HEX (ej: "#6366f1") — opcional
+    "preferred_tasks": [str],       # Nombres de tareas preferidas — opcional
+    "time_slots": [                  # Lista de franjas de disponibilidad
+        {
+            "date": str,            # "YYYY-MM-DD"
+            "start": str,           # "HH:MM" (24h)
+            "end": str              # "HH:MM" (debe ser > start)
+        }
+    ]
+}
+```
+
+Reglas para `time_slots`:
+- Cada franja debe tener `start < end`
+- La franja debe **contener completamente** cualquier necesidad que se le asigne (start <= need.start AND end >= need.end)
+- Una necesidad que va de 09:00 a 11:00 puede cubrirse con una franja 09:00-14:00, pero NO con 09:30-11:00
+- Los slots pueden solaparse entre sí para un mismo profesor (se usan como "disponibilidad total" ese día)
+- Si no hay slot para un día concreto, el profesor no está disponible ese día
+
+### Necesidad (tarea)
+
+```python
+{
+    "name": str,           # Nombre descriptivo de la tarea
+    "date": str,           # "YYYY-MM-DD"
+    "start": str,          # "HH:MM"
+    "end": str,            # "HH:MM"
+    "min": int,            # Mínimo de profesores requeridos (>= 1)
+    "max": int             # Máximo de profesores que pueden asignarse (>= min)
+}
+```
+
+Reglas para necesidades:
+- `min >= 1`, `max >= min`
+- `start < end`
+- La duración se calcula automáticamente como `end - start` en minutos
+- Una necesidad puede requerir varios profesores simultáneamente (min 2, max 4)
+
+### Proyecto (archivo en `projects/`)
+
+```json
+{
+    "name": "Nombre del proyecto",
+    "needs": [ ... ]  // Lista de necesidades
+}
+```
+
+### Opciones generadas (archivo `*_generated.json`)
+
+Contiene una lista de opciones, cada una con:
+- `id`: int — número de opción
+- `assignment`: list — asignaciones (need + teacher)
+- `n_assignments`: int — total de asignaciones
+- `n_covered`: int — necesidades distintas cubiertas
+- `total_needs`: int — total de necesidades
+- `total_minutes`: int — minutos totales asignados
+- `teacher_hours`: dict — {nombre_profesor: minutos}
+
+## Formatos para importación / exportación
+
+### Importar solo profesores → pestaña Profes
+
+Archivo JSON con un array de objetos profesor:
+
+```json
+[
+    {
+        "name": "Ana Alumnez",
+        "max_hours": 20,
+        "max_hours_per_day": 6,
+        "turno": "Cualquiera",
+        "color": "#6366f1",
+        "preferred_tasks": [],
+        "time_slots": [
+            {"date": "2026-06-22", "start": "09:00", "end": "14:00"},
+            {"date": "2026-06-22", "start": "15:30", "end": "18:30"}
+        ]
+    }
+]
+```
+
+### Importar solo necesidades → pestaña Necesidades
+
+Archivo JSON con un array de objetos necesidad:
+
+```json
+[
+    {
+        "name": "Recogida libros 1º ESO A",
+        "date": "2026-06-22",
+        "start": "09:00",
+        "end": "11:00",
+        "min": 2,
+        "max": 4
+    }
+]
+```
+
+### Importar/Exportar proyecto completo → pestaña Proyecto
+
+```json
+{
+    "project_name": "Nombre del proyecto",
+    "needs": [ ... ],
+    "teachers": [ ... ]  // Opcional — si se incluye, reemplaza todos los profesores
+}
+```
+
+## Reglas para generar datos válidos
+
+1. **Nombres inventados**: Usa apellidos claramente ficticios (Alumnez, Profesorez, Inventadez, Ficticiez, etc.). No uses nombres reales de docentes.
+
+2. **Disponibilidad vs necesidades**: Para que el solver encuentre solución, la disponibilidad de los profesores debe **cubrir** las necesidades. Si una necesidad es de 09:00 a 11:00, al menos un profesor debe tener una franja que empiece ≤ 09:00 y termine ≥ 11:00.
+
+3. **Horas mínimas**: La suma de (min × duración) de todas las necesidades debe ser ≤ la suma de horas disponibles de todos los profesores.
+
+4. **Solapamiento de necesidades**: Si dos necesidades ocurren el mismo día y sus horarios se cruzan, un mismo profesor no puede estar en ambas. El solver lo maneja automáticamente.
+
+5. **Distribución realista**: Los datos semilla incluyen 8 profesores con distintos perfiles (mañanas, tardes, mixto, jornada partida, reducida) y ~25 necesidades distribuidas en 5 días. Es un buen punto de partida.
+
+6. **Límite de tiempo**: El solver tiene 10 segundos por opción. Si el problema es muy grande (>15 profesores, >50 necesidades), puede no encontrar la solución óptima, pero dará una factible.
+
+7. **Perfiles variados**: Los profesores deberían tener distintos `turno` y `max_hours` para que el solver tenga combinaciones interesantes. Mezcla perfiles de mañana, tarde, y mixtos.
+
+8. **Colores**: Se recomienda usar colores HEX distintos para cada profesor. Si no se especifica `color`, se asigna automáticamente.
+
+## Funcionalidades actuales
+
+| Funcionalidad | Dónde |
+|---|---|
+| 🎨 **Colores personalizados** | Al crear profesor, botón 🎨 para elegir color |
+| 👤 **Turno preferente** | Combo "Cualquiera/Mañana/Tarde" al crear profesor |
+| 🔍 **Búsqueda y filtros** | Campos de texto en listas de profesores y necesidades |
+| 📥 **Importar JSON** | Cada pestaña tiene su botón de importación |
+| 📤 **Exportar JSON** | Profesores, necesidades o proyecto completo |
+| 📊 **Exportar CSV** | Botón en pestaña Proyecto |
+| 📈 **Panel de estadísticas** | Botón 📊 Stats en pestaña Cuadrante |
+| 📅 **Vista compacta/normal** | Botón en pestaña Cuadrante |
+| ↩️ **Deshacer/Rehacer** | Botones ↩️🔁 en pestaña Proyecto (hasta 50 estados) |
+| 💾 **Auto-guardado** | Cada 2 minutos si hay cambios sin guardar |
+| 🔁 **10 opciones navegables** | ◀ ▶ en pestaña Cuadrante |
+| 🗃️ **Plantillas de horarios** | Guardar/cargar franjas de un profesor como plantilla |
+| ✅ **Validación previa** | Antes de generar, avisa si hay necesidades sin cobertura |
+| ⚠️ **Advertencias de cobertura** | Muestra qué necesidades no pueden cubrirse y horas insuficientes |
+
+## Archivos del proyecto
+
+| Archivo | Propósito |
+|---|---|
+| `main.py` | Punto de entrada |
+| `gui.py` | Interfaz PyQt6 (~1700 líneas) |
+| `scheduler.py` | Modelo CP-SAT (variables, restricciones, solver) |
+| `seed_data.py` | Datos ficticios de demostración |
+| `html_exporter.py` | Exportación a HTML con correos |
+| `teachers.json` | Persistencia global de profesores |
+| `projects/*.json` | Proyectos guardados |
+| `projects/*_generated.json` | Opciones generadas guardadas |
+| `output/*.html` | Cuadrantes generados |
+| `AGENTS.md` | Esta guía |

@@ -5,10 +5,11 @@ from PyQt6.QtWidgets import (
     QGridLayout, QLabel, QPushButton, QLineEdit, QComboBox,
     QTabWidget, QScrollArea, QFrame, QTextEdit, QSizePolicy,
     QMessageBox, QDateEdit, QDialog, QFormLayout, QDialogButtonBox,
-    QButtonGroup, QRadioButton  # Para el selector de opciones múltiples
+    QButtonGroup, QRadioButton, QFileDialog  # Para el selector de opciones múltiples
 )
 from PyQt6.QtCore import Qt, QTimer, QDate, pyqtSignal
-from PyQt6.QtGui import QFont, QAction
+from PyQt6.QtGui import QFont, QAction, QColor
+from PyQt6.QtWidgets import QColorDialog, QInputDialog
 
 from ortools.sat.python import cp_model
 from scheduler import TeacherScheduler, duration_min
@@ -53,8 +54,8 @@ QTabBar::tab {{ background: {C_BORDER}; color: {C_TEXT2}; padding: 8px 18px; mar
 QTabBar::tab:selected {{ background: {C_CARD}; color: {C_PRI}; font-weight: bold; }}
 QPushButton {{ background: {C_PRI}; color: #fff; border: none; padding: 6px 14px; border-radius: 5px; font-size: 12px; }}
 QPushButton:hover {{ background: {C_PRI_D}; }}
-QPushButton#danger {{ background: {C_RED}; }}
-QPushButton#danger:hover {{ background: #b91c1c; }}
+QPushButton#danger {{ background: transparent; color: {C_RED}; border: none; padding: 4px 8px; border-radius: 4px; font-size: 14px; }}
+QPushButton#danger:hover {{ background: #fee2e2; }}
 QPushButton#secondary {{ background: {C_BORDER}; color: {C_TEXT}; }}
 QPushButton#secondary:hover {{ background: #cbd5e1; }}
 QLineEdit {{ background: {C_CARD}; border: 1px solid {C_BORDER}; border-radius: 4px; padding: 4px 7px; color: {C_TEXT}; }}
@@ -81,8 +82,8 @@ QTabBar::tab {{ background: {C_BORDER_D}; color: {C_TEXT2_D}; padding: 8px 18px;
 QTabBar::tab:selected {{ background: {C_CARD_D}; color: {C_PRI_L}; font-weight: bold; }}
 QPushButton {{ background: {C_PRI}; color: #fff; border: none; padding: 6px 14px; border-radius: 5px; font-size: 12px; }}
 QPushButton:hover {{ background: {C_PRI_D}; }}
-QPushButton#danger {{ background: {C_RED}; }}
-QPushButton#danger:hover {{ background: #b91c1c; }}
+QPushButton#danger {{ background: transparent; color: {C_RED}; border: none; padding: 4px 8px; border-radius: 4px; font-size: 14px; }}
+QPushButton#danger:hover {{ background: #450a0a; }}
 QPushButton#secondary {{ background: {C_BORDER_D}; color: {C_TEXT_D}; }}
 QPushButton#secondary:hover {{ background: #475569; }}
 QLineEdit {{ background: {C_BG_D}; border: 1px solid {C_BORDER_D}; border-radius: 4px; padding: 4px 7px; color: {C_TEXT_D}; }}
@@ -122,10 +123,14 @@ def _list_projects():
     _ensure_dirs()
     names = []
     for f in sorted(os.listdir(PROJECTS_DIR)):
-        if not f.endswith(".json"): continue
+        if not f.endswith(".json") or f.endswith("_generated.json"): continue
         try:
             with open(os.path.join(PROJECTS_DIR, f), "r", encoding="utf-8") as fh:
-                names.append(json.load(fh).get("name", f.replace(".json", "")))
+                data = json.load(fh)
+                if isinstance(data, dict):
+                    names.append(data.get("name", f.replace(".json", "")))
+                else:
+                    names.append(f.replace(".json", ""))
         except Exception:
             names.append(f.replace(".json", ""))
     return names
@@ -146,6 +151,12 @@ def _load_project(name):
 def _delete_project_file(name):
     p = _project_filename(name)
     if os.path.exists(p): os.remove(p)
+    gp = _generated_options_filename(name)
+    if os.path.exists(gp): os.remove(gp)
+
+def _generated_options_filename(name):
+    safe = re.sub(r"[^a-zA-Z0-9_\-]", "_", name.strip() or "sin_titulo")
+    return os.path.join(PROJECTS_DIR, f"{safe}_generated.json")
 
 def _fmt_slot(s):
     try:
@@ -180,12 +191,13 @@ class Toast(QFrame):
 
 # ── Clickable Frame ──────────────────────────────────────────────────────
 class ClickFrame(QFrame):
-    clicked = pyqtSignal(int)
-    def __init__(self, idx, parent=None):
+    clicked = pyqtSignal(int, int)
+    def __init__(self, a=0, b=0, parent=None):
         super().__init__(parent)
-        self.idx = idx
+        self.a = a
+        self.b = b
     def mousePressEvent(self, e):
-        self.clicked.emit(self.idx)
+        self.clicked.emit(self.a, self.b)
         super().mousePressEvent(e)
 
 # ── MultiOptionDialog ───────────────────────────────────────────────────
@@ -260,7 +272,7 @@ class MultiOptionDialog(QDialog):
         btn_lay = QHBoxLayout()
         btn_lay.addStretch()
         cancelar = QPushButton("❌ Cancelar")
-        cancelar.setObjectName("danger")
+        cancelar.setObjectName("secondary")
         cancelar.clicked.connect(self.reject)
         btn_lay.addWidget(cancelar)
         aceptar = QPushButton("✅ Aceptar opción seleccionada")
@@ -365,23 +377,38 @@ class App(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("📋 Generador Cuadrante Tareas Profesorado")
-        self.setMinimumSize(1100, 650)  # 16:9 friendly minimum
-        self.resize(1366, 768)          # 16:9 estándar
+        self.setMinimumSize(1200, 720)
+        self.resize(1400, 800)
 
         self.teachers = _load_teachers()
         self.needs = []
         self.project_name = ""
         self.last_assignment = None
         self.last_html_path = None
+        self.generated_options = []
+        self.generated_html_paths = []
+        self.current_option_index = 0
         self._dirty = False
         self._selected_teacher_idx = None
         self._dark_mode = False
+        self._undo_stack = []
+        self._redo_stack = []
+        self._compact_view = False
+        self._locked_assignments = {}       # {(need_idx, teacher_idx): bool}
+        self._teacher_filter = ""
+        self._need_filter = ""
+        self._tslot_templates = []
 
         self._build_ui()
         self._apply_theme()
         self._refresh_project_list()
         self._rebuild_teacher_list()
         self._update_stats()
+
+        self._auto_save_timer = QTimer(self)
+        self._auto_save_timer.setInterval(120000)
+        self._auto_save_timer.timeout.connect(self._auto_save)
+        self._auto_save_timer.start()
 
     # ── Theme ──────────────────────────────────────────────────────────
     def _apply_theme(self):
@@ -476,7 +503,7 @@ class App(QMainWindow):
         btn("➕ Nuevo", None, self._new_project, "secondary")
         btn("📋 Duplicar", None, self._duplicate_project, "secondary")
         btn("💾 Guardar", None, self._save_current)
-        btn("🗑️ Eliminar", None, self._delete_project, "danger")
+        btn("🗑️ Eliminar", None, self._delete_project, "secondary")
         v.addLayout(sel)
 
         v.addWidget(QLabel("📛 Nombre del proyecto:"))
@@ -502,6 +529,30 @@ class App(QMainWindow):
 
         bf = QHBoxLayout()
         btn("📦 Cargar datos ficticios", None, self._load_seed, "secondary")
+        btn_imp_proj = QPushButton("📥 Importar proyecto...")
+        btn_imp_proj.setObjectName("secondary")
+        btn_imp_proj.clicked.connect(self._import_project)
+        bf.addWidget(btn_imp_proj)
+        btn_exp_proj = QPushButton("📤 Exportar proyecto")
+        btn_exp_proj.setObjectName("secondary")
+        btn_exp_proj.clicked.connect(self._export_project)
+        bf.addWidget(btn_exp_proj)
+        btn_csv = QPushButton("📊 Exportar CSV")
+        btn_csv.setObjectName("secondary")
+        btn_csv.clicked.connect(self._export_csv)
+        bf.addWidget(btn_csv)
+        btn_undo = QPushButton("↩️")
+        btn_undo.setFixedWidth(36)
+        btn_undo.setObjectName("secondary")
+        btn_undo.setToolTip("Deshacer")
+        btn_undo.clicked.connect(self._undo)
+        bf.addWidget(btn_undo)
+        btn_redo = QPushButton("🔁")
+        btn_redo.setFixedWidth(36)
+        btn_redo.setObjectName("secondary")
+        btn_redo.setToolTip("Rehacer")
+        btn_redo.clicked.connect(self._redo)
+        bf.addWidget(btn_redo)
         self._dirty_label = QLabel("")
         self._dirty_label.setStyleSheet(f"color: {C_ACCENT};")
         bf.addWidget(self._dirty_label)
@@ -516,7 +567,7 @@ class App(QMainWindow):
             "1. 👨‍🏫 Gestiona los profesores con sus horarios — datos compartidos entre proyectos\n"
             "2. 🏠 Crea un proyecto o selecciona uno existente\n"
             "3. 📋 Añade necesidades de apoyo con fecha/hora y mínimo/máximo de profesores\n"
-            "4. ⚙️ Genera el cuadrante — el solver CP-SAT genera 5 opciones y tú eliges la mejor\n"
+            "4. ⚙️ Genera el cuadrante — el solver CP-SAT genera 10 opciones y tú eliges la mejor\n"
             "5. 📅 Abre el HTML, copia los correos e imprime como PDF"
         )
         info.setWordWrap(True)
@@ -536,29 +587,62 @@ class App(QMainWindow):
         hint.setStyleSheet(f"color: {C_SLATE};")
         v.addWidget(hint)
 
+        ie_teachers = QHBoxLayout()
+        btn_imp_t = QPushButton("📥 Importar profesores...")
+        btn_imp_t.setObjectName("secondary")
+        btn_imp_t.clicked.connect(self._import_teachers)
+        ie_teachers.addWidget(btn_imp_t)
+        btn_exp_t = QPushButton("📤 Exportar profesores")
+        btn_exp_t.setObjectName("secondary")
+        btn_exp_t.clicked.connect(self._export_teachers)
+        ie_teachers.addWidget(btn_exp_t)
+        ie_teachers.addStretch()
+        v.addLayout(ie_teachers)
+
         # Add teacher form
         f = QHBoxLayout()
         f.addWidget(QLabel("👤 Nombre:"))
         self.t_name = QLineEdit(); self.t_name.setPlaceholderText("Nombre del profe")
         f.addWidget(self.t_name)
-        f.addSpacing(8)
-        f.addWidget(QLabel("⏱ Max total (h):"))
-        self.t_max = QLineEdit("20"); self.t_max.setFixedWidth(50)
+        f.addSpacing(4)
+        f.addWidget(QLabel("⏱ Max tot:"))
+        self.t_max = QLineEdit("20"); self.t_max.setFixedWidth(40)
         f.addWidget(self.t_max)
-        f.addSpacing(8)
-        f.addWidget(QLabel("📅 Max/día (h):"))
-        self.t_maxd = QLineEdit("6"); self.t_maxd.setFixedWidth(50)
+        f.addSpacing(4)
+        f.addWidget(QLabel("Max/día:"))
+        self.t_maxd = QLineEdit("6"); self.t_maxd.setFixedWidth(36)
         f.addWidget(self.t_maxd)
-        f.addSpacing(8)
+        f.addSpacing(4)
+        f.addWidget(QLabel("Turno:"))
+        self.t_turno = QComboBox()
+        self.t_turno.addItems(["Cualquiera", "Mañana", "Tarde"])
+        self.t_turno.setFixedWidth(100)
+        f.addWidget(self.t_turno)
+        f.addSpacing(4)
+        self.t_color_btn = QPushButton("🎨")
+        self.t_color_btn.setFixedWidth(32)
+        self.t_color_btn.setToolTip("Color personalizado")
+        self.t_color_btn.clicked.connect(self._pick_teacher_color)
+        f.addWidget(self.t_color_btn)
+        self._teacher_color_pick = C_PRI
+        f.addSpacing(4)
         btn = QPushButton("➕ Añadir profe")
         btn.clicked.connect(self._add_teacher)
         f.addWidget(btn)
         f.addStretch()
         v.addLayout(f)
 
+        search_teach = QHBoxLayout()
         self.teacher_count = QLabel("0 profesores")
         self.teacher_count.setStyleSheet("font-weight: bold;")
-        v.addWidget(self.teacher_count)
+        search_teach.addWidget(self.teacher_count)
+        search_teach.addStretch()
+        self.teacher_search = QLineEdit()
+        self.teacher_search.setPlaceholderText("🔍 Filtrar profes...")
+        self.teacher_search.setFixedWidth(200)
+        self.teacher_search.textChanged.connect(self._rebuild_teacher_list)
+        search_teach.addWidget(self.teacher_search)
+        v.addLayout(search_teach)
 
         self.teacher_scroll = QScrollArea()
         self.teacher_scroll.setWidgetResizable(True)
@@ -601,6 +685,15 @@ class App(QMainWindow):
             b.setCursor(Qt.CursorShape.PointingHandCursor)
             b.clicked.connect(lambda checked, ss=s, ee=e: self._add_tslot_preset(ss, ee))
             presets.addWidget(b)
+        presets.addSpacing(8)
+        btn_save_t = QPushButton("💾 Guardar plantilla")
+        btn_save_t.setObjectName("secondary")
+        btn_save_t.clicked.connect(self._save_tslot_template)
+        presets.addWidget(btn_save_t)
+        btn_load_t = QPushButton("📂 Cargar plantilla")
+        btn_load_t.setObjectName("secondary")
+        btn_load_t.clicked.connect(self._load_tslot_template)
+        presets.addWidget(btn_load_t)
         presets.addStretch()
         v.addLayout(presets)
 
@@ -622,6 +715,18 @@ class App(QMainWindow):
         v = QVBoxLayout(tab)
         v.setContentsMargins(20, 16, 20, 16)
         v.setSpacing(8)
+
+        ie_needs = QHBoxLayout()
+        btn_imp_n = QPushButton("📥 Importar necesidades...")
+        btn_imp_n.setObjectName("secondary")
+        btn_imp_n.clicked.connect(self._import_needs)
+        ie_needs.addWidget(btn_imp_n)
+        btn_exp_n = QPushButton("📤 Exportar necesidades")
+        btn_exp_n.setObjectName("secondary")
+        btn_exp_n.clicked.connect(self._export_needs)
+        ie_needs.addWidget(btn_exp_n)
+        ie_needs.addStretch()
+        v.addLayout(ie_needs)
 
         f = QHBoxLayout()
         f.addWidget(QLabel("📝 Nombre:"))
@@ -654,9 +759,17 @@ class App(QMainWindow):
         f.addStretch()
         v.addLayout(f)
 
+        search_needs = QHBoxLayout()
         self.need_count = QLabel("📋 0 necesidades")
         self.need_count.setStyleSheet("font-weight: bold;")
-        v.addWidget(self.need_count)
+        search_needs.addWidget(self.need_count)
+        search_needs.addStretch()
+        self.need_search = QLineEdit()
+        self.need_search.setPlaceholderText("🔍 Filtrar necesidades...")
+        self.need_search.setFixedWidth(220)
+        self.need_search.textChanged.connect(self._rebuild_need_list)
+        search_needs.addWidget(self.need_search)
+        v.addLayout(search_needs)
 
         self.need_scroll = QScrollArea()
         self.need_scroll.setWidgetResizable(True)
@@ -680,8 +793,8 @@ class App(QMainWindow):
         v.addWidget(QLabel("⚙️ Generar cuadrante de apoyo"))
 
         info_multi = QLabel(
-            "🧠 El solver genera 5 opciones distintas (variando la semilla de búsqueda)\n"
-            "y te permite elegir la que más te guste antes de mostrar el resultado final."
+            "🧠 El solver genera 10 opciones distintas (variando la semilla de búsqueda).\n"
+            "Una vez generadas, cambia entre ellas libremente desde la pestaña 📅 Cuadrante."
         )
         info_multi.setWordWrap(True)
         info_multi.setStyleSheet(f"color: {C_TEXT2}; background: #eef2ff; border: 1px solid {C_PRI_L}; border-radius: 6px; padding: 8px 12px;")
@@ -702,7 +815,7 @@ class App(QMainWindow):
         self.status_text.setReadOnly(True)
         self.status_text.setMinimumHeight(200)
         self.status_text.append("💡 Define profesores y necesidades, luego pulsa Generar.\n")
-        self.status_text.append("🔁 El solver probará 5 semillas distintas y abrirá un selector.\n")
+        self.status_text.append("🔁 El solver probará 10 semillas distintas y podrás cambiar entre opciones.\n")
         v.addWidget(self.status_text, 1)
 
     # ── Schedule Tab ───────────────────────────────────────────────────
@@ -726,15 +839,62 @@ class App(QMainWindow):
         self.open_folder_btn.setEnabled(False)
         bf.addWidget(self.open_folder_btn)
 
+        self.stats_btn = QPushButton("📊 Stats")
+        self.stats_btn.setObjectName("secondary")
+        self.stats_btn.clicked.connect(self._show_stats)
+        self.stats_btn.setEnabled(False)
+        bf.addWidget(self.stats_btn)
+
+        self.compact_btn = QPushButton("📅 Vista compacta")
+        self.compact_btn.setObjectName("secondary")
+        self.compact_btn.clicked.connect(self._toggle_compact_view)
+        self.compact_btn.setEnabled(False)
+        bf.addWidget(self.compact_btn)
+
+        self.lock_regenerate_btn = QPushButton("🔒 Regenerar con bloqueos")
+        self.lock_regenerate_btn.setObjectName("secondary")
+        self.lock_regenerate_btn.clicked.connect(self._regenerate_with_locks)
+        self.lock_regenerate_btn.setEnabled(False)
+        bf.addWidget(self.lock_regenerate_btn)
+
+        self.png_btn = QPushButton("🖼️ PNG")
+        self.png_btn.setObjectName("secondary")
+        self.png_btn.clicked.connect(self._export_png)
+        self.png_btn.setEnabled(False)
+        bf.addWidget(self.png_btn)
+
+        bf.addSpacing(24)
+
+        # Navegación entre opciones
+        self.nav_prev_btn = QPushButton("◀")
+        self.nav_prev_btn.setFixedWidth(36)
+        self.nav_prev_btn.setObjectName("secondary")
+        self.nav_prev_btn.clicked.connect(self._prev_option)
+        self.nav_prev_btn.setEnabled(False)
+        bf.addWidget(self.nav_prev_btn)
+
+        self.nav_label = QLabel("")
+        self.nav_label.setStyleSheet(f"font-weight: bold; color: {C_PRI}; font-size: 13px;")
+        bf.addWidget(self.nav_label)
+
+        self.nav_next_btn = QPushButton("▶")
+        self.nav_next_btn.setFixedWidth(36)
+        self.nav_next_btn.setObjectName("secondary")
+        self.nav_next_btn.clicked.connect(self._next_option)
+        self.nav_next_btn.setEnabled(False)
+        bf.addWidget(self.nav_next_btn)
+
+        bf.addStretch()
+
         self.cal_summary = QLabel("")
         self.cal_summary.setStyleSheet(f"color: {C_SLATE};")
-        bf.addStretch()
         bf.addWidget(self.cal_summary)
         v.addLayout(bf)
 
         self.cal_scroll = QScrollArea()
         self.cal_scroll.setWidgetResizable(True)
         self.cal_scroll.setFrameShape(QFrame.Shape.NoFrame)
+        self.cal_scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
         self.cal_container = QWidget()
         self.cal_layout = QVBoxLayout(self.cal_container)
         self.cal_layout.setContentsMargins(0, 0, 0, 0)
@@ -754,6 +914,9 @@ class App(QMainWindow):
         return s
 
     def _teacher_color(self, name):
+        for t in self.teachers:
+            if t["name"] == name and t.get("color"):
+                return t["color"]
         idx = next((i for i, t in enumerate(self.teachers) if t["name"] == name), 0) % len(TEACHER_COLORS)
         return TEACHER_COLORS[idx]
 
@@ -764,38 +927,48 @@ class App(QMainWindow):
         return f"rgba({r},{g},{b},{alpha})"
 
     def _rebuild_teacher_list(self):
+        filtro = self.teacher_search.text().strip().lower()
         while self.teacher_list_layout.count() > 1:
             item = self.teacher_list_layout.takeAt(0)
             if item.widget(): item.widget().deleteLater()
 
+        shown = 0
         for i, t in enumerate(self.teachers):
+            if filtro and filtro not in t["name"].lower():
+                continue
+            shown += 1
             frame = ClickFrame(i)
             if i == self._selected_teacher_idx:
                 frame.setObjectName("row_selected")
             else:
                 frame.setObjectName("row")
-            frame.setStyleSheet("")  # let QSS handle it
+            frame.setStyleSheet("")
             frame.setCursor(Qt.CursorShape.PointingHandCursor)
-            frame.clicked.connect(self._select_teacher)
+            frame.clicked.connect(lambda a, b, idx=i: self._select_teacher(idx))
 
             row = QHBoxLayout(frame)
             row.setContentsMargins(10, 6, 10, 6)
             color = self._teacher_color(t["name"])
             n_slots = len(t.get("time_slots", []))
+            turno = t.get("turno", "Cualquiera")
+            turno_icon = {"Mañana": "🌅", "Tarde": "🌆", "Cualquiera": "⏰"}
             dot = QLabel("●")
             dot.setStyleSheet(f"color: {color}; font-size: 18px;")
             row.addWidget(dot)
-            txt = QLabel(f"👤 {t['name']:16s}  ⏱ {t['max_hours']}h  📅 {t['max_hours_per_day']}h/d  🗓 {n_slots} franjas")
+            pref = t.get("preferred_tasks", [])
+            pref_str = f"  ⭐ {len(pref)} pref." if pref else ""
+            txt = QLabel(f"👤 {t['name']:16s}  ⏱ {t['max_hours']}h  📅 {t['max_hours_per_day']}h/d  🗓 {n_slots} franjas  {turno_icon.get(turno, '⏰')} {turno}{pref_str}")
             row.addWidget(txt, 1)
-            del_btn = QPushButton("✕")
+            del_btn = QPushButton("❌")
             del_btn.setFixedSize(28, 28)
             del_btn.setObjectName("danger")
+            del_btn.setToolTip("Eliminar profesor")
             del_btn.clicked.connect(lambda checked, idx=i: self._delete_teacher(idx))
             row.addWidget(del_btn)
 
             self.teacher_list_layout.insertWidget(self.teacher_list_layout.count()-1, frame)
 
-        self.teacher_count.setText(f"{len(self.teachers)} profesores")
+        self.teacher_count.setText(f"{shown} profesores (de {len(self.teachers)})" if filtro else f"{len(self.teachers)} profesores")
 
     def _select_teacher(self, idx):
         if idx >= len(self.teachers): return
@@ -824,9 +997,10 @@ class App(QMainWindow):
             row = QHBoxLayout(frame)
             row.setContentsMargins(10, 4, 10, 4)
             row.addWidget(QLabel(_fmt_slot(s)))
-            del_btn = QPushButton("✕")
-            del_btn.setFixedSize(24, 24)
+            del_btn = QPushButton("❌")
+            del_btn.setFixedSize(28, 28)
             del_btn.setObjectName("danger")
+            del_btn.setToolTip("Eliminar franja")
             del_btn.clicked.connect(lambda checked, ref=s: self._delete_tslot(ref))
             row.addWidget(del_btn, alignment=Qt.AlignmentFlag.AlignRight)
             row.addStretch()
@@ -857,14 +1031,26 @@ class App(QMainWindow):
             mxd = int(self.t_maxd.text())
         except ValueError:
             self.toast.show("Límites deben ser enteros", "warning"); return
-        self.teachers.append({"name": name, "max_hours": mx, "max_hours_per_day": mxd, "time_slots": []})
+        turno = self.t_turno.currentText()
+        color = self._teacher_color_pick
+        self.teachers.append({
+            "name": name, "max_hours": mx, "max_hours_per_day": mxd,
+            "time_slots": [], "turno": turno, "color": color
+        })
         _save_teachers(self.teachers)
         self._selected_teacher_idx = len(self.teachers) - 1
         self._rebuild_teacher_list()
         self._refresh_tslot_panel()
         self._update_stats()
         self.t_name.clear()
+        self._teacher_color_pick = TEACHER_COLORS[len(self.teachers) % len(TEACHER_COLORS)]
         self.toast.show(f"Profe «{name}» añadido")
+
+    def _pick_teacher_color(self):
+        color = QColorDialog.getColor(QColor(self._teacher_color_pick), self, "Color del profesor")
+        if color.isValid():
+            self._teacher_color_pick = color.name()
+            self.t_color_btn.setStyleSheet(f"background: {self._teacher_color_pick}; border-radius: 4px;")
 
     def _delete_teacher(self, idx):
         if idx >= len(self.teachers): return
@@ -932,6 +1118,66 @@ class App(QMainWindow):
             self._rebuild_teacher_list()
             self._update_stats()
 
+    def _save_tslot_template(self):
+        if self._selected_teacher_idx is None or self._selected_teacher_idx >= len(self.teachers):
+            self.toast.show("Selecciona un profe primero", "warning"); return
+        t = self.teachers[self._selected_teacher_idx]
+        if not t.get("time_slots"):
+            self.toast.show("El profe no tiene franjas", "warning"); return
+        name, ok = QInputDialog.getText(self, "Guardar plantilla", "Nombre de la plantilla:")
+        if not ok or not name.strip():
+            return
+        self._tslot_templates.append({"name": name.strip(), "slots": list(t["time_slots"])})
+        self.toast.show(f"Plantilla «{name.strip()}» guardada")
+
+    def _load_tslot_template(self):
+        if self._selected_teacher_idx is None or self._selected_teacher_idx >= len(self.teachers):
+            self.toast.show("Selecciona un profe primero", "warning"); return
+        if not self._tslot_templates:
+            self.toast.show("No hay plantillas guardadas", "warning"); return
+        names = [tmpl["name"] for tmpl in self._tslot_templates]
+        name, ok = QInputDialog.getItem(self, "Cargar plantilla", "Selecciona:", names, 0, False)
+        if not ok or not name:
+            return
+        tmpl = next(t for t in self._tslot_templates if t["name"] == name)
+        self.teachers[self._selected_teacher_idx]["time_slots"] = list(tmpl["slots"])
+        _save_teachers(self.teachers)
+        self._refresh_tslot_panel()
+        self._rebuild_teacher_list()
+        self._update_stats()
+        self.toast.show(f"Plantilla «{name}» cargada")
+
+    def _export_csv(self):
+        if not self.needs:
+            self.toast.show("No hay datos para exportar", "warning"); return
+        path, _ = QFileDialog.getSaveFileName(self, "Exportar CSV", "cuadrante.csv", "CSV (*.csv)")
+        if not path: return
+        try:
+            import csv
+            with open(path, "w", newline="", encoding="utf-8-sig") as f:
+                w = csv.writer(f)
+                w.writerow(["Fecha", "Inicio", "Fin", "Tarea", "Min", "Max", "Profesor", "Horas"])
+                if self.last_assignment:
+                    rows = {}
+                    for a in self.last_assignment:
+                        nd = a["need"]
+                        key = (nd["date"], nd["start"], nd["end"], nd["name"])
+                        rows.setdefault(key, {"need": nd, "teachers": []})
+                        rows[key]["teachers"].append(a["teacher"]["name"])
+                    for key, g in sorted(rows.items()):
+                        nd = g["need"]
+                        dur = duration_min(nd) / 60
+                        profs = "; ".join(g["teachers"])
+                        w.writerow([nd["date"], nd["start"], nd["end"], nd["name"],
+                                    nd["min"], nd["max"], profs, f"{dur:.1f}"])
+                else:
+                    for n in self.needs:
+                        w.writerow([n["date"], n["start"], n["end"], n["name"],
+                                    n["min"], n["max"], "", ""])
+            self.toast.show("CSV exportado")
+        except Exception as e:
+            self.toast.show(f"Error: {e}", "error")
+
     # ── Need actions ───────────────────────────────────────────────────
     def _add_need(self):
         name = self.nd_name.text().strip()
@@ -966,11 +1212,16 @@ class App(QMainWindow):
         self._update_stats()
 
     def _rebuild_need_list(self):
+        filtro = self.need_search.text().strip().lower()
         while self.need_layout.count() > 1:
             item = self.need_layout.takeAt(0)
             if item.widget(): item.widget().deleteLater()
 
+        shown = 0
         for n in self.needs:
+            if filtro and filtro not in n["name"].lower() and filtro not in n.get("date", ""):
+                continue
+            shown += 1
             frame = QFrame()
             frame.setObjectName("need_row")
             row = QHBoxLayout(frame)
@@ -979,14 +1230,15 @@ class App(QMainWindow):
             lbl = QLabel(f"📋 <b>{n['name']}</b>  —  {dsp}")
             lbl.setTextFormat(Qt.TextFormat.RichText)
             row.addWidget(lbl, 1)
-            del_btn = QPushButton("✕")
-            del_btn.setFixedSize(24, 24)
+            del_btn = QPushButton("❌")
+            del_btn.setFixedSize(28, 28)
             del_btn.setObjectName("danger")
+            del_btn.setToolTip("Eliminar necesidad")
             del_btn.clicked.connect(lambda checked, ref=n: self._delete_need(ref))
             row.addWidget(del_btn)
             self.need_layout.insertWidget(self.need_layout.count()-1, frame)
 
-        self.need_count.setText(f"{len(self.needs)} necesidades")
+        self.need_count.setText(f"{shown} necesidades (de {len(self.needs)})" if filtro else f"{len(self.needs)} necesidades")
 
     # ── Project actions ────────────────────────────────────────────────
     def _refresh_project_list(self):
@@ -1015,10 +1267,17 @@ class App(QMainWindow):
         self._save_current(silent=True)
         self.project_name_input.clear()
         self.needs = []
+        self.generated_options = []
+        self.generated_html_paths = []
+        self.current_option_index = 0
+        self.last_assignment = None
+        self.last_html_path = None
+        self._locked_assignments = {}
         self._dirty = False
         self._dirty_label.setText("")
         self._rebuild_need_list()
         self._update_stats()
+        self._update_schedule_tab()
         self.project_name_input.setText("Nuevo proyecto")
         self._mark_dirty()
         self.toast.show("Nuevo proyecto creado")
@@ -1055,6 +1314,8 @@ class App(QMainWindow):
     def _load_project_data(self, name):
         try:
             data = _load_project(name)
+            if not isinstance(data, dict):
+                raise ValueError("El archivo no contiene un proyecto válido")
         except Exception as e:
             self.toast.show(f"Error al cargar: {e}", "error"); return
         self.project_name_input.setText(data.get("name", name))
@@ -1063,6 +1324,21 @@ class App(QMainWindow):
         self._dirty_label.setText("")
         self._rebuild_need_list()
         self._update_stats()
+
+        # Cargar opciones generadas guardadas
+        saved = self._load_generated_options()
+        if saved:
+            self.generated_options = saved
+            self.generated_html_paths = []
+            self.current_option_index = 0
+            self.last_assignment = saved[0]["assignment"]
+            self.last_html_path = None
+            self._log(f"📂 Cargadas {len(saved)} opciones guardadas del proyecto")
+            self._update_schedule_tab()
+        else:
+            self.generated_options = []
+            self.generated_html_paths = []
+            self.current_option_index = 0
 
     def _mark_dirty(self):
         if not self._dirty:
@@ -1076,11 +1352,239 @@ class App(QMainWindow):
         ndata = get_seed_needs()
         self.project_name_input.setText("XarxaLlibres 2026 - Recogida y distribución")
         self.needs = [dict(n) for n in ndata]
+        self.generated_options = []
+        self.generated_html_paths = []
+        self.current_option_index = 0
+        self.last_assignment = None
+        self.last_html_path = None
+        self._locked_assignments = {}
         self._selected_teacher_idx = 0 if self.teachers else None
         self._rebuild_teacher_list()
         self._rebuild_need_list()
         self._mark_dirty()
+        self._update_schedule_tab()
         self.toast.show("Datos XarxaLlibres cargados (8 profesores, 25 tareas)")
+
+    # ── Import / Export ─────────────────────────────────────────────────
+    def _import_teachers(self):
+        path, _ = QFileDialog.getOpenFileName(self, "Importar profesores", "", "JSON (*.json)")
+        if not path: return
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            if not isinstance(data, list):
+                self.toast.show("El archivo debe contener un array de profesores", "error"); return
+            imported = 0
+            for t in data:
+                if not all(k in t for k in ("name", "max_hours", "max_hours_per_day", "time_slots")):
+                    continue
+                if not any(ex["name"] == t["name"] for ex in self.teachers):
+                    self.teachers.append(t)
+                    imported += 1
+            _save_teachers(self.teachers)
+            self._rebuild_teacher_list()
+            self._refresh_tslot_panel()
+            self._update_stats()
+            self.toast.show(f"Importados {imported} profesores")
+        except Exception as e:
+            self.toast.show(f"Error al importar: {e}", "error")
+
+    def _export_teachers(self):
+        if not self.teachers:
+            self.toast.show("No hay profesores para exportar", "warning"); return
+        path, _ = QFileDialog.getSaveFileName(self, "Exportar profesores", "profesores.json", "JSON (*.json)")
+        if not path: return
+        try:
+            with open(path, "w", encoding="utf-8") as f:
+                json.dump(self.teachers, f, ensure_ascii=False, indent=2)
+            self.toast.show(f"Exportados {len(self.teachers)} profesores")
+        except Exception as e:
+            self.toast.show(f"Error al exportar: {e}", "error")
+
+    def _import_needs(self):
+        path, _ = QFileDialog.getOpenFileName(self, "Importar necesidades", "", "JSON (*.json)")
+        if not path: return
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            if not isinstance(data, list):
+                self.toast.show("El archivo debe contener un array de necesidades", "error"); return
+            for n in data:
+                if all(k in n for k in ("name", "date", "start", "end", "min", "max")):
+                    self.needs.append(n)
+            self._rebuild_need_list()
+            self._mark_dirty()
+            self._update_stats()
+            self.toast.show(f"Importadas {len(data)} necesidades")
+        except Exception as e:
+            self.toast.show(f"Error al importar: {e}", "error")
+
+    def _export_needs(self):
+        if not self.needs:
+            self.toast.show("No hay necesidades para exportar", "warning"); return
+        path, _ = QFileDialog.getSaveFileName(self, "Exportar necesidades", "necesidades.json", "JSON (*.json)")
+        if not path: return
+        try:
+            with open(path, "w", encoding="utf-8") as f:
+                json.dump(self.needs, f, ensure_ascii=False, indent=2)
+            self.toast.show(f"Exportadas {len(self.needs)} necesidades")
+        except Exception as e:
+            self.toast.show(f"Error al exportar: {e}", "error")
+
+    def _import_project(self):
+        path, _ = QFileDialog.getOpenFileName(self, "Importar proyecto", "", "JSON (*.json)")
+        if not path: return
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            if isinstance(data, list):
+                self.toast.show("Usa 'Importar necesidades' para arrays directos", "warning"); return
+            pname = data.get("project_name") or data.get("name", "")
+            if not pname:
+                self.toast.show("El archivo debe tener 'project_name' o 'name'", "error"); return
+            if "teachers" in data and isinstance(data["teachers"], list):
+                self.teachers = []
+                for t in data["teachers"]:
+                    if all(k in t for k in ("name", "max_hours", "max_hours_per_day", "time_slots")):
+                        self.teachers.append(t)
+                _save_teachers(self.teachers)
+                self._rebuild_teacher_list()
+                self._refresh_tslot_panel()
+            needs_data = data.get("needs", [])
+            if isinstance(needs_data, list):
+                self.project_name_input.setText(pname)
+                self.needs = []
+                for n in needs_data:
+                    if all(k in n for k in ("name", "date", "start", "end", "min", "max")):
+                        self.needs.append(n)
+                self._rebuild_need_list()
+            self._mark_dirty()
+            self.generated_options = []
+            self.generated_html_paths = []
+            self.current_option_index = 0
+            self.last_assignment = None
+            self.last_html_path = None
+            self._update_schedule_tab()
+            self._update_stats()
+            self.toast.show(f"Proyecto «{pname}» importado")
+        except Exception as e:
+            self.toast.show(f"Error al importar: {e}", "error")
+
+    def _export_project(self):
+        pname = self.project_name_input.text().strip()
+        if not pname:
+            self.toast.show("Escribe un nombre de proyecto", "warning"); return
+        path, _ = QFileDialog.getSaveFileName(self, "Exportar proyecto", f"{pname}.json", "JSON (*.json)")
+        if not path: return
+        try:
+            data = {
+                "project_name": pname,
+                "teachers": self.teachers,
+                "needs": self.needs,
+            }
+            with open(path, "w", encoding="utf-8") as f:
+                json.dump(data, f, ensure_ascii=False, indent=2)
+            self.toast.show(f"Proyecto «{pname}» exportado")
+        except Exception as e:
+            self.toast.show(f"Error al exportar: {e}", "error")
+
+    def _show_stats(self):
+        if not self.last_assignment:
+            self.toast.show("Genera un cuadrante primero", "warning"); return
+        d = QDialog(self)
+        d.setWindowTitle("📊 Estadísticas")
+        d.setMinimumSize(500, 400)
+        v = QVBoxLayout(d)
+        v.setSpacing(10)
+        v.setContentsMargins(20, 16, 20, 16)
+        total_min = sum(duration_min(a["need"]) for a in self.last_assignment)
+        unique = len({a["need_idx"] for a in self.last_assignment})
+        teacher_mins = {}
+        for a in self.last_assignment:
+            name = a["teacher"]["name"]
+            teacher_mins[name] = teacher_mins.get(name, 0) + duration_min(a["need"])
+        stats_text = f"""📊 <b>Estadísticas del cuadrante</b><br><br>
+📋 Total necesidades: {len(self.needs)}<br>
+✅ Necesidades cubiertas: {unique}<br>
+📌 Asignaciones totales: {len(self.last_assignment)}<br>
+⏱ Horas totales asignadas: {total_min // 60}h {total_min % 60:02d}m<br><br>
+<b>Carga por profesor:</b><br>"""
+        for name in sorted(teacher_mins.keys()):
+            m = teacher_mins[name]
+            hh = m // 60
+            mm = m % 60
+            stats_text += f"  {name}: {hh}h {mm:02d}m<br>"
+        lbl = QLabel(stats_text)
+        lbl.setTextFormat(Qt.TextFormat.RichText)
+        lbl.setWordWrap(True)
+        v.addWidget(lbl)
+        avail_min = sum(duration_min(s) for t in self.teachers for s in t.get("time_slots", []))
+        need_min = sum(n["min"] * duration_min(n) for n in self.needs)
+        cov_text = f"""<br><b>Cobertura:</b><br>
+👨‍🏫 Total profes: {len(self.teachers)}<br>
+⏰ Horas disponibles: {avail_min // 60}h<br>
+📋 Horas mínimas necesarias: {need_min // 60}h<br>
+📊 Cobertura: {total_min}/{avail_min}h ({total_min*100//max(avail_min,1)}%)"""
+        lbl2 = QLabel(cov_text)
+        lbl2.setTextFormat(Qt.TextFormat.RichText)
+        v.addWidget(lbl2)
+        bb = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok)
+        bb.accepted.connect(d.accept)
+        v.addWidget(bb)
+        d.exec()
+
+    def _toggle_compact_view(self):
+        self._compact_view = not self._compact_view
+        self._update_schedule_tab()
+        self.toast.show(f"Vista {'compacta' if self._compact_view else 'normal'}")
+
+    def _toggle_lock(self, need_idx, teacher_idx):
+        key = (need_idx, teacher_idx)
+        if key in self._locked_assignments:
+            del self._locked_assignments[key]
+            self.toast.show("🔓 Bloqueo eliminado")
+        else:
+            self._locked_assignments[key] = True
+            self.toast.show("🔒 Asignación bloqueada")
+        self._update_schedule_tab()
+
+    def _regenerate_with_locks(self):
+        if not self._locked_assignments:
+            self.toast.show("No hay bloqueos activos. Bloquea haciendo clic en un profesor en el cuadrante.", "warning")
+            return
+        if not self.teachers or not self.needs:
+            self.toast.show("Faltan profes o necesidades", "warning"); return
+        self._log(f"\n{'='*60}")
+        self._log("Regenerando con {len(self._locked_assignments)} bloqueos...")
+        scheduler = TeacherScheduler(self.teachers, self.needs)
+        scheduler.build_model(locked=self._locked_assignments)
+        opciones = scheduler.solve_multiple(n_options=5, time_limit=10)
+        opciones = [op for op in opciones if op["n_assignments"] > 0]
+        if not opciones:
+            self._log("❌ Sin solución posible con los bloqueos actuales.")
+            self.toast.show("Sin solución con esos bloqueos", "error"); return
+        self.generated_options = opciones
+        self.generated_html_paths = []
+        self.current_option_index = 0
+        self._save_generated_options(opciones)
+        self.last_assignment = opciones[0]["assignment"]
+        self.last_html_path = None
+        self.tabs.setCurrentIndex(4)
+        self._update_schedule_tab()
+        self._log(f"✅ {len(opciones)} opciones regeneradas con bloqueos")
+        self.toast.show(f"✅ Regenerado con {len(self._locked_assignments)} bloqueos")
+
+    def _export_png(self):
+        if not self.last_assignment:
+            self.toast.show("No hay cuadrante que exportar", "warning"); return
+        path, _ = QFileDialog.getSaveFileName(self, "Exportar PNG", "cuadrante.png", "PNG (*.png)")
+        if not path: return
+        try:
+            pixmap = self.cal_container.grab()
+            pixmap.save(path, "PNG")
+            self.toast.show("PNG guardado")
+        except Exception as e:
+            self.toast.show(f"Error: {e}", "error")
 
     # ── Generate ───────────────────────────────────────────────────────
     def _generate(self):
@@ -1108,6 +1612,21 @@ class App(QMainWindow):
         pname = self.project_name_input.text().strip() or "(sin nombre)"
 
         # ---------------------------------------------------------------
+        # Validación previa
+        # ---------------------------------------------------------------
+        warnings = self._validate_coverage()
+        if warnings:
+            msg = "Se detectaron los siguientes problemas:\n\n" + "\n".join(warnings)
+            msg += "\n\n¿Deseas continuar de todas formas?"
+            reply = QMessageBox.warning(self, "⚠️ Advertencias de cobertura", msg,
+                                        QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+            if reply != QMessageBox.StandardButton.Yes:
+                self._log("❌ Generación cancelada por advertencias")
+                return
+            for w in warnings:
+                self._log(f"  {w}")
+
+        # ---------------------------------------------------------------
         # Log de cabecera
         # ---------------------------------------------------------------
         self._log(f"\n{'='*60}")
@@ -1122,19 +1641,17 @@ class App(QMainWindow):
         # ---------------------------------------------------------------
         self._log("Construyendo modelo CP-SAT...")
         scheduler = TeacherScheduler(self.teachers, self.needs)
-        scheduler.build_model()
+        scheduler.build_model(locked=self._locked_assignments if self._locked_assignments else None)
 
         # ---------------------------------------------------------------
         # Generación de múltiples opciones
         # ---------------------------------------------------------------
-        self._log("Generando opciones (5 variantes con distintas semillas)...")
-        self.status_text.repaint()  # Forzar actualización visual
+        self._log("Generando opciones (10 variantes con distintas semillas)...")
+        self.status_text.repaint()
 
-        # Número de opciones a generar
-        num_opciones = 5
+        num_opciones = 10
         opciones = scheduler.solve_multiple(n_options=num_opciones, time_limit=10)
 
-        # Filtra opciones válidas (con asignaciones)
         opciones = [op for op in opciones if op["n_assignments"] > 0]
 
         if not opciones:
@@ -1148,66 +1665,104 @@ class App(QMainWindow):
                       f"{op['total_minutes'] // 60}h{op['total_minutes'] % 60:02d}m totales")
 
         # ---------------------------------------------------------------
-        # Diálogo de selección (si hay más de una opción)
+        # Guardar todas las opciones (sin diálogo modal)
         # ---------------------------------------------------------------
-        if len(opciones) == 1:
-            # Una sola opción: la usamos directamente
-            opcion_elegida = opciones[0]
-            self._log("→ Solo hay una opción disponible, se usará automáticamente")
-        else:
-            # Múltiples opciones: mostramos el diálogo para que elija
-            self._log("→ Mostrando selector de opciones...")
-            dialog = MultiOptionDialog(opciones, self)
-            if dialog.exec() != QDialog.DialogCode.Accepted:
-                self._log("❌ Selección cancelada por el usuario")
-                self.toast.show("Generación cancelada", "warning")
-                return
-            opcion_elegida = dialog.selected_option
-            if opcion_elegida is None:
-                return
-            self._log(f"→ Opción {opcion_elegida['id']} seleccionada")
+        self._log("→ Guardando todas las opciones...")
 
-        # ---------------------------------------------------------------
-        # Procesar la opción elegida
-        # ---------------------------------------------------------------
-        assignment = opcion_elegida["assignment"]
-        self.last_assignment = assignment
+        # Exportar HTML para cada opción
+        out_dir = os.path.join(BASE_DIR, "output")
+        os.makedirs(out_dir, exist_ok=True)
+        safe = re.sub(r"[^a-zA-Z0-9_\-]", "_", pname)
+        html_paths = []
+        for op in opciones:
+            ts = datetime.now().strftime('%Y%m%d_%H%M%S')
+            filename = f"{safe}_op{op['id']}_{ts}.html"
+            path = os.path.join(out_dir, filename)
+            export_html_file(pname, self.teachers, self.needs, op["assignment"], path)
+            html_paths.append(path)
 
-        # Log detallado de la opción elegida
-        self._log(f"\n✅ Opción {opcion_elegida['id']} — {len(assignment)} asignaciones")
+        self.generated_options = opciones
+        self.generated_html_paths = html_paths
+        self.current_option_index = 0
+
+        # Guardar persistencia
+        self._save_generated_options(opciones)
+
+        # Mostrar la primera opción
+        primera = opciones[0]
+        self.last_assignment = primera["assignment"]
+        self.last_html_path = html_paths[0]
+
+        self._log(f"\n✅ Opción {primera['id']} — {len(primera['assignment'])} asignaciones (mostrando primera opción)")
         self._log("Carga por profesor:")
-        for name in sorted(opcion_elegida['teacher_hours'].keys()):
-            mins = opcion_elegida['teacher_hours'][name]
+        for name in sorted(primera['teacher_hours'].keys()):
+            mins = primera['teacher_hours'][name]
             h = mins // 60; m = mins % 60
             self._log(f"  {name}: {h}h {m:02d}m")
 
         self._log("Asignaciones detalladas:")
-        for a in sorted(assignment, key=lambda x: (x["need"]["date"], x["need"]["start"], x["teacher"]["name"])):
+        for a in sorted(primera["assignment"], key=lambda x: (x["need"]["date"], x["need"]["start"], x["teacher"]["name"])):
             self._log(f"  {a['need']['date']} {a['need']['start']}-{a['need']['end']}  |  "
                       f"{a['need']['name'][:30]:30s}  |  {a['teacher']['name']}")
 
-        # ---------------------------------------------------------------
-        # Exportar HTML con la opción elegida
-        # ---------------------------------------------------------------
-        out_dir = os.path.join(BASE_DIR, "output")
-        os.makedirs(out_dir, exist_ok=True)
-        safe = re.sub(r"[^a-zA-Z0-9_\-]", "_", pname)
-        filename = f"{safe}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.html"
-        path = os.path.join(out_dir, filename)
-        export_html_file(pname, self.teachers, self.needs, assignment, path)
-        self.last_html_path = path
-        self._log(f"\n✅ HTML: {path}")
-        self.toast.show("Cuadrante generado con éxito")
+        self._log(f"\n✅ HTML: {html_paths[0]}")
+        self.toast.show(f"✅ {len(opciones)} opciones generadas. Cambia entre ellas en 📅 Cuadrante")
 
-        # Cambia a la pestaña de cuadrante
         self.tabs.setCurrentIndex(4)
         self._update_schedule_tab()
 
     def _log(self, msg):
         self.status_text.append(msg)
-        # scroll to bottom
         sb = self.status_text.verticalScrollBar()
         sb.setValue(sb.maximum())
+
+    # ── Persistencia de opciones generadas ─────────────────────────────
+    def _save_generated_options(self, options):
+        name = self.project_name_input.text().strip()
+        if not name:
+            return
+        try:
+            with open(_generated_options_filename(name), "w", encoding="utf-8") as f:
+                json.dump(options, f, ensure_ascii=False, indent=2)
+        except Exception as e:
+            self._log(f"⚠️ No se pudieron guardar las opciones: {e}")
+
+    def _load_generated_options(self):
+        name = self.project_name_input.text().strip()
+        if not name:
+            return []
+        path = _generated_options_filename(name)
+        if not os.path.exists(path):
+            return []
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception as e:
+            self._log(f"⚠️ No se pudieron cargar opciones guardadas: {e}")
+            return []
+
+    # ── Navegación entre opciones ──────────────────────────────────────
+    def _prev_option(self):
+        if not self.generated_options:
+            return
+        self.current_option_index = (self.current_option_index - 1) % len(self.generated_options)
+        self._show_option(self.current_option_index)
+
+    def _next_option(self):
+        if not self.generated_options:
+            return
+        self.current_option_index = (self.current_option_index + 1) % len(self.generated_options)
+        self._show_option(self.current_option_index)
+
+    def _show_option(self, index):
+        if not self.generated_options or index < 0 or index >= len(self.generated_options):
+            return
+        op = self.generated_options[index]
+        self.last_assignment = op["assignment"]
+        if index < len(self.generated_html_paths):
+            self.last_html_path = self.generated_html_paths[index]
+        self.current_option_index = index
+        self._update_schedule_tab()
 
     # ── Schedule ───────────────────────────────────────────────────────
     def _update_schedule_tab(self):
@@ -1220,6 +1775,27 @@ class App(QMainWindow):
 
         self.open_btn.setEnabled(True)
         self.open_folder_btn.setEnabled(True)
+        self.stats_btn.setEnabled(True)
+        self.compact_btn.setEnabled(True)
+        self.compact_btn.setText("📅 Vista normal" if self._compact_view else "📅 Vista compacta")
+        self.lock_regenerate_btn.setEnabled(bool(self._locked_assignments))
+        self.png_btn.setEnabled(True)
+
+        # Actualizar navegación
+        n_opts = len(self.generated_options)
+        has_opts = n_opts > 0
+        self.nav_prev_btn.setEnabled(has_opts)
+        self.nav_next_btn.setEnabled(has_opts)
+        if has_opts:
+            idx = self.current_option_index
+            op = self.generated_options[idx]
+            self.nav_label.setText(
+                f"  Opción {op['id']}  de  {n_opts}  "
+                f"({op['n_assignments']} asig.  ·  "
+                f"{op['total_minutes'] // 60}h{op['total_minutes'] % 60:02d}m)  "
+            )
+        else:
+            self.nav_label.setText("")
 
         a = self.last_assignment
         groups = {}
@@ -1237,8 +1813,12 @@ class App(QMainWindow):
             return
 
         cal_frame = QFrame()
-        cal_lay = QHBoxLayout(cal_frame)
-        cal_lay.setSpacing(8)
+        if self._compact_view:
+            cal_lay = QVBoxLayout(cal_frame)
+            cal_lay.setSpacing(12)
+        else:
+            cal_lay = QHBoxLayout(cal_frame)
+            cal_lay.setSpacing(8)
         cal_lay.setContentsMargins(4, 4, 4, 4)
 
         for day in dates:
@@ -1318,8 +1898,21 @@ class App(QMainWindow):
                     if assigned:
                         for tname in assigned:
                             c = self._teacher_color(tname)
-                            tlabel = QLabel(f"  {tname}  ")
-                            tlabel.setStyleSheet(f"color: {c}; background: {self._rgba(c, 0.12)}; border-radius: 4px; padding: 1px 6px; font-weight: bold; font-size: 10px;")
+                            # Buscar teacher_idx para este nombre y need_idx
+                            t_idx = next((ti for ti, t in enumerate(self.teachers) if t["name"] == tname), -1)
+                            n_idx = ni
+                            is_locked = (n_idx, t_idx) in self._locked_assignments
+                            lock_char = "🔒" if is_locked else "🔓"
+                            tlabel = ClickFrame(n_idx, t_idx, self)
+                            tlabel.setObjectName("card")
+                            tlabel.setCursor(Qt.CursorShape.PointingHandCursor)
+                            tlabel.setToolTip("Clic para bloquear/desbloquear esta asignación")
+                            tlabel_inner = QLabel(f"  {lock_char}  {tname}  ")
+                            tlabel_inner.setStyleSheet(f"color: {c}; background: {self._rgba(c, 0.12)}; border-radius: 4px; padding: 1px 6px; font-weight: bold; font-size: 10px;")
+                            tlabel_lyt = QVBoxLayout(tlabel)
+                            tlabel_lyt.setContentsMargins(0, 0, 0, 0)
+                            tlabel_lyt.addWidget(tlabel_inner)
+                            tlabel.clicked.connect(self._toggle_lock)
                             card_v.addWidget(tlabel)
 
                     col_v.addWidget(card)
@@ -1332,7 +1925,92 @@ class App(QMainWindow):
     def _open_html(self):
         if self.last_html_path and os.path.exists(self.last_html_path):
             webbrowser.open(f"file://{os.path.abspath(self.last_html_path)}")
+        elif self.last_assignment:
+            pname = self.project_name_input.text().strip() or "cuadrante"
+            out_dir = os.path.join(BASE_DIR, "output")
+            os.makedirs(out_dir, exist_ok=True)
+            safe = re.sub(r"[^a-zA-Z0-9_\-]", "_", pname)
+            filename = f"{safe}_op{self.current_option_index+1}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.html"
+            path = os.path.join(out_dir, filename)
+            export_html_file(pname, self.teachers, self.needs, self.last_assignment, path)
+            self.last_html_path = path
+            webbrowser.open(f"file://{os.path.abspath(path)}")
 
     def _open_folder(self):
         if self.last_html_path:
             os.startfile(os.path.dirname(os.path.abspath(self.last_html_path)))
+
+    # ── Auto-guardado ──────────────────────────────────────────────────
+    def _auto_save(self):
+        name = self.project_name_input.text().strip()
+        if name and self._dirty:
+            _save_project(name, self.needs)
+            self._dirty = False
+            self._dirty_label.setText("")
+
+    # ── Validación previa ──────────────────────────────────────────────
+    def _validate_coverage(self):
+        warnings = []
+        needs_by_date = {}
+        for n in self.needs:
+            needs_by_date.setdefault(n["date"], []).append(n)
+        for day, day_needs in needs_by_date.items():
+            avail_teachers = []
+            for t in self.teachers:
+                if any(s["date"] == day for s in t.get("time_slots", [])):
+                    avail_teachers.append(t["name"])
+            for n in day_needs:
+                can_cover = [t["name"] for t in self.teachers
+                             if any(s["date"] == n["date"] and s["start"] <= n["start"] and s["end"] >= n["end"]
+                                    for s in t.get("time_slots", []))]
+                if len(can_cover) < n["min"]:
+                    warnings.append(f"⚠️ «{n['name']}» necesita {n['min']} profes, solo {len(can_cover)} pueden cubrirla")
+        avail_min = sum(duration_min(s) for t in self.teachers for s in t.get("time_slots", []))
+        need_min = sum(n["min"] * duration_min(n) for n in self.needs)
+        if need_min > avail_min:
+            warnings.append(f"⏰ Horas necesarias ({need_min // 60}h) superan las disponibles ({avail_min // 60}h)")
+        if not self._undo_active():
+            self._save_undo()
+        return warnings
+
+    def _undo_active(self):
+        return hasattr(self, '_undo_stack')
+
+    def _save_undo(self):
+        state = {"teachers": [dict(t) for t in self.teachers], "needs": [dict(n) for n in self.needs]}
+        self._undo_stack.append(state)
+        self._redo_stack.clear()
+        if len(self._undo_stack) > 50:
+            self._undo_stack.pop(0)
+
+    def _undo(self):
+        if not self._undo_stack:
+            self.toast.show("Nada que deshacer", "warning"); return
+        state = {"teachers": [dict(t) for t in self.teachers], "needs": [dict(n) for n in self.needs]}
+        self._redo_stack.append(state)
+        prev = self._undo_stack.pop()
+        self.teachers = prev["teachers"]
+        self.needs = prev["needs"]
+        _save_teachers(self.teachers)
+        self._rebuild_teacher_list()
+        self._rebuild_need_list()
+        self._refresh_tslot_panel()
+        self._update_stats()
+        self._mark_dirty()
+        self.toast.show("↩️ Deshecho")
+
+    def _redo(self):
+        if not self._redo_stack:
+            self.toast.show("Nada que rehacer", "warning"); return
+        state = {"teachers": [dict(t) for t in self.teachers], "needs": [dict(n) for n in self.needs]}
+        self._undo_stack.append(state)
+        nxt = self._redo_stack.pop()
+        self.teachers = nxt["teachers"]
+        self.needs = nxt["needs"]
+        _save_teachers(self.teachers)
+        self._rebuild_teacher_list()
+        self._rebuild_need_list()
+        self._refresh_tslot_panel()
+        self._update_stats()
+        self._mark_dirty()
+        self.toast.show("🔁 Rehecho")

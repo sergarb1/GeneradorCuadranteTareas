@@ -148,7 +148,7 @@ class TeacherScheduler:
     # CONSTRUCCIÓN DEL MODELO
     # =========================================================================
     
-    def build_model(self):
+    def build_model(self, locked=None):
         """Construye el modelo CP-SAT completo.
         
         Este método:
@@ -157,8 +157,13 @@ class TeacherScheduler:
         3. Añade las restricciones de capacidad, solapamiento, carga total y diaria
         4. Define la función objetivo (maximizar asignaciones)
         
+        Parámetros:
+            locked (dict|None): Diccionario {(need_idx, teacher_idx): True}
+                para asignaciones que deben forzarse a 1.
+        
         No retorna nada; modifica self.model y self._valid_pairs.
         """
+        self.locked = locked or {}
         # Índices de necesidades y profesores
         N = list(range(len(self.needs)))       # [0, 1, ..., M-1]
         P = list(range(len(self.teachers)))    # [0, 1, ..., N-1]
@@ -167,22 +172,25 @@ class TeacherScheduler:
         DAYS = sorted({n["date"] for n in self.needs})
         
         # ---------------------------------------------------------------
-        # Paso 1: Parejas válidas (profesor disponible para la necesidad)
+        # Paso 1: Parejas válidos (profesor disponible para la necesidad)
         # ---------------------------------------------------------------
+        # Siempre incluir pares bloqueados aunque el profe no esté disponible
+        # (asumimos que el usuario sabe lo que hace)
+        locked_set = set(self.locked.keys())
         self._valid_pairs = [
             (n, p) for n in N for p in P
-            if self._teacher_available(self.teachers[p], self.needs[n])
+            if (n, p) in locked_set or self._teacher_available(self.teachers[p], self.needs[n])
         ]
         
         # ---------------------------------------------------------------
         # Paso 2: Variables de decisión
         # ---------------------------------------------------------------
-        # Por cada par válido, creamos una variable binaria:
-        #   x[n, p] = 1  si el profesor p se asigna a la necesidad n
-        #   x[n, p] = 0  en caso contrario
         for n, p in self._valid_pairs:
-            # NewBoolVar crea una variable {0, 1} con nombre descriptivo
-            self.x[(n, p)] = self.model.NewBoolVar(f"x_n{n}_p{p}")
+            var = self.model.NewBoolVar(f"x_n{n}_p{p}")
+            self.x[(n, p)] = var
+            # Si está bloqueado, forzar a 1
+            if (n, p) in self.locked:
+                self.model.Add(var == 1)
         
         # ---------------------------------------------------------------
         # Restricción 1: Capacidad mínima y máxima por necesidad
