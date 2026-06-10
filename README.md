@@ -23,6 +23,7 @@
 | 📋 **Necesidades por proyecto** | Cada proyecto define sus propias tareas con fecha, hora y rango de profesores necesarios |
 | 🧠 **Optimización CP-SAT** | Google OR-Tools genera la mejor asignación posible maximizando el número total de asignaciones |
 | 🎯 **10 opciones navegables** | El solver genera **10 variantes** y cambias entre ellas con ◀ ▶ sin perder ninguna |
+| ⏳ **Loading animado** | Spinner visual mientras el solver piensa — evita clicks múltiples |
 | 🔒 **Bloquear asignaciones** | Fija un profesor a una tarea (clic en el cuadrante) y regenera el resto |
 | 🚫 **Sin solapamientos** | Un profesor no puede estar en dos sitios a la vez |
 | ⏱ **Límites personalizados** | Horas máximas totales y por día para cada profesor |
@@ -41,6 +42,7 @@
 | 🗃️ **Plantillas de horarios** | Guarda/carga patrones de disponibilidad de un profesor |
 | 🖨️ **Exportación HTML** | Vista optimizada para impresión como PDF desde el navegador |
 | 💾 **Persistencia local** | Las opciones generadas se guardan al proyecto y persisten al recargar |
+| 🖥️ **Layout compacto** | Optimizado para 1280×720, columnas estrechas, scrollbars finos, toolbar en 2 filas |
 
 ---
 
@@ -75,7 +77,7 @@ O haz doble clic en `lanzar.bat` (Windows).
 1. 👨‍🏫 Profes     →  Añade profesores con disponibilidad, turno y color (o importa JSON)
 2. 🏠 Proyecto     →  Crea o selecciona un proyecto (o importa proyecto completo)
 3. 📋 Necesidades  →  Añade tareas con fecha, hora y mínimo/máximo (o importa JSON)
-4. ⚙️ Generar      →  El solver genera 10 opciones (con validación previa)
+4. ⚙️ Generar      →  El solver genera 10 opciones (con loading animado y validación previa)
 5. 🔒 Cuadrante    →  Bloquea profes a tareas (clic) y regenera si es necesario
 6. 📅 Navega       →  Cambia entre opciones con ◀ ▶, exporta HTML/PNG/CSV
 ```
@@ -84,9 +86,10 @@ O haz doble clic en `lanzar.bat` (Windows).
 
 El proyecto incluye datos ficticios del proceso **XarxaLlibres** (recogida y distribución de libros de texto):
 
-- **8 profesores** con distinta disponibilidad (mañana, tarde, mixto)
-- **25 tareas** a lo largo de 5 días (22–26 de junio de 2026)
+- **15 profesores** con distinta disponibilidad (mañana, tarde, mixto, jornada partida, reducida)
+- **50 tareas** a lo largo de 5 días (22–26 de junio de 2026) con solapamientos densos
 - Límites individuales de 10h–25h total y 4h–8h por día
+- Cada profesor con turno preferente y color HEX personalizado
 
 Para cargarlos: pulsa **"📦 Cargar datos ficticios"** en la pestaña Proyecto.
 
@@ -123,10 +126,10 @@ Maximizar Σ x[n, p]
 
 ```
 GeneradorCuadranteTareasProfesorado/
-├── gui.py              # 🖥️ Interfaz gráfica PyQt6 (~2025 líneas)
+├── gui.py              # 🖥️ Interfaz gráfica PyQt6 (~2050 líneas)
 ├── scheduler.py        # 🧠 Modelo CP-SAT con OR-Tools
 ├── html_exporter.py    # 📄 Generación HTML (cuadrante + correos)
-├── seed_data.py        # 🌱 Datos de ejemplo XarxaLlibres
+├── seed_data.py        # 🌱 Datos de ejemplo XarxaLlibres (15 profes, 50 tareas)
 ├── main.py             # 🚀 Punto de entrada
 ├── teachers.json       # 👨‍🏫 Profesores (se crea al usar)
 ├── AGENTS.md           # 🤖 Guía para IA y esquemas de datos

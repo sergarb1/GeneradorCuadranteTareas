@@ -217,6 +217,7 @@
     Esta aplicación de escritorio genera cuadrantes de apoyo al profesorado respetando
     restricciones reales de los centros educativos: disponibilidad horaria, límites de carga,
     solapamientos y mínimos/máximos de profesores por tarea.
+    Usa <strong>Google OR-Tools CP-SAT</strong> para optimización combinatoria.
   </p>
 
   <div class="feature-grid">
@@ -295,6 +296,16 @@
       <h4>Validación previa</h4>
       <p>Antes de generar avisa si faltan profes u horas</p>
     </div>
+    <div class="feature-card">
+      <div class="icon">⏳</div>
+      <h4>Loading animado</h4>
+      <p>Spinner mientras el solver piensa — evita dobles clics</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon">🖥️</div>
+      <h4>Layout compacto</h4>
+      <p>Optimizado para 1280×720, columnas estrechas, toolbar en 2 filas</p>
+    </div>
   </div>
 
   <!-- ── Workflow ── -->
@@ -320,6 +331,10 @@
       <div class="workflow-num">5</div>
       <p><strong>🔒 Cuadrante</strong> &mdash; Bloquea profes a tareas (clic), regenera, exporta HTML/PNG/CSV</p>
     </div>
+    <div class="workflow-item">
+      <div class="workflow-num">6</div>
+      <p><strong>📅 Navega</strong> &mdash; Cambia entre 10 opciones con ◀ ▶, toolbar en 2 filas</p>
+    </div>
   </div>
 
   <!-- ── Install ── -->
@@ -335,16 +350,18 @@ python main.py</pre>
   <h2>📁 Estructura</h2>
   <pre>
 GeneradorCuadranteTareasProfesorado/
-├── gui.py              #   Interfaz gráfica (PyQt6)
+├── gui.py              #   Interfaz gráfica (PyQt6, ~2050 líneas)
 ├── scheduler.py        #   Modelo CP-SAT (OR-Tools)
 ├── html_exporter.py    #   Generación HTML
-├── seed_data.py        #   Datos de ejemplo
+├── seed_data.py        #   Datos de ejemplo (15 profes, 50 tareas)
 ├── main.py             #   Punto de entrada
 ├── teachers.json       #   Profesores (se crea al usar)
 ├── AGENTS.md           #   Guía para IA y esquemas de datos
 ├── projects/           #   Proyectos guardados + opciones generadas
 ├── output/             #   HTML generados
 ├── lanzar.bat          #   Lanzador Windows
+├── index.html          #   Página del proyecto
+├── requirements.txt    #   Dependencias Python
 └── README.md           #   Documentación</pre>
 
   <!-- ── Solver ── -->
@@ -397,6 +414,7 @@ Objetivo:  Maximizar Σ x (más asignaciones posible)</pre>
   <h3>🧠 Solver CP-SAT</h3>
   <ul>
     <li><strong>10 opciones</strong> generadas con distintas semillas de búsqueda</li>
+    <li><strong>Loading animado</strong> con spinner mientras el solver resuelve (evita dobles clics)</li>
     <li>Validación previa: avisa si hay necesidades sin cobertura u horas insuficientes</li>
     <li>Bloqueo de asignaciones: clic en un profesor en el cuadrante para fijarlo a esa tarea</li>
     <li>Regeneración respetando bloqueos</li>
@@ -440,6 +458,7 @@ Objetivo:  Maximizar Σ x (más asignaciones posible)</pre>
     <li>Notificaciones toast no intrusivas</li>
     <li>Panel de log con información detallada del solver</li>
     <li>Layout adaptado a 1280×720, columnas estrechas (190px) para que quepan 5 días</li>
+    <li>Scrollbars finos (6px) para máximo espacio útil</li>
   </ul>
 
   <!-- ── License ── -->

@@ -1,228 +1,172 @@
 # -*- coding: utf-8 -*-
 # =============================================================================
-# seed_data.py — Datos de ejemplo (ficticios) para XarxaLlibres
+# seed_data.py — Datos de ejemplo (ficticios) más estresantes
 # =============================================================================
-# Este archivo contiene dos listas principales:
-#   - SEED_TEACHERS: 8 profesores con distinta disponibilidad horaria
-#   - SEED_NEEDS: 25 tareas del proceso XarxaLlibres (recogida, clasificación,
-#     empaquetado, distribución y cierre de libros de texto)
-#
-# Se usan para cargar datos de demostración con un solo clic.
-# Cada profesor tiene: nombre, límite total de horas, límite por día,
-# y una lista de franjas horarias (date, start, end).
-# Cada necesidad tiene: nombre, fecha, hora inicio/fin y min/max profesores.
-# =============================================================================
+# 15 profesores con perfiles variados y ~50 necesidades en 5 días.
+# Diseñado para poner a prueba el solver CP-SAT con solapamientos densos.
 
+TEACHER_COLORS = ["#6366f1","#ef4444","#10b981","#8b5cf6","#f59e0b","#06b6d4","#ec4899","#3b82f6","#f97316","#14b8a6","#84cc16","#e11d48","#0ea5e9","#a855f7","#22c55e"]
 
-# =============================================================================
-# LISTA DE PROFESORES DE EJEMPLO
-# =============================================================================
-# Cada entrada representa un docente con su disponibilidad semanal.
-# Los horarios simulan un centro real durante la semana de recogida de libros.
-# -----------------------------------------------------------------------------
 SEED_TEACHERS = [
-    {
-        # --- Ana Alumnez: disponibilidad mixta (mañana y tarde) ---
-        "name": "Ana Alumnez",
-        "max_hours": 20,              # Límite total de horas en la semana
-        "max_hours_per_day": 6,       # Máximo de horas en un mismo día
-        "time_slots": [
-            # Lunes 22 — mañana completa + tarde parcial
-            {"date": "2026-06-22", "start": "09:00", "end": "14:00"},
-            {"date": "2026-06-22", "start": "15:30", "end": "18:30"},
-            # Martes 23
-            {"date": "2026-06-23", "start": "09:00", "end": "14:00"},
-            {"date": "2026-06-23", "start": "15:30", "end": "18:30"},
-            # Miércoles 24
-            {"date": "2026-06-24", "start": "09:00", "end": "14:00"},
-            {"date": "2026-06-24", "start": "15:30", "end": "18:30"},
-            # Jueves 25
-            {"date": "2026-06-25", "start": "09:00", "end": "14:00"},
-            {"date": "2026-06-25", "start": "15:30", "end": "18:30"},
-            # Viernes 26 — solo mañana
-            {"date": "2026-06-26", "start": "09:00", "end": "14:00"},
-        ],
-    },
-    {
-        # --- Carlos Profesorez: disponible toda la mañana (8-15) toda la semana ---
-        "name": "Carlos Profesorez",
-        "max_hours": 25,
-        "max_hours_per_day": 7,
-        "time_slots": [
-            {"date": "2026-06-22", "start": "08:00", "end": "15:00"},
-            {"date": "2026-06-23", "start": "08:00", "end": "15:00"},
-            {"date": "2026-06-24", "start": "08:00", "end": "15:00"},
-            {"date": "2026-06-25", "start": "08:00", "end": "15:00"},
-            {"date": "2026-06-26", "start": "08:00", "end": "15:00"},
-        ],
-    },
-    {
-        # --- Maria Inventadez: solo por la tarde (16-20), menos días ---
-        "name": "Maria Inventadez",
-        "max_hours": 12,
-        "max_hours_per_day": 4,
-        "time_slots": [
-            {"date": "2026-06-22", "start": "16:00", "end": "20:00"},
-            {"date": "2026-06-23", "start": "16:00", "end": "20:00"},
-            {"date": "2026-06-24", "start": "16:00", "end": "20:00"},
-            {"date": "2026-06-25", "start": "16:00", "end": "20:00"},
-            # Nota: viernes NO disponible (solo 4 días)
-        ],
-    },
-    {
-        # --- Jose Ficticiez: mixto, con jornada intensiva ambos turnos ---
-        "name": "Jose Ficticiez",
-        "max_hours": 20,
-        "max_hours_per_day": 6,
-        "time_slots": [
-            {"date": "2026-06-22", "start": "09:00", "end": "14:00"},
-            {"date": "2026-06-22", "start": "15:00", "end": "19:00"},
-            {"date": "2026-06-23", "start": "09:00", "end": "14:00"},
-            {"date": "2026-06-23", "start": "15:00", "end": "19:00"},
-            {"date": "2026-06-24", "start": "09:00", "end": "14:00"},
-            {"date": "2026-06-24", "start": "15:00", "end": "19:00"},
-            {"date": "2026-06-25", "start": "09:00", "end": "14:00"},
-            {"date": "2026-06-25", "start": "15:00", "end": "19:00"},
-        ],
-    },
-    {
-        # --- Laura Ejemplarez: mixto con horario partido ---
-        "name": "Laura Ejemplarez",
-        "max_hours": 18,
-        "max_hours_per_day": 6,
-        "time_slots": [
-            {"date": "2026-06-22", "start": "09:00", "end": "14:00"},
-            {"date": "2026-06-22", "start": "16:00", "end": "19:00"},
-            {"date": "2026-06-23", "start": "09:00", "end": "14:00"},
-            {"date": "2026-06-23", "start": "16:00", "end": "19:00"},
-            {"date": "2026-06-24", "start": "09:00", "end": "14:00"},
-            {"date": "2026-06-24", "start": "16:00", "end": "19:00"},
-            {"date": "2026-06-25", "start": "09:00", "end": "14:00"},
-            {"date": "2026-06-25", "start": "16:00", "end": "19:00"},
-            {"date": "2026-06-26", "start": "09:00", "end": "14:00"},
-        ],
-    },
-    {
-        # --- David Simuladez: jornada partida (8-12 y 14-18), máxima carga ---
-        "name": "David Simuladez",
-        "max_hours": 25,
-        "max_hours_per_day": 8,
-        "time_slots": [
-            {"date": "2026-06-22", "start": "08:00", "end": "12:00"},
-            {"date": "2026-06-22", "start": "14:00", "end": "18:00"},
-            {"date": "2026-06-23", "start": "08:00", "end": "12:00"},
-            {"date": "2026-06-23", "start": "14:00", "end": "18:00"},
-            {"date": "2026-06-24", "start": "08:00", "end": "12:00"},
-            {"date": "2026-06-24", "start": "14:00", "end": "18:00"},
-            {"date": "2026-06-25", "start": "08:00", "end": "12:00"},
-            {"date": "2026-06-25", "start": "14:00", "end": "18:00"},
-            # Viernes también completo
-            {"date": "2026-06-26", "start": "08:00", "end": "12:00"},
-            {"date": "2026-06-26", "start": "14:00", "end": "18:00"},
-        ],
-    },
-    {
-        # --- Sofia Irrealmez: solo mañanas reducidas (9-12) ---
-        "name": "Sofia Irrealmez",
-        "max_hours": 10,
-        "max_hours_per_day": 4,
-        "time_slots": [
-            {"date": "2026-06-22", "start": "09:00", "end": "12:00"},
-            {"date": "2026-06-23", "start": "09:00", "end": "12:00"},
-            {"date": "2026-06-24", "start": "09:00", "end": "12:00"},
-            {"date": "2026-06-25", "start": "09:00", "end": "12:00"},
-            {"date": "2026-06-26", "start": "09:00", "end": "12:00"},
-        ],
-    },
-    {
-        # --- Pablo Fingirez: solo tardes (14-19) toda la semana ---
-        "name": "Pablo Fingirez",
-        "max_hours": 18,
-        "max_hours_per_day": 6,
-        "time_slots": [
-            {"date": "2026-06-22", "start": "14:00", "end": "19:00"},
-            {"date": "2026-06-23", "start": "14:00", "end": "19:00"},
-            {"date": "2026-06-24", "start": "14:00", "end": "19:00"},
-            {"date": "2026-06-25", "start": "14:00", "end": "19:00"},
-            {"date": "2026-06-26", "start": "14:00", "end": "19:00"},
-        ],
-    },
+    # --- Original 8 conservados con turno y color ---
+    {"name":"Ana Alumnez","max_hours":20,"max_hours_per_day":6,"turno":"Cualquiera","color":"#6366f1",
+     "time_slots":[
+         {"date":"2026-06-22","start":"09:00","end":"14:00"},{"date":"2026-06-22","start":"15:30","end":"18:30"},
+         {"date":"2026-06-23","start":"09:00","end":"14:00"},{"date":"2026-06-23","start":"15:30","end":"18:30"},
+         {"date":"2026-06-24","start":"09:00","end":"14:00"},{"date":"2026-06-24","start":"15:30","end":"18:30"},
+         {"date":"2026-06-25","start":"09:00","end":"14:00"},{"date":"2026-06-25","start":"15:30","end":"18:30"},
+         {"date":"2026-06-26","start":"09:00","end":"14:00"}]},
+    {"name":"Carlos Profesorez","max_hours":25,"max_hours_per_day":7,"turno":"Mañana","color":"#ef4444",
+     "time_slots":[
+         {"date":"2026-06-22","start":"08:00","end":"15:00"},{"date":"2026-06-23","start":"08:00","end":"15:00"},
+         {"date":"2026-06-24","start":"08:00","end":"15:00"},{"date":"2026-06-25","start":"08:00","end":"15:00"},
+         {"date":"2026-06-26","start":"08:00","end":"15:00"}]},
+    {"name":"Maria Inventadez","max_hours":12,"max_hours_per_day":4,"turno":"Tarde","color":"#10b981",
+     "time_slots":[
+         {"date":"2026-06-22","start":"16:00","end":"20:00"},{"date":"2026-06-23","start":"16:00","end":"20:00"},
+         {"date":"2026-06-24","start":"16:00","end":"20:00"},{"date":"2026-06-25","start":"16:00","end":"20:00"}]},
+    {"name":"Jose Ficticiez","max_hours":20,"max_hours_per_day":6,"turno":"Cualquiera","color":"#8b5cf6",
+     "time_slots":[
+         {"date":"2026-06-22","start":"09:00","end":"14:00"},{"date":"2026-06-22","start":"15:00","end":"19:00"},
+         {"date":"2026-06-23","start":"09:00","end":"14:00"},{"date":"2026-06-23","start":"15:00","end":"19:00"},
+         {"date":"2026-06-24","start":"09:00","end":"14:00"},{"date":"2026-06-24","start":"15:00","end":"19:00"},
+         {"date":"2026-06-25","start":"09:00","end":"14:00"},{"date":"2026-06-25","start":"15:00","end":"19:00"}]},
+    {"name":"Laura Ejemplarez","max_hours":18,"max_hours_per_day":6,"turno":"Mañana","color":"#f59e0b",
+     "time_slots":[
+         {"date":"2026-06-22","start":"09:00","end":"14:00"},{"date":"2026-06-22","start":"16:00","end":"19:00"},
+         {"date":"2026-06-23","start":"09:00","end":"14:00"},{"date":"2026-06-23","start":"16:00","end":"19:00"},
+         {"date":"2026-06-24","start":"09:00","end":"14:00"},{"date":"2026-06-24","start":"16:00","end":"19:00"},
+         {"date":"2026-06-25","start":"09:00","end":"14:00"},{"date":"2026-06-25","start":"16:00","end":"19:00"},
+         {"date":"2026-06-26","start":"09:00","end":"14:00"}]},
+    {"name":"David Simuladez","max_hours":25,"max_hours_per_day":8,"turno":"Mañana","color":"#06b6d4",
+     "time_slots":[
+         {"date":"2026-06-22","start":"08:00","end":"12:00"},{"date":"2026-06-22","start":"14:00","end":"18:00"},
+         {"date":"2026-06-23","start":"08:00","end":"12:00"},{"date":"2026-06-23","start":"14:00","end":"18:00"},
+         {"date":"2026-06-24","start":"08:00","end":"12:00"},{"date":"2026-06-24","start":"14:00","end":"18:00"},
+         {"date":"2026-06-25","start":"08:00","end":"12:00"},{"date":"2026-06-25","start":"14:00","end":"18:00"},
+         {"date":"2026-06-26","start":"08:00","end":"12:00"},{"date":"2026-06-26","start":"14:00","end":"18:00"}]},
+    {"name":"Sofia Irrealmez","max_hours":10,"max_hours_per_day":4,"turno":"Mañana","color":"#ec4899",
+     "time_slots":[
+         {"date":"2026-06-22","start":"09:00","end":"12:00"},{"date":"2026-06-23","start":"09:00","end":"12:00"},
+         {"date":"2026-06-24","start":"09:00","end":"12:00"},{"date":"2026-06-25","start":"09:00","end":"12:00"},
+         {"date":"2026-06-26","start":"09:00","end":"12:00"}]},
+    {"name":"Pablo Fingirez","max_hours":18,"max_hours_per_day":6,"turno":"Tarde","color":"#3b82f6",
+     "time_slots":[
+         {"date":"2026-06-22","start":"14:00","end":"19:00"},{"date":"2026-06-23","start":"14:00","end":"19:00"},
+         {"date":"2026-06-24","start":"14:00","end":"19:00"},{"date":"2026-06-25","start":"14:00","end":"19:00"},
+         {"date":"2026-06-26","start":"14:00","end":"19:00"}]},
+    # --- 7 nuevos profesores para estrés ---
+    {"name":"Elena Textualdez","max_hours":22,"max_hours_per_day":7,"turno":"Mañana","color":"#f97316",
+     "time_slots":[
+         {"date":"2026-06-22","start":"07:30","end":"14:30"},{"date":"2026-06-23","start":"07:30","end":"14:30"},
+         {"date":"2026-06-24","start":"07:30","end":"14:30"},{"date":"2026-06-25","start":"07:30","end":"14:30"},
+         {"date":"2026-06-26","start":"07:30","end":"14:30"}]},
+    {"name":"Ramon Librez","max_hours":15,"max_hours_per_day":5,"turno":"Tarde","color":"#14b8a6",
+     "time_slots":[
+         {"date":"2026-06-22","start":"15:00","end":"20:00"},{"date":"2026-06-23","start":"15:00","end":"20:00"},
+         {"date":"2026-06-24","start":"15:00","end":"20:00"},{"date":"2026-06-25","start":"15:00","end":"20:00"},
+         {"date":"2026-06-26","start":"15:00","end":"20:00"}]},
+    {"name":"Beatriz Papelmez","max_hours":20,"max_hours_per_day":6,"turno":"Cualquiera","color":"#84cc16",
+     "time_slots":[
+         {"date":"2026-06-22","start":"09:00","end":"13:00"},{"date":"2026-06-22","start":"15:30","end":"19:30"},
+         {"date":"2026-06-23","start":"09:00","end":"13:00"},{"date":"2026-06-23","start":"15:30","end":"19:30"},
+         {"date":"2026-06-24","start":"09:00","end":"13:00"},{"date":"2026-06-24","start":"15:30","end":"19:30"},
+         {"date":"2026-06-25","start":"09:00","end":"13:00"},{"date":"2026-06-25","start":"15:30","end":"19:30"}]},
+    {"name":"Miguel Cuaderniez","max_hours":16,"max_hours_per_day":5,"turno":"Mañana","color":"#e11d48",
+     "time_slots":[
+         {"date":"2026-06-22","start":"08:00","end":"13:00"},{"date":"2026-06-23","start":"08:00","end":"13:00"},
+         {"date":"2026-06-24","start":"08:00","end":"13:00"},{"date":"2026-06-25","start":"08:00","end":"13:00"},
+         {"date":"2026-06-26","start":"08:00","end":"13:00"}]},
+    {"name":"Teresa Estucherez","max_hours":14,"max_hours_per_day":5,"turno":"Tarde","color":"#0ea5e9",
+     "time_slots":[
+         {"date":"2026-06-22","start":"16:00","end":"21:00"},{"date":"2026-06-23","start":"16:00","end":"21:00"},
+         {"date":"2026-06-24","start":"16:00","end":"21:00"},{"date":"2026-06-25","start":"16:00","end":"21:00"},
+         {"date":"2026-06-26","start":"16:00","end":"21:00"}]},
+    {"name":"Andres Mozillarez","max_hours":24,"max_hours_per_day":8,"turno":"Cualquiera","color":"#a855f7",
+     "time_slots":[
+         {"date":"2026-06-22","start":"08:30","end":"12:30"},{"date":"2026-06-22","start":"13:30","end":"17:30"},
+         {"date":"2026-06-23","start":"08:30","end":"12:30"},{"date":"2026-06-23","start":"13:30","end":"17:30"},
+         {"date":"2026-06-24","start":"08:30","end":"12:30"},{"date":"2026-06-24","start":"13:30","end":"17:30"},
+         {"date":"2026-06-25","start":"08:30","end":"12:30"},{"date":"2026-06-25","start":"13:30","end":"17:30"},
+         {"date":"2026-06-26","start":"08:30","end":"12:30"},{"date":"2026-06-26","start":"13:30","end":"17:30"}]},
+    {"name":"Carmen Blocdez","max_hours":10,"max_hours_per_day":4,"turno":"Mañana","color":"#22c55e",
+     "time_slots":[
+         {"date":"2026-06-22","start":"08:00","end":"12:00"},{"date":"2026-06-23","start":"08:00","end":"12:00"},
+         {"date":"2026-06-24","start":"08:00","end":"12:00"},{"date":"2026-06-25","start":"08:00","end":"12:00"},
+         {"date":"2026-06-26","start":"08:00","end":"12:00"}]},
 ]
 
-
-# =============================================================================
-# LISTA DE NECESIDADES / TAREAS DE EJEMPLO
-# =============================================================================
-# Simula el proceso completo de XarxaLlibres durante 5 días (22-26 junio 2026):
-#   Día 1 (lunes):     Recogida masiva de libros de 1º y 2º ESO + clasificación
-#   Día 2 (martes):    Recogida de 1º Bachillerato + clasificación
-#   Día 3 (miércoles): Clasificación de 3º, 4º ESO y Bachilleratos + empaquetado
-#   Día 4 (jueves):    Preparación de lotes por curso
-#   Día 5 (viernes):   Distribución a aulas + cierre del proceso
-#
-# Cada necesidad especifica: nombre, fecha, hora inicio, hora fin,
-# número MÍNIMO de profesores requerido (min) y número MÁXIMO (max).
-# -----------------------------------------------------------------------------
 SEED_NEEDS = [
-    # --- LUNES 22: RECOGIDA Y CLASIFICACIÓN PRELIMINAR ---
-    {"name": "Recogida libros 1º ESO A", "date": "2026-06-22", "start": "09:00", "end": "11:00", "min": 2, "max": 4},
-    {"name": "Recogida libros 1º ESO B", "date": "2026-06-22", "start": "09:00", "end": "11:00", "min": 2, "max": 3},
-    {"name": "Recogida libros 2º ESO A", "date": "2026-06-22", "start": "11:00", "end": "13:00", "min": 2, "max": 3},
-    {"name": "Recogida libros 2º ESO B", "date": "2026-06-22", "start": "11:00", "end": "13:00", "min": 2, "max": 3},
-    {"name": "Clasificación preliminar",     "date": "2026-06-22", "start": "16:00", "end": "18:00", "min": 2, "max": 4},
+    # --- LUNES 22: RECOGIDA MASIVA + CLASIFICACIÓN ---
+    {"name":"Recogida 1º ESO A","date":"2026-06-22","start":"08:30","end":"10:00","min":2,"max":4},
+    {"name":"Recogida 1º ESO B","date":"2026-06-22","start":"08:30","end":"10:00","min":2,"max":3},
+    {"name":"Recogida 1º ESO C","date":"2026-06-22","start":"08:30","end":"10:00","min":1,"max":2},
+    {"name":"Recogida 2º ESO A","date":"2026-06-22","start":"10:00","end":"12:00","min":2,"max":3},
+    {"name":"Recogida 2º ESO B","date":"2026-06-22","start":"10:00","end":"12:00","min":2,"max":3},
+    {"name":"Recogida 2º ESO C","date":"2026-06-22","start":"10:00","end":"12:00","min":1,"max":2},
+    {"name":"Recogida 3º ESO A","date":"2026-06-22","start":"12:00","end":"13:30","min":2,"max":3},
+    {"name":"Recogida 3º ESO B","date":"2026-06-22","start":"12:00","end":"13:30","min":1,"max":2},
+    {"name":"Clasif. inicial 1º-2º","date":"2026-06-22","start":"16:00","end":"18:00","min":2,"max":4},
+    {"name":"Clasif. inicial 3º","date":"2026-06-22","start":"16:00","end":"18:00","min":1,"max":2},
+    {"name":"Empaquetado urgente","date":"2026-06-22","start":"18:00","end":"19:30","min":1,"max":3},
 
-    # --- MARTES 23: RECOGIDA DE BACHILLERATO Y CLASIFICACIÓN ---
-    {"name": "Recogida libros 1º Batx A", "date": "2026-06-23", "start": "09:00", "end": "11:00", "min": 2, "max": 3},
-    {"name": "Recogida libros 1º Batx B", "date": "2026-06-23", "start": "09:00", "end": "11:00", "min": 1, "max": 2},
-    {"name": "Clasificación 1º ESO",         "date": "2026-06-23", "start": "11:30", "end": "13:30", "min": 2, "max": 3},
-    {"name": "Clasificación 2º ESO",         "date": "2026-06-23", "start": "11:30", "end": "13:30", "min": 2, "max": 3},
-    {"name": "Clasificación y empaquetado",   "date": "2026-06-23", "start": "16:00", "end": "18:00", "min": 2, "max": 4},
+    # --- MARTES 23: BACHILLERATO + CLASIFICACIÓN ---
+    {"name":"Recogida 1º Batx A","date":"2026-06-23","start":"08:30","end":"10:00","min":2,"max":3},
+    {"name":"Recogida 1º Batx B","date":"2026-06-23","start":"08:30","end":"10:00","min":1,"max":2},
+    {"name":"Recogida 2º Batx A","date":"2026-06-23","start":"10:00","end":"11:30","min":1,"max":2},
+    {"name":"Recogida 2º Batx B","date":"2026-06-23","start":"10:00","end":"11:30","min":1,"max":2},
+    {"name":"Clasif. 1º ESO detallada","date":"2026-06-23","start":"09:00","end":"11:00","min":2,"max":3},
+    {"name":"Clasif. 2º ESO detallada","date":"2026-06-23","start":"09:00","end":"11:00","min":2,"max":3},
+    {"name":"Clasif. 3º ESO detallada","date":"2026-06-23","start":"11:00","end":"13:00","min":2,"max":3},
+    {"name":"Clasif. 4º ESO detallada","date":"2026-06-23","start":"11:00","end":"13:00","min":1,"max":2},
+    {"name":"Separación por curso","date":"2026-06-23","start":"16:00","end":"18:00","min":2,"max":4},
+    {"name":"Control calidad lotes","date":"2026-06-23","start":"18:00","end":"19:30","min":1,"max":2},
 
-    # --- MIÉRCOLES 24: CLASIFICACIÓN FINA Y EMPAQUETADO ---
-    {"name": "Clasificación 3º ESO",         "date": "2026-06-24", "start": "09:00", "end": "11:00", "min": 2, "max": 3},
-    {"name": "Clasificación 4º ESO",         "date": "2026-06-24", "start": "09:00", "end": "11:00", "min": 2, "max": 3},
-    {"name": "Clasificación 1º Batx",        "date": "2026-06-24", "start": "11:30", "end": "13:30", "min": 1, "max": 2},
-    {"name": "Clasificación 2º Batx",        "date": "2026-06-24", "start": "11:30", "end": "13:30", "min": 1, "max": 2},
-    {"name": "Empaquetado por cursos",       "date": "2026-06-24", "start": "16:00", "end": "18:00", "min": 2, "max": 4},
+    # --- MIÉRCOLES 24: CLASIFICACIÓN FINA + EMPAQUETADO ---
+    {"name":"Clasif. 1º Batx detallada","date":"2026-06-24","start":"09:00","end":"11:00","min":1,"max":2},
+    {"name":"Clasif. 2º Batx detallada","date":"2026-06-24","start":"09:00","end":"11:00","min":1,"max":2},
+    {"name":"Empaquetado 1º ESO","date":"2026-06-24","start":"09:00","end":"11:00","min":2,"max":3},
+    {"name":"Empaquetado 2º ESO","date":"2026-06-24","start":"11:00","end":"13:00","min":2,"max":3},
+    {"name":"Empaquetado 3º ESO","date":"2026-06-24","start":"11:00","end":"13:00","min":1,"max":2},
+    {"name":"Empaquetado 4º ESO","date":"2026-06-24","start":"11:00","end":"13:00","min":1,"max":2},
+    {"name":"Empaquetado 1º Batx","date":"2026-06-24","start":"13:00","end":"14:30","min":1,"max":2},
+    {"name":"Empaquetado 2º Batx","date":"2026-06-24","start":"13:00","end":"14:30","min":1,"max":2},
+    {"name":"Etiquetado y verificación","date":"2026-06-24","start":"16:00","end":"18:00","min":2,"max":4},
+    {"name":"Revisión dañados","date":"2026-06-24","start":"18:00","end":"19:30","min":1,"max":2},
 
-    # --- JUEVES 25: PREPARACIÓN DE LOTES ---
-    {"name": "Preparación lotes 1º ESO",     "date": "2026-06-25", "start": "09:00", "end": "11:00", "min": 2, "max": 4},
-    {"name": "Preparación lotes 2º ESO",     "date": "2026-06-25", "start": "09:00", "end": "11:00", "min": 2, "max": 3},
-    {"name": "Preparación lotes 3º ESO",     "date": "2026-06-25", "start": "11:30", "end": "13:30", "min": 1, "max": 2},
-    {"name": "Preparación lotes 4º ESO",     "date": "2026-06-25", "start": "11:30", "end": "13:30", "min": 1, "max": 2},
-    {"name": "Revisión y recuento final",    "date": "2026-06-25", "start": "16:00", "end": "18:00", "min": 2, "max": 3},
+    # --- JUEVES 25: PREPARACIÓN LOTES + TRASLADO ---
+    {"name":"Lotes 1º ESO A","date":"2026-06-25","start":"08:30","end":"10:00","min":2,"max":3},
+    {"name":"Lotes 1º ESO B","date":"2026-06-25","start":"08:30","end":"10:00","min":1,"max":2},
+    {"name":"Lotes 2º ESO A","date":"2026-06-25","start":"10:00","end":"11:30","min":2,"max":3},
+    {"name":"Lotes 2º ESO B","date":"2026-06-25","start":"10:00","end":"11:30","min":1,"max":2},
+    {"name":"Lotes 3º ESO","date":"2026-06-25","start":"11:30","end":"13:00","min":1,"max":2},
+    {"name":"Lotes 4º ESO","date":"2026-06-25","start":"11:30","end":"13:00","min":1,"max":2},
+    {"name":"Lotes 1º Batx","date":"2026-06-25","start":"13:00","end":"14:30","min":1,"max":2},
+    {"name":"Lotes 2º Batx","date":"2026-06-25","start":"13:00","end":"14:30","min":1,"max":2},
+    {"name":"Traslado a aulas","date":"2026-06-25","start":"16:00","end":"18:00","min":2,"max":4},
+    {"name":"Recuento inventario","date":"2026-06-25","start":"18:00","end":"19:30","min":1,"max":2},
 
-    # --- VIERNES 26: DISTRIBUCIÓN Y CIERRE ---
-    {"name": "Distribución 1º ESO",          "date": "2026-06-26", "start": "09:00", "end": "11:00", "min": 1, "max": 2},
-    {"name": "Distribución 2º ESO",          "date": "2026-06-26", "start": "09:00", "end": "11:00", "min": 1, "max": 2},
-    {"name": "Distribución 3º ESO",          "date": "2026-06-26", "start": "11:00", "end": "13:00", "min": 1, "max": 2},
-    {"name": "Distribución 4º ESO",          "date": "2026-06-26", "start": "11:00", "end": "13:00", "min": 1, "max": 2},
-    {"name": "Cierre XarxaLlibres",          "date": "2026-06-26", "start": "15:00", "end": "17:00", "min": 2, "max": 3},
+    # --- VIERNES 26: DISTRIBUCIÓN + CIERRE ---
+    {"name":"Distribución 1º ESO","date":"2026-06-26","start":"08:30","end":"10:00","min":2,"max":3},
+    {"name":"Distribución 2º ESO","date":"2026-06-26","start":"08:30","end":"10:00","min":2,"max":3},
+    {"name":"Distribución 3º ESO","date":"2026-06-26","start":"10:00","end":"11:30","min":1,"max":2},
+    {"name":"Distribución 4º ESO","date":"2026-06-26","start":"10:00","end":"11:30","min":1,"max":2},
+    {"name":"Distribución 1º Batx","date":"2026-06-26","start":"11:30","end":"13:00","min":1,"max":2},
+    {"name":"Distribución 2º Batx","date":"2026-06-26","start":"11:30","end":"13:00","min":1,"max":2},
+    {"name":"Recogida materiales","date":"2026-06-26","start":"13:00","end":"14:30","min":1,"max":2},
+    {"name":"Cierre XarxaLlibres","date":"2026-06-26","start":"15:00","end":"17:00","min":2,"max":4},
+    {"name":"Acta y documentación","date":"2026-06-26","start":"17:00","end":"18:30","min":1,"max":2},
 ]
 
-
-# =============================================================================
-# FUNCIONES DE ACCESO
-# =============================================================================
-# Devuelven copias profundas (dicts nuevos) para evitar que las modificaciones
-# en la GUI alteren los datos semilla originales.
-# -----------------------------------------------------------------------------
 
 def get_seed_teachers():
-    """Devuelve una copia de la lista de profesores de ejemplo."""
     return [dict(t) for t in SEED_TEACHERS]
 
-
 def get_seed_needs():
-    """Devuelve una copia de la lista de necesidades de ejemplo."""
     return [dict(n) for n in SEED_NEEDS]
 
-
 def get_seed_data():
-    """Devuelve un dict completo con nombre de proyecto y necesidades."""
     return {
-        # Nombre del proyecto de demostración
-        "project_name": "XarxaLlibres 2026 - Recogida y distribución",
-        # Lista de necesidades copiada
+        "project_name": "XarxaLlibres 2026 - Recogida y distribución (estresante)",
         "needs": get_seed_needs(),
     }

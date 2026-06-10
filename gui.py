@@ -204,6 +204,37 @@ class ClickFrame(QFrame):
         self.clicked.emit(self.a, self.b)
         super().mousePressEvent(e)
 
+# ── Loading Dialog ──────────────────────────────────────────────────────
+class LoadingDialog(QDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("Generando")
+        self.setFixedSize(260, 100)
+        self.setWindowFlags(Qt.WindowType.Dialog | Qt.WindowType.CustomizeWindowHint)
+        self.setModal(True)
+        self.setStyleSheet(f"background: {C_CARD}; border-radius: 12px;")
+        l = QVBoxLayout(self)
+        l.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        l.setSpacing(8)
+        self.spinner = QLabel("⣾")
+        self.spinner.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.spinner.setStyleSheet(f"font-size: 32px; color: {C_PRI};")
+        l.addWidget(self.spinner)
+        self.msg = QLabel("🧠 Pensando...")
+        self.msg.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.msg.setStyleSheet(f"font-size: 14px; color: {C_TEXT}; font-weight: bold;")
+        l.addWidget(self.msg)
+        self._chars = "⣾⣽⣻⢿⡿⣟⣯⣷"
+        self._idx = 0
+        self._timer = QTimer(self)
+        self._timer.timeout.connect(self._tick)
+        self._timer.start(120)
+    def _tick(self):
+        self._idx = (self._idx + 1) % len(self._chars)
+        self.spinner.setText(self._chars[self._idx])
+    def set_message(self, text):
+        self.msg.setText(text)
+
 # ── MultiOptionDialog ───────────────────────────────────────────────────
 class MultiOptionDialog(QDialog):
     """Diálogo para elegir entre varias opciones de asignación generadas.
@@ -1561,7 +1592,12 @@ class App(QMainWindow):
         self._log("Regenerando con {len(self._locked_assignments)} bloqueos...")
         scheduler = TeacherScheduler(self.teachers, self.needs)
         scheduler.build_model(locked=self._locked_assignments)
+        loading = LoadingDialog(self)
+        loading.set_message("🔒 Regenerando con bloqueos...\nPuede tardar hasta 1 minuto")
+        loading.show()
+        QApplication.processEvents()
         opciones = scheduler.solve_multiple(n_options=5, time_limit=10)
+        loading.close()
         opciones = [op for op in opciones if op["n_assignments"] > 0]
         if not opciones:
             self._log("❌ Sin solución posible con los bloqueos actuales.")
@@ -1652,8 +1688,16 @@ class App(QMainWindow):
         self._log("Generando opciones (10 variantes con distintas semillas)...")
         self.status_text.repaint()
 
+        # Loading dialog animado mientras el solver piensa
+        loading = LoadingDialog(self)
+        loading.set_message("🧠 Resolviendo...\nPuede tardar hasta 2 minutos")
+        loading.show()
+        QApplication.processEvents()
+
         num_opciones = 10
         opciones = scheduler.solve_multiple(n_options=num_opciones, time_limit=10)
+
+        loading.close()
 
         opciones = [op for op in opciones if op["n_assignments"] > 0]
 

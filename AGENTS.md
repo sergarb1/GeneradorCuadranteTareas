@@ -132,9 +132,9 @@ Archivo JSON con un array de objetos necesidad:
 
 4. **Solapamiento de necesidades**: Si dos necesidades ocurren el mismo día y sus horarios se cruzan, un mismo profesor no puede estar en ambas. El solver lo maneja automáticamente.
 
-5. **Distribución realista**: Los datos semilla incluyen 8 profesores con distintos perfiles (mañanas, tardes, mixto, jornada partida, reducida) y ~25 necesidades distribuidas en 5 días. Es un buen punto de partida.
+5. **Distribución realista**: Los datos semilla incluyen 15 profesores con distintos perfiles (mañanas, tardes, mixto, jornada partida, reducida) y ~50 necesidades distribuidas en 5 días con solapamientos densos. Es un buen punto de partida para estresar el solver.
 
-6. **Límite de tiempo**: El solver tiene 10 segundos por opción. Si el problema es muy grande (>15 profesores, >50 necesidades), puede no encontrar la solución óptima, pero dará una factible.
+6. **Límite de tiempo**: El solver tiene 10 segundos por opción. Con 15 profesores y 50 necesidades, puede tardar hasta 2 minutos en generar las 10 opciones. La interfaz muestra un loading animado mientras resuelve.
 
 7. **Perfiles variados**: Los profesores deberían tener distintos `turno` y `max_hours` para que el solver tenga combinaciones interesantes. Mezcla perfiles de mañana, tarde, y mixtos.
 
@@ -162,13 +162,14 @@ Archivo JSON con un array de objetos necesidad:
 | 🕐 **Icono en franjas** | Las franjas de disponibilidad muestran 🕐 |
 | 🔒 **Bloquear asignaciones** | Clic en profesor en cuadrante → 🔒, botón "Regenerar con bloqueos" |
 | 🌓 **Tema claro/oscuro** | Botón en cabecera |
+| ⏳ **Loading al generar** | Spinner animado mientras el solver piensa (evita dobles clics) |
 
 ## Archivos del proyecto
 
 | Archivo | Propósito |
 |---|---|
 | `main.py` | Punto de entrada |
-| `gui.py` | Interfaz PyQt6 (~2025 líneas) |
+| `gui.py` | Interfaz PyQt6 (~2050 líneas) |
 | `scheduler.py` | Modelo CP-SAT (variables, restricciones, solver) |
 | `seed_data.py` | Datos ficticios de demostración |
 | `html_exporter.py` | Exportación a HTML con correos |
