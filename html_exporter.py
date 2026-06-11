@@ -259,7 +259,7 @@ function copyText(id) {{
     gen_lines.append("Departamento de Coordinación")
     gen_text = "\n".join(gen_lines)
     gen_subject = f"Cuadrante apoyo - {title}"
-    gen_email = f"Assumpte: {gen_subject}\n\n{gen_text}"
+    gen_email = f"Asunto: {gen_subject}\n\n{gen_text}"
 
     html += f"""<div class="email-card">
   <div class="email-card-header" style="background:{GVA_BLUE};">
@@ -302,7 +302,7 @@ function copyText(id) {{
         email_text = "\n".join(email_lines)
 
         email_subject = f"Cuadrante apoyo - {title}"
-        full_email = f"Assumpte: {email_subject}\n\n{email_text}"
+        full_email = f"Asunto: {email_subject}\n\n{email_text}"
 
         email_id = f"email_{tname.replace(' ', '_')}"
         fg, _ = tcolors[tname]

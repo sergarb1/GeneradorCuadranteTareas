@@ -4,6 +4,13 @@
 
 Aplicación de escritorio (Python + PyQt6) que asigna profesores a tareas de apoyo usando optimización combinatoria con Google OR-Tools CP-SAT. Genera 10 opciones de cuadrante horario navegables, con persistencia local, importación/exportación JSON, y validación previa.
 
+Características recientes de UX pulida:
+- **Tooltips** en todos los botones, inputs y labels
+- **Barra de estado** inferior con mensajes contextuales y atajos
+- **Atajos de teclado**: Ctrl+S, Ctrl+Z, Ctrl+Y, Ctrl+N, Ctrl+D, F1
+- **Diálogo de bienvenida** interactivo en primer inicio
+- **Botón 📖 Ayuda** en la cabecera que abre el manual
+
 ## Esquemas de datos
 
 ### Profesor (`teachers.json` y seed_data.py)
@@ -163,13 +170,18 @@ Archivo JSON con un array de objetos necesidad:
 | 🔒 **Bloquear asignaciones** | Clic en profesor en cuadrante → 🔒, botón "Regenerar con bloqueos" |
 | 🌓 **Tema claro/oscuro** | Botón en cabecera |
 | ⏳ **Loading al generar** | Spinner animado mientras el solver piensa (evita dobles clics) |
+| 💬 **Tooltips descriptivos** | Todos los botones e inputs tienen tooltips al pasar el ratón |
+| ⌨️ **Atajos de teclado** | Ctrl+S/Z/Y/N/D, F1 ayuda, Esc limpiar estado |
+| ℹ️ **Barra de estado** | Barra inferior con mensajes contextuales y atajos recordados |
+| 🎉 **Diálogo de bienvenida** | Guía interactiva en primer inicio |
+| 📖 **Ayuda en cabecera** | Botón 📖 que abre el manual completo |
 
 ## Archivos del proyecto
 
 | Archivo | Propósito |
 |---|---|
 | `main.py` | Punto de entrada |
-| `gui.py` | Interfaz PyQt6 (~2050 líneas) |
+| `gui.py` | Interfaz PyQt6 (~2280 líneas) |
 | `scheduler.py` | Modelo CP-SAT (variables, restricciones, solver) |
 | `seed_data.py` | Datos ficticios de demostración |
 | `html_exporter.py` | Exportación a HTML con correos |

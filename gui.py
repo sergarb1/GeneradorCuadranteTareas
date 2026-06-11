@@ -5,10 +5,10 @@ from PyQt6.QtWidgets import (
     QGridLayout, QLabel, QPushButton, QLineEdit, QComboBox,
     QTabWidget, QScrollArea, QFrame, QTextEdit, QSizePolicy,
     QMessageBox, QDateEdit, QDialog, QFormLayout, QDialogButtonBox,
-    QButtonGroup, QRadioButton, QFileDialog  # Para el selector de opciones múltiples
+    QButtonGroup, QRadioButton, QFileDialog, QStatusBar  # Para el selector de opciones múltiples
 )
 from PyQt6.QtCore import Qt, QTimer, QDate, pyqtSignal
-from PyQt6.QtGui import QFont, QAction, QColor
+from PyQt6.QtGui import QFont, QAction, QColor, QShortcut, QKeySequence, QPixmap, QPainter, QIcon
 from PyQt6.QtWidgets import QColorDialog, QInputDialog
 
 from ortools.sat.python import cp_model
@@ -185,8 +185,11 @@ class Toast(QFrame):
         colors = {"success": "#059669", "warning": "#d97706", "error": "#dc2626"}
         self.setStyleSheet(f"background: {colors.get(type, '#059669')}; border-radius: 8px;")
         self.label.setText(message)
+        self.label.setWordWrap(True)
         w = self.parent().width()
-        self.setFixedWidth(min(400, w - 40))
+        mw = min(420, w - 40)
+        self.label.setFixedWidth(mw - 48)
+        self.setFixedWidth(mw)
         self.adjustSize()
         self.move((w - self.width()) // 2, 16)
         self.raise_()
@@ -218,6 +221,7 @@ class LoadingDialog(QDialog):
         l.setSpacing(8)
         self.spinner = QLabel("⣾")
         self.spinner.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.spinner.setToolTip("El solver está trabajando... puede tardar hasta 2 minutos")
         self.spinner.setStyleSheet(f"font-size: 32px; color: {C_PRI};")
         l.addWidget(self.spinner)
         self.msg = QLabel("🧠 Pensando...")
@@ -307,10 +311,12 @@ class MultiOptionDialog(QDialog):
         btn_lay = QHBoxLayout()
         btn_lay.addStretch()
         cancelar = QPushButton("❌ Cancelar")
+        cancelar.setToolTip("Volver sin elegir ninguna opción")
         cancelar.setObjectName("secondary")
         cancelar.clicked.connect(self.reject)
         btn_lay.addWidget(cancelar)
         aceptar = QPushButton("✅ Aceptar opción seleccionada")
+        aceptar.setToolTip("Usar la opción seleccionada como cuadrante principal")
         aceptar.setMinimumWidth(220)
         aceptar.clicked.connect(self._accept)
         btn_lay.addWidget(aceptar)
@@ -445,6 +451,27 @@ class App(QMainWindow):
         self._auto_save_timer.timeout.connect(self._auto_save)
         self._auto_save_timer.start()
 
+        # Keyboard shortcuts
+        QShortcut(QKeySequence("Ctrl+S"), self).activated.connect(self._save_current)
+        QShortcut(QKeySequence("Ctrl+Z"), self).activated.connect(self._undo)
+        QShortcut(QKeySequence("Ctrl+Y"), self).activated.connect(self._redo)
+        QShortcut(QKeySequence("Ctrl+N"), self).activated.connect(self._new_project)
+        QShortcut(QKeySequence("Ctrl+D"), self).activated.connect(self._load_seed)
+        QShortcut(QKeySequence("F1"), self).activated.connect(self._open_manual)
+        QShortcut(QKeySequence("Escape"), self).activated.connect(lambda: self.status_bar.clearMessage())
+
+        # Status bar timer for auto-clearing messages
+        self._status_timer = QTimer(self)
+        self._status_timer.setSingleShot(True)
+        self._status_timer.timeout.connect(lambda: self.status_bar.clearMessage())
+
+        # App icon
+        self.setWindowIcon(self._make_icon())
+
+        # Welcome dialog (first launch or manual trigger)
+        if not self.teachers:
+            QTimer.singleShot(300, self._show_welcome)
+
     # ── Theme ──────────────────────────────────────────────────────────
     def _apply_theme(self):
         qss = DARK_QSS if self._dark_mode else LIGHT_QSS
@@ -478,8 +505,16 @@ class App(QMainWindow):
 
         hdr_lay.addStretch()
 
+        self.help_btn = QPushButton("📖 Ayuda")
+        self.help_btn.setFixedSize(90, 30)
+        self.help_btn.setToolTip("Abrir manual de usuario detallado (F1)")
+        self.help_btn.setStyleSheet("background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3); border-radius: 4px;")
+        self.help_btn.clicked.connect(self._open_manual)
+        hdr_lay.addWidget(self.help_btn)
+
         self.theme_btn = QPushButton("☀️ Claro")
         self.theme_btn.setFixedSize(100, 30)
+        self.theme_btn.setToolTip("Cambiar entre tema claro y oscuro")
         self.theme_btn.setStyleSheet("background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3); border-radius: 4px;")
         self.theme_btn.clicked.connect(self._toggle_theme)
         hdr_lay.addWidget(self.theme_btn)
@@ -496,6 +531,16 @@ class App(QMainWindow):
         self._build_needs_tab()
         self._build_generate_tab()
         self._build_schedule_tab()
+
+        # Status bar
+        self.status_bar = QStatusBar()
+        self.status_bar.setFixedHeight(24)
+        self.status_bar.setStyleSheet(
+            f"QStatusBar {{ background: {C_SLATE}; color: white; font-size: 11px; padding: 0 12px; }} "
+            f"QStatusBar::item {{ border: none; }} "
+        )
+        self.status_bar.showMessage("💡 F1 Ayuda  ·  Ctrl+D Datos ejemplo  ·  Ctrl+S Guardar  ·  Ctrl+Z Deshacer  ·  Ctrl+Y Rehacer")
+        main_v.addWidget(self.status_bar)
 
         # Toast overlay
         self.toast = Toast(self)
@@ -523,68 +568,86 @@ class App(QMainWindow):
         # Heading
         # Selector row
         sel = QHBoxLayout()
+        sel.setSpacing(6)
         self.project_selector = QComboBox()
         self.project_selector.setMinimumWidth(300)
+        self.project_selector.setToolTip("Selecciona un proyecto guardado para cargarlo")
         self.project_selector.currentTextChanged.connect(self._on_project_selected)
         sel.addWidget(self.project_selector)
 
-        def btn(text, obj, cmd, color=None):
+        def btn(text, tip, cmd, color=None):
             b = QPushButton(text)
+            b.setToolTip(tip)
             b.clicked.connect(cmd)
             if color: b.setObjectName(color)
             sel.addWidget(b)
             return b
-        btn("➕ Nuevo", None, self._new_project, "secondary")
-        btn("📋 Duplicar", None, self._duplicate_project, "secondary")
-        btn("💾 Guardar", None, self._save_current)
-        btn("🗑️ Eliminar", None, self._delete_project, "secondary")
+        btn("➕ Nuevo", "Crear un proyecto nuevo en blanco", self._new_project, "secondary")
+        btn("📋 Duplicar", "Hacer una copia del proyecto actual", self._duplicate_project, "secondary")
+        btn("💾 Guardar", "Guardar el proyecto actual (Ctrl+S)", self._save_current)
+        btn("🗑️ Eliminar", "Eliminar el proyecto seleccionado permanentemente", self._delete_project, "secondary")
         v.addLayout(sel)
 
         v.addWidget(QLabel("📛 Nombre del proyecto:"))
         self.project_name_input = QLineEdit()
-        self.project_name_input.setPlaceholderText("Nombre del proyecto...")
+        self.project_name_input.setPlaceholderText("P.ej.: XarxaLlibres 2026, Recogida septiembre, Apoyo exámenes...")
+        self.project_name_input.setToolTip("Nombre descriptivo del proyecto. Se usará como nombre de archivo.")
         self.project_name_input.textChanged.connect(lambda: self._mark_dirty())
         v.addWidget(self.project_name_input)
 
         # Stats
         stats = QHBoxLayout()
+        stats.setSpacing(6)
         self.info_teachers = QLabel("👨‍🏫 0 profesores")
+        self.info_teachers.setToolTip("Número total de profesores registrados (compartidos entre proyectos)")
         self.info_teachers.setStyleSheet(f"font-weight: bold; color: {C_PRI};")
         self.info_needs = QLabel("📋 0 necesidades")
+        self.info_needs.setToolTip("Número total de tareas/necesidades de apoyo en este proyecto")
         self.info_slots = QLabel("🗓 0 franjas profe")
+        self.info_slots.setToolTip("Suma de todas las franjas de disponibilidad de todos los profesores")
         self.info_need_slots = QLabel("📅 0 franjas neces.")
+        self.info_need_slots.setToolTip("Número de necesidades (tareas) en este proyecto")
         self.info_hours = QLabel("⏱ 0h disponibles")
+        self.info_hours.setToolTip("Total de horas disponibles sumando todas las franjas de todos los profes")
         self.info_need_hours = QLabel("⏰ 0h necesarias (min)")
+        self.info_need_hours.setToolTip("Horas mínimas necesarias (min × duración de cada necesidad)")
         for lbl in [self.info_teachers, self.info_needs, self.info_slots, self.info_need_slots, self.info_hours, self.info_need_hours]:
             stats.addWidget(lbl)
-            stats.addSpacing(12)
+            stats.addSpacing(8)
         stats.addStretch()
         v.addLayout(stats)
 
         bf = QHBoxLayout()
-        btn("📦 Cargar datos ficticios", None, self._load_seed, "secondary")
+        bf.setSpacing(6)
+        btn("📦 Cargar datos ficticios", "Carga 15 profesores de ejemplo y 50 necesidades para probar", self._load_seed, "secondary")
         btn_imp_proj = QPushButton("📥 Importar proyecto...")
+        btn_imp_proj.setToolTip("Importar proyecto completo desde archivo JSON (profesores + necesidades)")
         btn_imp_proj.setObjectName("secondary")
         btn_imp_proj.clicked.connect(self._import_project)
         bf.addWidget(btn_imp_proj)
         btn_exp_proj = QPushButton("📤 Exportar proyecto")
+        btn_exp_proj.setToolTip("Exportar proyecto actual a archivo JSON (incluye profesores y necesidades)")
         btn_exp_proj.setObjectName("secondary")
         btn_exp_proj.clicked.connect(self._export_project)
         bf.addWidget(btn_exp_proj)
         btn_csv = QPushButton("📊 Exportar CSV")
+        btn_csv.setToolTip("Exportar asignaciones a CSV para abrir en Excel/LibreOffice")
         btn_csv.setObjectName("secondary")
         btn_csv.clicked.connect(self._export_csv)
         bf.addWidget(btn_csv)
         btn_undo = QPushButton("↩️ Deshacer")
         btn_undo.setObjectName("secondary")
+        btn_undo.setToolTip("Deshacer último cambio (Ctrl+Z)")
         btn_undo.clicked.connect(self._undo)
         bf.addWidget(btn_undo)
         btn_redo = QPushButton("🔁 Rehacer")
         btn_redo.setObjectName("secondary")
+        btn_redo.setToolTip("Rehacer cambio deshecho (Ctrl+Y)")
         btn_redo.clicked.connect(self._redo)
         bf.addWidget(btn_redo)
         self._dirty_label = QLabel("")
-        self._dirty_label.setStyleSheet(f"color: {C_ACCENT};")
+        self._dirty_label.setStyleSheet(f"color: {C_ACCENT}; font-size: 11px;")
+        self._dirty_label.setToolTip("Hay cambios sin guardar — pulsa 💾 Guardar o espera al auto-guardado (cada 2 min)")
         bf.addWidget(self._dirty_label)
         bf.addStretch()
         v.addLayout(bf)
@@ -613,16 +676,20 @@ class App(QMainWindow):
         v.setContentsMargins(16, 12, 16, 12)
         v.setSpacing(6)
 
-        hint = QLabel("Los profesores se guardan automáticamente y se comparten entre proyectos")
-        hint.setStyleSheet(f"color: {C_SLATE};")
+        hint = QLabel("💡 Los profesores se guardan automáticamente y se comparten entre todos los proyectos")
+        hint.setStyleSheet(f"color: {C_SLATE}; padding: 4px 0;")
+        hint.setToolTip("Los datos de profesores se almacenan en teachers.json y están disponibles siempre")
         v.addWidget(hint)
 
         ie_teachers = QHBoxLayout()
+        ie_teachers.setSpacing(6)
         btn_imp_t = QPushButton("📥 Importar profesores...")
+        btn_imp_t.setToolTip("Cargar profesores desde un archivo JSON (formato: array de objetos profesor)")
         btn_imp_t.setObjectName("secondary")
         btn_imp_t.clicked.connect(self._import_teachers)
         ie_teachers.addWidget(btn_imp_t)
         btn_exp_t = QPushButton("📤 Exportar profesores")
+        btn_exp_t.setToolTip("Guardar todos los profesores en un archivo JSON")
         btn_exp_t.setObjectName("secondary")
         btn_exp_t.clicked.connect(self._export_teachers)
         ie_teachers.addWidget(btn_exp_t)
@@ -631,32 +698,41 @@ class App(QMainWindow):
 
         # Add teacher form
         f = QHBoxLayout()
+        f.setSpacing(4)
         f.addWidget(QLabel("👤 Nombre:"))
-        self.t_name = QLineEdit(); self.t_name.setPlaceholderText("Nombre del profe")
+        self.t_name = QLineEdit()
+        self.t_name.setPlaceholderText("P.ej.: Ana Alumnez, Carlos Pérez...")
+        self.t_name.setToolTip("Nombre completo del profesor (único, no puede repetirse)")
         f.addWidget(self.t_name)
         f.addSpacing(4)
         f.addWidget(QLabel("⏱ Max tot:"))
-        self.t_max = QLineEdit("20"); self.t_max.setFixedWidth(40)
+        self.t_max = QLineEdit("20")
+        self.t_max.setFixedWidth(40)
+        self.t_max.setToolTip("Horas totales semanales que puede trabajar este profesor")
         f.addWidget(self.t_max)
         f.addSpacing(4)
         f.addWidget(QLabel("Max/día:"))
-        self.t_maxd = QLineEdit("6"); self.t_maxd.setFixedWidth(36)
+        self.t_maxd = QLineEdit("6")
+        self.t_maxd.setFixedWidth(36)
+        self.t_maxd.setToolTip("Horas máximas que puede trabajar en un solo día")
         f.addWidget(self.t_maxd)
         f.addSpacing(4)
         f.addWidget(QLabel("Turno:"))
         self.t_turno = QComboBox()
         self.t_turno.addItems(["Cualquiera", "Mañana", "Tarde"])
         self.t_turno.setFixedWidth(100)
+        self.t_turno.setToolTip("Preferencia de turno: el solver prioriza asignar en este horario")
         f.addWidget(self.t_turno)
         f.addSpacing(4)
         self.t_color_btn = QPushButton("🎨")
         self.t_color_btn.setFixedWidth(32)
-        self.t_color_btn.setToolTip("Color personalizado")
+        self.t_color_btn.setToolTip("Elegir color personalizado para identificar al profesor en el cuadrante")
         self.t_color_btn.clicked.connect(self._pick_teacher_color)
         f.addWidget(self.t_color_btn)
         self._teacher_color_pick = C_PRI
         f.addSpacing(4)
         btn = QPushButton("➕ Añadir profe")
+        btn.setToolTip("Dar de alta al profesor con los datos indicados")
         btn.clicked.connect(self._add_teacher)
         f.addWidget(btn)
         f.addStretch()
@@ -664,11 +740,13 @@ class App(QMainWindow):
 
         search_teach = QHBoxLayout()
         self.teacher_count = QLabel("0 profesores")
+        self.teacher_count.setToolTip("Número de profesores visibles (con filtro aplicado)")
         self.teacher_count.setStyleSheet("font-weight: bold;")
         search_teach.addWidget(self.teacher_count)
         search_teach.addStretch()
         self.teacher_search = QLineEdit()
-        self.teacher_search.setPlaceholderText("🔍 Filtrar profes...")
+        self.teacher_search.setPlaceholderText("🔍 Filtrar por nombre...")
+        self.teacher_search.setToolTip("Escribe para filtrar la lista de profesores por nombre")
         self.teacher_search.setFixedWidth(200)
         self.teacher_search.textChanged.connect(self._rebuild_teacher_list)
         search_teach.addWidget(self.teacher_search)
@@ -693,34 +771,44 @@ class App(QMainWindow):
         self.tslot_header.setStyleSheet("font-weight: bold; font-size: 14px;")
         slot_top.addWidget(self.tslot_header)
         slot_top.addStretch()
-
-        self.tslot_date = QDateEdit()
-        self.tslot_date.setCalendarPopup(True)
-        self.tslot_date.setDisplayFormat("yyyy-MM-dd")
-        self.tslot_date.setDate(datetime.strptime("2026-06-22", "%Y-%m-%d").date())
-        slot_top.addWidget(self.tslot_date)
+        tslot_hint = QLabel("💡 Selecciona un profe de la lista para gestionar sus franjas")
+        tslot_hint.setStyleSheet(f"color: {C_SLATE}; font-size: 11px;")
+        slot_top.addWidget(tslot_hint)
         v.addLayout(slot_top)
 
         # ── Add buttons ──
         presets = QHBoxLayout()
         presets.setSpacing(6)
+
+        presets.addWidget(QLabel("📅 Fecha:"))
+        self.tslot_date = QDateEdit()
+        self.tslot_date.setCalendarPopup(True)
+        self.tslot_date.setDisplayFormat("yyyy-MM-dd")
+        self.tslot_date.setToolTip("Elige la fecha para la franja de disponibilidad")
+        self.tslot_date.setDate(datetime.strptime("2026-06-22", "%Y-%m-%d").date())
+        presets.addWidget(self.tslot_date)
+
         add_custom = QPushButton("➕ Personalitzada")
+        add_custom.setToolTip("Añadir una franja con horario personalizado (cualquier hora de inicio y fin)")
         add_custom.clicked.connect(self._add_tslot_custom_dialog)
         presets.addWidget(add_custom)
-        presets.addSpacing(12)
-        for lbl, s, e in [("☕ Mañana  09-14h", "09:00", "14:00"),
-                          ("🌤 Tarde 15-18h", "15:00", "18:00"),
-                          ("🌞 Completo 09-18h", "09:00", "18:00")]:
+        presets.addSpacing(6)
+        for lbl, tip, s, e in [("☕ Mañana 09-14h", "Franja de mañana: de 09:00 a 14:00", "09:00", "14:00"),
+                          ("🌤 Tarde 15-18h", "Franja de tarde: de 15:00 a 18:00", "15:00", "18:00"),
+                          ("🌞 Completo 09-18h", "Franja completa: de 09:00 a 18:00", "09:00", "18:00")]:
             b = QPushButton(lbl)
+            b.setToolTip(tip)
             b.setCursor(Qt.CursorShape.PointingHandCursor)
             b.clicked.connect(lambda checked, ss=s, ee=e: self._add_tslot_preset(ss, ee))
             presets.addWidget(b)
         presets.addSpacing(8)
         btn_save_t = QPushButton("💾 Guardar plantilla")
+        btn_save_t.setToolTip("Guardar las franjas del profesor actual como plantilla reutilizable")
         btn_save_t.setObjectName("secondary")
         btn_save_t.clicked.connect(self._save_tslot_template)
         presets.addWidget(btn_save_t)
         btn_load_t = QPushButton("📂 Cargar plantilla")
+        btn_load_t.setToolTip("Cargar una plantilla guardada para asignar sus franjas al profesor actual")
         btn_load_t.setObjectName("secondary")
         btn_load_t.clicked.connect(self._load_tslot_template)
         presets.addWidget(btn_load_t)
@@ -747,11 +835,14 @@ class App(QMainWindow):
         v.setSpacing(6)
 
         ie_needs = QHBoxLayout()
+        ie_needs.setSpacing(6)
         btn_imp_n = QPushButton("📥 Importar necesidades...")
+        btn_imp_n.setToolTip("Cargar necesidades desde un archivo JSON (formato: array de objetos necesidad)")
         btn_imp_n.setObjectName("secondary")
         btn_imp_n.clicked.connect(self._import_needs)
         ie_needs.addWidget(btn_imp_n)
         btn_exp_n = QPushButton("📤 Exportar necesidades")
+        btn_exp_n.setToolTip("Guardar las necesidades actuales en un archivo JSON")
         btn_exp_n.setObjectName("secondary")
         btn_exp_n.clicked.connect(self._export_needs)
         ie_needs.addWidget(btn_exp_n)
@@ -759,31 +850,51 @@ class App(QMainWindow):
         v.addLayout(ie_needs)
 
         f = QHBoxLayout()
+        f.setSpacing(4)
         f.addWidget(QLabel("📝 Nombre:"))
-        self.nd_name = QLineEdit(); self.nd_name.setPlaceholderText("Nombre tarea"); self.nd_name.setFixedWidth(180)
+        self.nd_name = QLineEdit()
+        self.nd_name.setPlaceholderText("P.ej.: Recogida 1º ESO A, Apoyo matemáticas...")
+        self.nd_name.setToolTip("Nombre descriptivo de la tarea o necesidad de apoyo")
+        self.nd_name.setFixedWidth(200)
         f.addWidget(self.nd_name)
         f.addSpacing(4)
         f.addWidget(QLabel("📅 Fecha:"))
-        self.nd_date = QLineEdit("2026-06-22"); self.nd_date.setFixedWidth(90)
+        self.nd_date = QDateEdit()
+        self.nd_date.setCalendarPopup(True)
+        self.nd_date.setDisplayFormat("yyyy-MM-dd")
+        self.nd_date.setDate(QDate(2026, 6, 22))
+        self.nd_date.setFixedWidth(120)
+        self.nd_date.setToolTip("Fecha en que se necesita cubrir esta tarea")
         f.addWidget(self.nd_date)
         f.addSpacing(4)
         f.addWidget(QLabel("🕐 Inicio:"))
-        self.nd_start = QLineEdit("09:00"); self.nd_start.setFixedWidth(50)
+        self.nd_start = QLineEdit("09:00")
+        self.nd_start.setFixedWidth(50)
+        self.nd_start.setToolTip("Hora de inicio (formato HH:MM, 24h)")
+        self.nd_start.setPlaceholderText("HH:MM")
         f.addWidget(self.nd_start)
         f.addSpacing(4)
         f.addWidget(QLabel("🕐 Fin:"))
-        self.nd_end = QLineEdit("11:00"); self.nd_end.setFixedWidth(50)
+        self.nd_end = QLineEdit("11:00")
+        self.nd_end.setFixedWidth(50)
+        self.nd_end.setToolTip("Hora de fin (formato HH:MM, 24h — debe ser posterior a Inicio)")
+        self.nd_end.setPlaceholderText("HH:MM")
         f.addWidget(self.nd_end)
         f.addSpacing(4)
         f.addWidget(QLabel("👤 Min:"))
-        self.nd_min = QLineEdit("2"); self.nd_min.setFixedWidth(36)
+        self.nd_min = QLineEdit("2")
+        self.nd_min.setFixedWidth(36)
+        self.nd_min.setToolTip("Número mínimo de profesores que necesita esta tarea (≥ 1)")
         f.addWidget(self.nd_min)
         f.addSpacing(4)
         f.addWidget(QLabel("👤 Max:"))
-        self.nd_max = QLineEdit("4"); self.nd_max.setFixedWidth(36)
+        self.nd_max = QLineEdit("4")
+        self.nd_max.setFixedWidth(36)
+        self.nd_max.setToolTip("Número máximo de profesores que pueden asignarse a esta tarea")
         f.addWidget(self.nd_max)
         f.addSpacing(6)
         b = QPushButton("➕➕ Añadir necesidad")
+        b.setToolTip("Añadir esta tarea a la lista de necesidades del proyecto")
         b.clicked.connect(self._add_need)
         f.addWidget(b)
         f.addStretch()
@@ -791,11 +902,13 @@ class App(QMainWindow):
 
         search_needs = QHBoxLayout()
         self.need_count = QLabel("📋 0 necesidades")
+        self.need_count.setToolTip("Número de necesidades visibles (con filtro aplicado)")
         self.need_count.setStyleSheet("font-weight: bold;")
         search_needs.addWidget(self.need_count)
         search_needs.addStretch()
         self.need_search = QLineEdit()
-        self.need_search.setPlaceholderText("🔍 Filtrar necesidades...")
+        self.need_search.setPlaceholderText("🔍 Filtrar por nombre o fecha...")
+        self.need_search.setToolTip("Escribe para filtrar la lista de necesidades por nombre o fecha")
         self.need_search.setFixedWidth(220)
         self.need_search.textChanged.connect(self._rebuild_need_list)
         search_needs.addWidget(self.need_search)
@@ -831,10 +944,12 @@ class App(QMainWindow):
         v.addWidget(info_multi)
 
         self.gen_summary = QLabel("")
+        self.gen_summary.setToolTip("Resumen de profesores, necesidades y horas disponibles")
         self.gen_summary.setStyleSheet(f"color: {C_SLATE};")
         v.addWidget(self.gen_summary)
 
         gen_btn = QPushButton("🚀 Generar Cuadrante")
+        gen_btn.setToolTip("Iniciar el proceso de generación. El solver calculará 10 opciones distintas.\nPuede tardar hasta 2 minutos con 15 profesores y 50 necesidades.")
         gen_btn.setMinimumHeight(50)
         gen_btn.setStyleSheet(f"font-size: 18px; font-weight: bold; background: {C_PRI}; color: white; border-radius: 8px;")
         gen_btn.clicked.connect(self._generate)
@@ -844,8 +959,13 @@ class App(QMainWindow):
         self.status_text = QTextEdit()
         self.status_text.setReadOnly(True)
         self.status_text.setMinimumHeight(200)
-        self.status_text.append("💡 Define profesores y necesidades, luego pulsa Generar.\n")
-        self.status_text.append("🔁 El solver probará 10 semillas distintas y podrás cambiar entre opciones.\n")
+        self.status_text.setToolTip("Registro detallado del proceso de generación. Muestra asignaciones, tiempos y posibles errores.")
+        self.status_text.append("🚀  GENERADOR CUADRANTE — Panel de log\n")
+        self.status_text.append("📌  1. Define profesores con franjas en 👨‍🏫 Profes")
+        self.status_text.append("📌  2. Crea necesidades en 📋 Necesidades")
+        self.status_text.append("📌  3. Vuelve aquí y pulsa 🚀 Generar Cuadrante")
+        self.status_text.append("📌  4. El solver generará 10 opciones que verás en 📅 Cuadrante")
+        self.status_text.append("")
         v.addWidget(self.status_text, 1)
 
     # ── Schedule Tab ───────────────────────────────────────────────────
@@ -860,36 +980,42 @@ class App(QMainWindow):
         tb1 = QHBoxLayout()
         tb1.setSpacing(6)
         self.open_btn = QPushButton("🌐 Abrir en navegador")
+        self.open_btn.setToolTip("Abrir el cuadrante actual en el navegador web (para imprimir/copiar correos)")
         self.open_btn.setObjectName("secondary")
         self.open_btn.clicked.connect(self._open_html)
         self.open_btn.setEnabled(False)
         tb1.addWidget(self.open_btn)
 
         self.open_folder_btn = QPushButton("📂 Carpeta")
+        self.open_folder_btn.setToolTip("Abrir la carpeta donde se guardan los archivos HTML generados")
         self.open_folder_btn.setObjectName("secondary")
         self.open_folder_btn.clicked.connect(self._open_folder)
         self.open_folder_btn.setEnabled(False)
         tb1.addWidget(self.open_folder_btn)
 
         self.stats_btn = QPushButton("📊 Stats")
+        self.stats_btn.setToolTip("Ver estadísticas detalladas: carga por profesor, cobertura, horas totales")
         self.stats_btn.setObjectName("secondary")
         self.stats_btn.clicked.connect(self._show_stats)
         self.stats_btn.setEnabled(False)
         tb1.addWidget(self.stats_btn)
 
         self.compact_btn = QPushButton("📅 Cambiar a vista compacta")
+        self.compact_btn.setToolTip("Alternar entre vista normal (columnas separadas) y compacta (una sola columna)")
         self.compact_btn.setObjectName("secondary")
         self.compact_btn.clicked.connect(self._toggle_compact_view)
         self.compact_btn.setEnabled(False)
         tb1.addWidget(self.compact_btn)
 
-        self.lock_regenerate_btn = QPushButton("🔒 Regen. bloqueos")
+        self.lock_regenerate_btn = QPushButton("🔒 Regenerar bloqueos")
+        self.lock_regenerate_btn.setToolTip("Regenerar el cuadrante manteniendo fijas las asignaciones bloqueadas\n(bloquea haciendo clic en un profesor del cuadrante)")
         self.lock_regenerate_btn.setObjectName("secondary")
         self.lock_regenerate_btn.clicked.connect(self._regenerate_with_locks)
         self.lock_regenerate_btn.setEnabled(False)
         tb1.addWidget(self.lock_regenerate_btn)
 
         self.png_btn = QPushButton("🖼️ PNG")
+        self.png_btn.setToolTip("Capturar el cuadrante actual como imagen PNG")
         self.png_btn.setObjectName("secondary")
         self.png_btn.clicked.connect(self._export_png)
         self.png_btn.setEnabled(False)
@@ -901,6 +1027,7 @@ class App(QMainWindow):
         tb2 = QHBoxLayout()
         tb2.setSpacing(6)
         self.nav_prev_btn = QPushButton("◀")
+        self.nav_prev_btn.setToolTip("Ver opción anterior")
         self.nav_prev_btn.setFixedWidth(32)
         self.nav_prev_btn.setObjectName("secondary")
         self.nav_prev_btn.clicked.connect(self._prev_option)
@@ -908,10 +1035,12 @@ class App(QMainWindow):
         tb2.addWidget(self.nav_prev_btn)
 
         self.nav_label = QLabel("")
+        self.nav_label.setToolTip("Opción actual y número total de opciones generadas")
         self.nav_label.setStyleSheet(f"font-weight: bold; color: {C_PRI}; font-size: 13px;")
         tb2.addWidget(self.nav_label)
 
         self.nav_next_btn = QPushButton("▶")
+        self.nav_next_btn.setToolTip("Ver opción siguiente")
         self.nav_next_btn.setFixedWidth(32)
         self.nav_next_btn.setObjectName("secondary")
         self.nav_next_btn.clicked.connect(self._next_option)
@@ -921,6 +1050,7 @@ class App(QMainWindow):
         tb2.addStretch()
 
         self.cal_summary = QLabel("")
+        self.cal_summary.setToolTip("Resumen del cuadrante actual: necesidades, cobertura y asignaciones")
         self.cal_summary.setStyleSheet(f"color: {C_SLATE};")
         tb2.addWidget(self.cal_summary)
         v.addLayout(tb2)
@@ -935,12 +1065,113 @@ class App(QMainWindow):
         self.cal_scroll.setWidget(self.cal_container)
         v.addWidget(self.cal_scroll, 1)
 
-        empty = QLabel("📭 Aún no hay cuadrante.\nVe a ⚙️ Generar y pulsa el botón.")
+        empty = QLabel(
+            "📭 Aún no hay cuadrante generado.\n\n"
+            "1. Asegúrate de tener 👨‍🏫 profesores con franjas de disponibilidad\n"
+            "2. Define 📋 necesidades en este proyecto\n"
+            "3. Ve a ⚙️ Generar y pulsa 🚀 Generar Cuadrante\n\n"
+            "💡 O carga datos ficticios desde la pestaña 🏠 Proyecto para probar"
+        )
         empty.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        empty.setStyleSheet(f"color: {C_SLATE}; font-size: 15px;")
+        empty.setWordWrap(True)
+        empty.setStyleSheet(f"color: {C_SLATE}; font-size: 13px; padding: 20px;")
         self.cal_layout.addWidget(empty)
 
     # ── Helpers ────────────────────────────────────────────────────────
+    def _status(self, msg, timeout=5000):
+        self.status_bar.showMessage(msg)
+        self._status_timer.stop()
+        self._status_timer.setInterval(timeout)
+        self._status_timer.start()
+
+    def _make_icon(self):
+        px = QPixmap(64, 64)
+        px.fill(QColor(C_PRI))
+        p = QPainter(px)
+        p.setRenderHint(QPainter.RenderHint.Antialiasing)
+        p.setPen(QColor("#fff"))
+        f = QFont("Segoe UI", 28)
+        f.setBold(True)
+        p.setFont(f)
+        p.drawText(px.rect(), Qt.AlignmentFlag.AlignCenter, "CT")
+        p.end()
+        return QIcon(px)
+
+    def _open_manual(self):
+        manual_path = os.path.join(BASE_DIR, "manual", "index.html")
+        if os.path.exists(manual_path):
+            webbrowser.open(f"file://{os.path.abspath(manual_path)}")
+            self._status("📖 Manual abierto en el navegador")
+        else:
+            self.toast.show("Manual no encontrado en manual/index.html", "error")
+
+    def _show_welcome(self):
+        d = QDialog(self)
+        d.setWindowTitle("🎉 ¡Bienvenido al Generador Cuadrante!")
+        d.setMinimumSize(560, 460)
+        d.setModal(True)
+        v = QVBoxLayout(d)
+        v.setSpacing(12)
+        v.setContentsMargins(24, 20, 24, 20)
+
+        title = QLabel("🎉 ¡Bienvenido al Generador Cuadrante Tareas!")
+        title.setStyleSheet(f"font-size: 18px; font-weight: bold; color: {C_PRI};")
+        v.addWidget(title)
+
+        desc = QLabel(
+            "Esta aplicación te permite asignar profesores a tareas de apoyo\n"
+            "de forma óptima usando inteligencia artificial (CP-SAT).\n\n"
+            "Aquí tienes las pestañas principales:"
+        )
+        desc.setWordWrap(True)
+        desc.setStyleSheet(f"color: {C_TEXT2}; font-size: 13px;")
+        v.addWidget(desc)
+
+        steps = [
+            ("👨‍🏫  Profes", "Gestiona profesores, horarios y disponibilidad.\n"
+             "Los datos se guardan automáticamente y se comparten entre proyectos."),
+            ("🏠  Proyecto", "Crea un proyecto, añade necesidades con fechas.\n"
+             "Usa el botón «📦 Cargar datos ficticios» para probar con datos de ejemplo."),
+            ("⚙️  Generar", "Pulsa el botón grande y el solver CP-SAT genera 10 opciones distintas.\n"
+             "Puede tardar hasta 2 minutos — un spinner animado te indica que está trabajando."),
+            ("📅  Cuadrante", "Navega entre opciones con ◀ ▶, bloquea asignaciones con clic,\n"
+             "abre en el navegador para imprimir, exporta PNG o copia correos."),
+        ]
+        for icon_title, body in steps:
+            f = QFrame()
+            f.setObjectName("card")
+            f_v = QVBoxLayout(f)
+            f_v.setContentsMargins(12, 8, 12, 8)
+            f_v.setSpacing(2)
+            t = QLabel(icon_title)
+            t.setStyleSheet(f"font-weight: bold; font-size: 13px; color: {C_PRI};")
+            f_v.addWidget(t)
+            b = QLabel(body)
+            b.setWordWrap(True)
+            b.setStyleSheet(f"color: {C_TEXT2}; font-size: 11px;")
+            f_v.addWidget(b)
+            v.addWidget(f)
+
+        v.addSpacing(8)
+
+        tip = QLabel(
+            "💡 Trucos rápidos:  F1 = Manual completo  |  Ctrl+D = Cargar datos ejemplo  |  "
+            "Ctrl+S = Guardar  |  Ctrl+Z = Deshacer"
+        )
+        tip.setWordWrap(True)
+        tip.setStyleSheet(f"color: {C_ACCENT}; font-size: 11px; padding: 6px; background: #fef3c7; border-radius: 4px;")
+        v.addWidget(tip)
+
+        btn_lay = QHBoxLayout()
+        btn_lay.addStretch()
+        close_btn = QPushButton("✅ ¡Entendido!")
+        close_btn.setMinimumWidth(140)
+        close_btn.clicked.connect(d.accept)
+        btn_lay.addWidget(close_btn)
+        v.addLayout(btn_lay)
+
+        d.exec()
+
     def _sep(self):
         s = QFrame()
         s.setObjectName("sep")
@@ -1016,9 +1247,14 @@ class App(QMainWindow):
             if item.widget(): item.widget().deleteLater()
 
         if self._selected_teacher_idx is None or self._selected_teacher_idx >= len(self.teachers):
-            self.tslot_header.setText("Franjas disponibles: (ningún profe seleccionado)")
-            empty = QLabel("Selecciona un profe de la lista para gestionar sus franjas.")
-            empty.setStyleSheet(f"color: {C_SLATE};")
+            self.tslot_header.setText("📅 Franjas: (ningún profe seleccionado)")
+            empty = QLabel(
+                "👆 Selecciona un profesor de la lista de arriba para gestionar sus franjas de disponibilidad.\n\n"
+                "💡 Las franjas indican cuándo está disponible cada profesor.\n"
+                "Usa los botones ☕ 🌤 🌞 para añadir franjas rápidas o ➕ Personalitzada para horarios concretos."
+            )
+            empty.setWordWrap(True)
+            empty.setStyleSheet(f"color: {C_SLATE}; padding: 12px;")
             self.tslot_layout.insertWidget(0, empty)
             return
 
@@ -1119,7 +1355,11 @@ class App(QMainWindow):
         d.setMinimumWidth(320)
         fl = QFormLayout(d)
         start_ed = QLineEdit("09:00")
+        start_ed.setPlaceholderText("HH:MM")
+        start_ed.setToolTip("Hora de inicio de la franja (formato HH:MM)")
         end_ed = QLineEdit("10:00")
+        end_ed.setPlaceholderText("HH:MM")
+        end_ed.setToolTip("Hora de fin de la franja (formato HH:MM, posterior a inicio)")
         fl.addRow("🕐 De:", start_ed)
         fl.addRow("🕐 A:", end_ed)
         bb = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel)
@@ -1215,7 +1455,7 @@ class App(QMainWindow):
     # ── Need actions ───────────────────────────────────────────────────
     def _add_need(self):
         name = self.nd_name.text().strip()
-        date = self.nd_date.text().strip()
+        date = self.nd_date.date().toString("yyyy-MM-dd")
         start = self.nd_start.text().strip()
         end = self.nd_end.text().strip()
         try:
@@ -1224,8 +1464,6 @@ class App(QMainWindow):
             self.toast.show("Min/Max deben ser enteros", "warning"); return
         if not name:
             self.toast.show("Nombre obligatorio", "warning"); return
-        if not re.match(r"^\d{4}-\d{2}-\d{2}$", date):
-            self.toast.show("Fecha debe ser YYYY-MM-DD", "warning"); return
         if not re.match(r"^\d{2}:\d{2}$", start) or not re.match(r"^\d{2}:\d{2}$", end):
             self.toast.show("Hora debe ser HH:MM", "warning"); return
         if start >= end:
@@ -1334,6 +1572,7 @@ class App(QMainWindow):
         self._refresh_project_list()
         if not silent:
             self.toast.show(f"Proyecto «{name}» guardado")
+            self._status(f"💾 Proyecto «{name}» guardado correctamente")
 
     def _delete_project(self):
         name = self.project_selector.currentText()
@@ -1397,7 +1636,7 @@ class App(QMainWindow):
         self._rebuild_need_list()
         self._mark_dirty()
         self._update_schedule_tab()
-        self.toast.show("Datos XarxaLlibres cargados (8 profesores, 25 tareas)")
+        self.toast.show("✅ Datos XarxaLlibres: 15 profes con horarios + 50 necesidades (5 días)")
 
     # ── Import / Export ─────────────────────────────────────────────────
     def _import_teachers(self):
@@ -1611,6 +1850,7 @@ class App(QMainWindow):
         self.tabs.setCurrentIndex(4)
         self._update_schedule_tab()
         self._log(f"✅ {len(opciones)} opciones regeneradas con bloqueos")
+        self._status(f"🔒 Regenerado con {len(self._locked_assignments)} bloqueos")
         self.toast.show(f"✅ Regenerado con {len(self._locked_assignments)} bloqueos")
 
     def _export_png(self):
@@ -1741,6 +1981,7 @@ class App(QMainWindow):
         self.last_html_path = html_paths[0]
 
         self._log(f"\n✅ Opción {primera['id']} — {len(primera['assignment'])} asignaciones (mostrando primera opción)")
+        self._status(f"✅ {len(opciones)} opciones generadas — mostrando opción {primera['id']}")
         self._log("Carga por profesor:")
         for name in sorted(primera['teacher_hours'].keys()):
             mins = primera['teacher_hours'][name]

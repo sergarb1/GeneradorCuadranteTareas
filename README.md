@@ -43,6 +43,11 @@
 | 🖨️ **Exportación HTML** | Vista optimizada para impresión como PDF desde el navegador |
 | 💾 **Persistencia local** | Las opciones generadas se guardan al proyecto y persisten al recargar |
 | 🖥️ **Layout compacto** | Optimizado para 1280×720, columnas estrechas, scrollbars finos, toolbar en 2 filas |
+| 💬 **Tooltips descriptivos** | Todos los botones e inputs tienen tooltips explicativos al pasar el ratón |
+| ⌨️ **Atajos de teclado** | Ctrl+S guardar, Ctrl+Z deshacer, Ctrl+Y rehacer, Ctrl+N nuevo, Ctrl+D datos ejemplo, F1 ayuda |
+| 📖 **Ayuda integrada** | Botón 📖 Ayuda en cabecera + F1 abre el manual completo en el navegador |
+| ℹ️ **Barra de estado** | Barra inferior con mensajes contextuales y recordatorio de atajos |
+| 🎉 **Diálogo de bienvenida** | Guía inicial interactiva para nuevos usuarios al abrir la app |
 
 ---
 
@@ -82,6 +87,18 @@ O haz doble clic en `lanzar.bat` (Windows).
 6. 📅 Navega       →  Cambia entre opciones con ◀ ▶, exporta HTML/PNG/CSV
 ```
 
+### Atajos de teclado
+
+| Atajo | Acción |
+|---|---|
+| `F1` | Abrir manual de usuario |
+| `Ctrl+S` | Guardar proyecto |
+| `Ctrl+Z` | Deshacer |
+| `Ctrl+Y` | Rehacer |
+| `Ctrl+N` | Nuevo proyecto |
+| `Ctrl+D` | Cargar datos ficticios |
+| `Esc` | Limpiar barra de estado |
+
 ### Datos de ejemplo
 
 El proyecto incluye datos ficticios del proceso **XarxaLlibres** (recogida y distribución de libros de texto):
@@ -91,7 +108,7 @@ El proyecto incluye datos ficticios del proceso **XarxaLlibres** (recogida y dis
 - Límites individuales de 10h–25h total y 4h–8h por día
 - Cada profesor con turno preferente y color HEX personalizado
 
-Para cargarlos: pulsa **"📦 Cargar datos ficticios"** en la pestaña Proyecto.
+Para cargarlos: pulsa **"📦 Cargar datos ficticios"** en la pestaña Proyecto (o Ctrl+D).
 
 ---
 
@@ -126,7 +143,7 @@ Maximizar Σ x[n, p]
 
 ```
 GeneradorCuadranteTareasProfesorado/
-├── gui.py              # 🖥️ Interfaz gráfica PyQt6 (~2050 líneas)
+├── gui.py              # 🖥️ Interfaz gráfica PyQt6 (~2280 líneas)
 ├── scheduler.py        # 🧠 Modelo CP-SAT con OR-Tools
 ├── html_exporter.py    # 📄 Generación HTML (cuadrante + correos)
 ├── seed_data.py        # 🌱 Datos de ejemplo XarxaLlibres (15 profes, 50 tareas)
@@ -143,11 +160,18 @@ GeneradorCuadranteTareasProfesorado/
 
 ---
 
+## 📖 Más información
+
+- 📖 **Manual de usuario detallado** → [manual/index.html](manual/index.html) — Guía paso a paso con presentación interactiva (reveal.js, ~55 diapositivas), explicada para profesorado no técnico. Incluye sección de trucos avanzados y solución de problemas.
+- 🌐 **Página del proyecto en GitHub Pages** → [https://tu-usuario.github.io/GeneradorCuadranteTareasProfesorado](https://tu-usuario.github.io/GeneradorCuadranteTareasProfesorado)
+- 🤖 **Guía para IA** → [AGENTS.md](AGENTS.md) — Esquemas de datos y reglas para generación de datos ficticios.
+
 ## 🎨 Personalización
 
 - **Colores**: edita las constantes `C_PRI`, `C_ACCENT`, `C_BG`, etc. en `gui.py`
 - **Tema**: botón ☀️/🌙 en la cabecera
 - **Idioma**: toda la interfaz en español, días de la semana en español
+- **Tooltips**: todos editables en los correspondientes `.setToolTip()` de cada widget
 
 ---
 
