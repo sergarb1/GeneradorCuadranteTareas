@@ -8,9 +8,9 @@
   *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
   :root {
-    --pri: #6366f1;
-    --pri-d: #4f46e5;
-    --pri-l: #a5b4fc;
+    --pri: #16a34a;
+    --pri-d: #15803d;
+    --pri-l: #4ade80;
     --accent: #f59e0b;
     --bg: #f8fafc;
     --card: #ffffff;
@@ -239,13 +239,33 @@
     </div>
     <div class="feature-card">
       <div class="icon">🎯</div>
-      <h4>10 opciones navegables</h4>
-      <p>El solver genera 10 variantes; cambia entre ellas con ◀ ▶</p>
+      <h4>1-50 opciones navegables</h4>
+      <p>Configura cuántas variantes generar; cambia entre ellas con ◀ ▶</p>
     </div>
     <div class="feature-card">
       <div class="icon">🔒</div>
       <h4>Bloquear asignaciones</h4>
-      <p>Fija un profe a una tarea y regenera el resto automáticamente</p>
+      <p>Fija un profe a una tarea con highlight visual + 2px borde y regenera el resto</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon">🖱️</div>
+      <h4>Asignación manual</h4>
+      <p>Menú contextual en tareas para añadir o quitar profesores manualmente</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon">📝</div>
+      <h4>Editar desde cuadrante</h4>
+      <p>Menú contextual → editar necesidad sin cambiar de pestaña</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon">🔄</div>
+      <h4>Arrastrar profesor</h4>
+      <p>Arrastra un profesor de una tarea a otra para reasignarlo al instante</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon">📋</div>
+      <h4>Duplicar día</h4>
+      <p>Copia necesidades de una fecha a otra desde el cuadrante, necesidades o franjas</p>
     </div>
     <div class="feature-card">
       <div class="icon">📥</div>
@@ -274,8 +294,8 @@
     </div>
     <div class="feature-card">
       <div class="icon">🌓</div>
-      <h4>Tema claro/oscuro</h4>
-      <p>Conmutación instantánea con un solo clic</p>
+      <h4>Tema claro/oscuro/alto contraste</h4>
+      <p>3 modos accesibles: claro → oscuro → ♿ alto contraste</p>
     </div>
     <div class="feature-card">
       <div class="icon">📅</div>
@@ -291,6 +311,16 @@
       <div class="icon">🖼️</div>
       <h4>Exportar PNG</h4>
       <p>Captura el cuadrante como imagen</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon">📄</div>
+      <h4>Exportar DOCX</h4>
+      <p>Documento Word con solo los cuadrantes</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon">📅</div>
+      <h4>Exportar ICS</h4>
+      <p>Calendario para Google Calendar/Outlook</p>
     </div>
     <div class="feature-card">
       <div class="icon">✅</div>
@@ -351,7 +381,7 @@
     </div>
     <div class="workflow-item">
       <div class="workflow-num">4</div>
-      <p><strong>⚙️ Generar</strong> &mdash; El solver genera 10 opciones con validación previa</p>
+      <p><strong>⚙️ Generar</strong> &mdash; Configura de 1 a 50 opciones, el solver calcula con validación previa</p>
     </div>
     <div class="workflow-item">
       <div class="workflow-num">5</div>
@@ -359,7 +389,7 @@
     </div>
     <div class="workflow-item">
       <div class="workflow-num">6</div>
-      <p><strong>📅 Navega</strong> &mdash; Cambia entre 10 opciones con ◀ ▶, toolbar en 2 filas</p>
+      <p><strong>📅 Navega</strong> &mdash; Cambia entre opciones con ◀ ▶, toolbar agrupada (Generar HTML · Acciones · Exportar)</p>
     </div>
   </div>
 
@@ -376,7 +406,7 @@ python main.py</pre>
   <h2>📁 Estructura</h2>
   <pre>
 GeneradorCuadranteTareasProfesorado/
-├── gui.py              #   Interfaz gráfica (PyQt6, ~2050 líneas)
+├── gui.py              #   Interfaz gráfica (PyQt6, ~3335 líneas)
 ├── scheduler.py        #   Modelo CP-SAT (OR-Tools)
 ├── html_exporter.py    #   Generación HTML
 ├── seed_data.py        #   Datos de ejemplo (15 profes, 50 tareas)
@@ -424,6 +454,9 @@ Objetivo:  Maximizar Σ x (más asignaciones posible)</pre>
     <li>Límite de horas semanales y por día</li>
     <li>Franjas de disponibilidad con botones predefinidos (Mañana 09-14h, Tarde 15-18h, Completo 09-18h)</li>
     <li>Franjas personalizadas con diálogo de hora libre</li>
+    <li>📋 <strong>Duplicar profesor</strong>: copia exacta con todas sus franjas, turno y color</li>
+    <li>📋 <strong>Duplicar franja</strong>: copia una franja para ajustar su fecha u hora</li>
+    <li>📋 <strong>Duplicar franjas a otro día</strong>: copia en bloque todas las franjas del profesor a otra fecha</li>
     <li><strong>Plantillas</strong> de horarios: guardar y cargar combinaciones de franjas</li>
     <li>Búsqueda y filtro por nombre</li>
     <li>Importar / exportar profesores en JSON</li>
@@ -433,16 +466,19 @@ Objetivo:  Maximizar Σ x (más asignaciones posible)</pre>
   <ul>
     <li>Se definen por proyecto con fecha, hora de inicio y fin</li>
     <li><strong>Mínimo y máximo</strong> de profesores simultáneos por tarea</li>
+    <li>📋 <strong>Duplicar necesidad</strong>: copia exacta para crear variantes rápidamente</li>
+    <li>📋 <strong>Duplicar necesidades a otro día</strong>: copia en bloque todas las necesidades de una fecha a otra</li>
     <li>Búsqueda y filtro por nombre o fecha</li>
     <li>Importar / exportar necesidades en JSON</li>
   </ul>
 
   <h3>🧠 Solver CP-SAT</h3>
   <ul>
-    <li><strong>10 opciones</strong> generadas con distintas semillas de búsqueda</li>
+    <li><strong>Opciones configurables</strong> (1-50) generadas con distintas semillas de búsqueda</li>
     <li><strong>Loading animado</strong> con spinner mientras el solver resuelve (evita dobles clics)</li>
     <li>Validación previa: avisa si hay necesidades sin cobertura u horas insuficientes</li>
     <li>Bloqueo de asignaciones: clic en un profesor en el cuadrante para fijarlo a esa tarea</li>
+    <li><strong>Asignación manual</strong>: clic derecho en una tarea para añadir o quitar profesores sin regenerar</li>
     <li>Regeneración respetando bloqueos</li>
     <li>Máximo 10 segundos por opción (solución factible garantizada)</li>
   </ul>
@@ -451,10 +487,15 @@ Objetivo:  Maximizar Σ x (más asignaciones posible)</pre>
   <ul>
     <li>Vista calendario por día con tarjetas de tarea y profesores coloreados</li>
     <li>Vista <strong>normal / compacta</strong> (toggle "Cambiar a vista...")</li>
-    <li>Navegación entre las 10 opciones con ◀ ▶</li>
+    <li>Navegación entre opciones con ◀ ▶</li>
     <li>Bloquear / desbloquear asignaciones con un clic</li>
+    <li>Asignación manual: clic derecho para añadir o quitar profesores sin regenerar</li>
+    <li>Arrastrar profesor: suelta el nombre de un profe en otra tarea para reasignarlo</li>
+    <li>Editar necesidad: menú contextual → "📝 Editar necesidad" abre el diálogo de edición</li>
+    <li>Duplicar día: botón "📋 Duplicar día" copia necesidades entre fechas para editar y regenerar</li>
+    <li>Lock highlight: asignaciones bloqueadas con fondo 0.35 opacity + borde 2px del color del profe</li>
     <li>Estadísticas: carga por profesor, cobertura global, horas totales</li>
-    <li>Toolbar en 2 filas: acciones arriba, navegación abajo</li>
+    <li>Toolbar en 3 grupos: <strong>Generar HTML</strong> (botón + combo vista), <strong>Acciones</strong> (Regenerar Bloqueos, Carpeta, Stats, Compacta), <strong>Exportar</strong> (DOCX, Calendario ICS, PNG)</li>
     <li>Scrollbars finos (6px) para máximo espacio útil</li>
   </ul>
 
@@ -470,7 +511,10 @@ Objetivo:  Maximizar Σ x (más asignaciones posible)</pre>
 
   <h3>📤 Exportación</h3>
   <ul>
-    <li><strong>HTML</strong>: cuadrante imprimible con correos individuales y generales, copia al portapapeles</li>
+    <li><strong>HTML</strong> con <strong>5 vistas</strong> seleccionables: 📅 Cuadrante, 👤 Por profesor, 📋 Por tarea, 📄 Estilo Word (copia/pega a Word), 🖨️ Para imprimir</li>
+    <li>Correos electrónicos generales e individuales integrados en el HTML con botón "📋 Copiar"</li>
+    <li><strong>DOCX</strong>: documento Word con solo los cuadrantes (tablas limpias, sin extras)</li>
+    <li><strong>ICS</strong>: calendario para Google Calendar / Outlook</li>
     <li><strong>PNG</strong>: captura directa del cuadrante</li>
     <li><strong>CSV</strong>: datos tabulares para hoja de cálculo</li>
     <li><strong>JSON</strong>: profesores, necesidades o proyecto completo</li>
@@ -478,7 +522,7 @@ Objetivo:  Maximizar Σ x (más asignaciones posible)</pre>
 
   <h3>🎨 Interfaz</h3>
   <ul>
-    <li>Tema <strong>claro / oscuro</strong> conmutación instantánea</li>
+    <li>Tema <strong>claro / oscuro / alto contraste (♿)</strong> — ciclo de 3 modos</li>
     <li>Deshacer / Rehacer con botones con texto (hasta 50 estados)</li>
     <li>Auto-guardado cada 2 minutos</li>
     <li>Notificaciones toast no intrusivas</li>

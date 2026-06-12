@@ -84,9 +84,9 @@ class TeacherScheduler:
     """Encapsula el modelo CP-SAT y su resolución.
     
     Uso típico:
-        scheduler = TeacherScheduler(teachers, needs)
+        scheduler = TeacherScheduler(profesores, necesidades)
         scheduler.build_model()
-        status = scheduler.solve()
+        estado = scheduler.solve()
         asignaciones = scheduler.extract_assignment()
     """
     
@@ -172,7 +172,7 @@ class TeacherScheduler:
         DAYS = sorted({n["date"] for n in self.needs})
         
         # ---------------------------------------------------------------
-        # Paso 1: Parejas válidos (profesor disponible para la necesidad)
+        # Paso 1: Pares válidos (profesor disponible para la necesidad)
         # ---------------------------------------------------------------
         # Siempre incluir pares bloqueados aunque el profe no esté disponible
         # (asumimos que el usuario sabe lo que hace)
@@ -332,10 +332,10 @@ class TeacherScheduler:
             for n, p in self._valid_pairs:
                 if solver.Value(self.x[(n, p)]) == 1:
                     assignments.append({
-                        "need": self.needs[n],
-                        "need_idx": n,
-                        "teacher": self.teachers[p],
-                        "teacher_idx": p,
+                        "need": self.needs[n],        # Datos completos de la necesidad
+                        "need_idx": n,                 # Índice por si se necesita referencia
+                        "teacher": self.teachers[p],   # Datos completos del profesor
+                        "teacher_idx": p,              # Índice del profesor
                     })
             return assignments
         return None

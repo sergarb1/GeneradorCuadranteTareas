@@ -28,7 +28,7 @@ def main():
 
     # Crea y muestra la ventana principal
     window = App()
-    window.show()
+    window.showMaximized()
 
     # Bucle de eventos de Qt; sys.exit() asegura código de salida correcto
     sys.exit(app.exec())

@@ -5,8 +5,10 @@
 # 15 profesores con perfiles variados y ~50 necesidades en 5 días.
 # Diseñado para poner a prueba el solver CP-SAT con solapamientos densos.
 
+# Lista de colores HEX para asignar a cada profesor
 TEACHER_COLORS = ["#6366f1","#ef4444","#10b981","#8b5cf6","#f59e0b","#06b6d4","#ec4899","#3b82f6","#f97316","#14b8a6","#84cc16","#e11d48","#0ea5e9","#a855f7","#22c55e"]
 
+# Datos semilla de 15 profesores con turno, color y franjas de disponibilidad
 SEED_TEACHERS = [
     # --- Original 8 conservados con turno y color ---
     {"name":"Ana Alumnez","max_hours":20,"max_hours_per_day":6,"turno":"Cualquiera","color":"#6366f1",
@@ -96,6 +98,7 @@ SEED_TEACHERS = [
          {"date":"2026-06-26","start":"08:00","end":"12:00"}]},
 ]
 
+# ~50 necesidades distribuidas en 5 días con solapamientos densos para estresar al solver
 SEED_NEEDS = [
     # --- LUNES 22: RECOGIDA MASIVA + CLASIFICACIÓN ---
     {"name":"Recogida 1º ESO A","date":"2026-06-22","start":"08:30","end":"10:00","min":2,"max":4},
@@ -160,12 +163,15 @@ SEED_NEEDS = [
 
 
 def get_seed_teachers():
+    # Retorna copias independientes de cada profesor para no mutar el original
     return [dict(t) for t in SEED_TEACHERS]
 
 def get_seed_needs():
+    # Retorna copias independientes de cada necesidad para no mutar el original
     return [dict(n) for n in SEED_NEEDS]
 
 def get_seed_data():
+    # Retorna un proyecto completo con nombre y necesidades (sin profesores)
     return {
         "project_name": "XarxaLlibres 2026 - Recogida y distribución (estresante)",
         "needs": get_seed_needs(),

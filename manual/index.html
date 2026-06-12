@@ -10,15 +10,15 @@
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
   .reveal { font-family: 'Inter', sans-serif; font-size: 28px; }
   .reveal h1 { font-size: 2.4rem; font-weight: 800; }
-  .reveal h2 { font-size: 1.6rem; font-weight: 700; color: #6366f1; }
-  .reveal h3 { font-size: 1.15rem; font-weight: 600; color: #4f46e5; }
+  .reveal h2 { font-size: 1.6rem; font-weight: 700; color: #16a34a; }
+  .reveal h3 { font-size: 1.15rem; font-weight: 600; color: #15803d; }
   .reveal h4 { font-size: 1rem; font-weight: 600; color: #0f172a; }
   .reveal p, .reveal li { font-size: 0.85rem; }
   .reveal ul, .reveal ol { display: block; }
   .reveal li { margin-bottom: 5px; }
   .reveal pre { font-size: 0.6rem; background: #1e293b; color: #e2e8f0; padding: 12px 16px; border-radius: 10px; line-height: 1.35; }
   .reveal code { font-size: 0.75rem; background: #e2e8f0; padding: 2px 7px; border-radius: 4px; color: #0f172a; }
-  .reveal blockquote { background: #eef2ff; border-left: 6px solid #6366f1; padding: 10px 18px; border-radius: 8px; margin: 10px 0; font-size: 0.8rem; }
+  .reveal blockquote { background: #f0fdf4; border-left: 6px solid #16a34a; padding: 10px 18px; border-radius: 8px; margin: 10px 0; font-size: 0.8rem; }
   .reveal blockquote.warn { background: #fef3c7; border-left-color: #f59e0b; }
   .reveal blockquote.tip { background: #f0fdf4; border-left-color: #10b981; }
   .reveal blockquote.danger { background: #fef2f2; border-left-color: #ef4444; }
@@ -30,15 +30,17 @@
   .reveal .icon-card p { font-size: 0.68rem; margin: 3px 0 0; color: #94a3b8; }
   .reveal .two-col { display: flex; gap: 20px; justify-content: center; margin: 10px 0; }
   .reveal .two-col > div { flex: 1; }
-  .reveal .two-col > div.wide { flex: 1.5; }
+  .reveal .three-col { display: flex; gap: 16px; justify-content: center; margin: 10px 0; }
+  .reveal .three-col > div { flex: 1; }
   .reveal table { font-size: 0.7rem; margin: 10px auto; border-collapse: collapse; }
-  .reveal th { background: #6366f1; color: #fff; padding: 5px 10px; font-weight: 600; }
+  .reveal th { background: #16a34a; color: #fff; padding: 5px 10px; font-weight: 600; }
   .reveal td { padding: 4px 10px; border-bottom: 1px solid #e2e8f0; }
   .reveal tr:nth-child(even) td { background: #f8fafc; }
   .reveal .step-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 14px; margin: 6px 0; }
-  .reveal .step-num { display: inline-block; background: #6366f1; color: #fff; width: 26px; height: 26px; border-radius: 50%; text-align: center; line-height: 26px; font-weight: 700; font-size: 0.8rem; margin-right: 8px; }
+  .reveal .step-num { display: inline-block; background: #16a34a; color: #fff; width: 26px; height: 26px; border-radius: 50%; text-align: center; line-height: 26px; font-weight: 700; font-size: 0.8rem; margin-right: 8px; }
   .reveal .mockup { background: #fff; border: 2px solid #e2e8f0; border-radius: 8px; padding: 8px 12px; font-family: monospace; font-size: 0.55rem; line-height: 1.25; color: #475569; text-align: left; display: inline-block; }
-  .reveal .tag { display: inline-block; background: #eef2ff; color: #6366f1; padding: 2px 10px; border-radius: 12px; font-weight: 600; font-size: 0.7rem; margin: 2px; }
+  .reveal .tag-green { display: inline-block; background: #f0fdf4; color: #16a34a; padding: 2px 10px; border-radius: 12px; font-weight: 600; font-size: 0.7rem; margin: 2px; }
+  .reveal .tag-beige { display: inline-block; background: #ece5da; color: #3d2b1f; padding: 2px 10px; border-radius: 12px; font-weight: 600; font-size: 0.7rem; margin: 2px; }
   .reveal .highlight { background: #fef9c3; padding: 1px 4px; border-radius: 3px; font-weight: 600; }
   .reveal .slides section { padding-top: 6px; }
 </style>
@@ -47,9 +49,9 @@
 <div class="reveal">
 <div class="slides">
 
-<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- ═══════════════════════════════════════════════ -->
 <!-- PORTADA -->
-<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- ═══════════════════════════════════════════════ -->
 <section>
   <h1>📋 Generador Cuadrante Tareas</h1>
   <h3 style="color:#475569;">Manual de usuario</h3>
@@ -61,17 +63,16 @@
     <div class="icon-card"><div class="emoji">👨‍🏫</div><div class="label">Profesores</div><p>Añadir y configurar</p></div>
     <div class="icon-card"><div class="emoji">📋</div><div class="label">Tareas</div><p>Crear necesidades</p></div>
     <div class="icon-card"><div class="emoji">🧠</div><div class="label">Solver</div><p>Genera el cuadrante</p></div>
-    <div class="icon-card"><div class="emoji">📤</div><div class="label">Exportar</div><p>Compartir resultados</p></div>
+    <div class="icon-card"><div class="emoji">📤</div><div class="label">Exportar</div><p>HTML, PNG, ICS, DOCX</p></div>
   </div>
   <p class="footer-note">Pulsa ➡ o espacio para avanzar · Esc para ver índice</p>
 </section>
 
-<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- ═══════════════════════════════════════════════ -->
 <!-- QUICK START -->
-<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- ═══════════════════════════════════════════════ -->
 <section>
   <h2>⚡ Inicio rápido (5 pasos)</h2>
-  <p>Si tienes prisa, haz esto:</p>
   <div class="step-box">
     <span class="step-num">1</span>
     Abre la aplicación (doble clic en <code>lanzar.bat</code> o <code>python main.py</code>)
@@ -86,399 +87,169 @@
   </div>
   <div class="step-box">
     <span class="step-num">4</span>
-    Ve a <strong>⚙️ Generar</strong> → pulsa <strong>🚀 Generar Cuadrante</strong> → espera (aparece un spinner girando)
+    Ve a <strong>⚙️ Generar</strong> → configura cuántas opciones quieres (1-50) → pulsa <strong>🚀 Generar Cuadrante</strong> → espera (aparece un spinner)
   </div>
   <div class="step-box">
     <span class="step-num">5</span>
-    Ve a <strong>📅 Cuadrante</strong> → usa ◀ ▶ para ver las 10 opciones → pulsa 🌐 para abrir en el navegador
+    Ve a <strong>📅 Cuadrante</strong> → usa ◀ ▶ para ver las opciones, o el grupo <strong>Generar HTML</strong> (elige vista y pulsa 🌐 Generar HTML) y exporta desde <strong>Exportar</strong> (DOCX, ICS, PNG)
   </div>
-  <blockquote class="tip">💡 ¿Has visto? En menos de 2 minutos tienes tu cuadrante listo.</blockquote>
 </section>
 
-<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- ═══════════════════════════════════════════════ -->
 <!-- 1. QUÉ ES -->
-<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- ═══════════════════════════════════════════════ -->
 <section>
   <h2>1️⃣ ¿Qué es esta aplicación?</h2>
-  <p>Es un programa que <span class="highlight">asigna profesores a tareas</span> de forma automática.</p>
-  <p>Piensa en ello como un <strong>robot organizador</strong>:</p>
+  <p>Asigna <span class="highlight">profesores a tareas</span> de forma automática mediante optimización combinatoria.</p>
   <div class="two-col">
     <div>
       <h4>Tú le dices:</h4>
       <ul>
-        <li>Qué profesores hay</li>
-        <li>Qué horarios tienen</li>
-        <li>Qué tareas hay que hacer</li>
-        <li>Cuándo son esas tareas</li>
+        <li>Qué profesores hay y sus horarios</li>
+        <li>Qué tareas hay que hacer y cuándo</li>
       </ul>
     </div>
     <div>
       <h4>Él te devuelve:</h4>
       <ul>
-        <li>Un cuadrante semanal completo</li>
-        <li>10 opciones distintas para elegir</li>
+        <li>Varias opciones de cuadrante</li>
         <li>Correos individuales para cada profe</li>
-        <li>El mejor reparto posible</li>
+        <li>Exportación a HTML, PNG, CSV</li>
       </ul>
     </div>
   </div>
 </section>
 
 <section>
-  <h2>¿Para qué sirve en un instituto?</h2>
+  <h2>¿Para qué sirve?</h2>
   <div class="icon-row">
-    <div class="icon-card">
-      <div class="emoji">📚</div>
-      <div class="label">XarxaLlibres</div>
-      <p>Recogida y distribución de libros de texto</p>
-    </div>
-    <div class="icon-card">
-      <div class="emoji">📝</div>
-      <div class="label">Exámenes</div>
-      <p>Vigilancia y organización de pruebas</p>
-    </div>
-    <div class="icon-card">
-      <div class="emoji">📦</div>
-      <div class="label">Materiales</div>
-      <p>Clasificación y empaquetado</p>
-    </div>
-    <div class="icon-card">
-      <div class="emoji">🔄</div>
-      <div class="label">Refuerzo</div>
-      <p>Tareas de apoyo educativo</p>
-    </div>
+    <div class="icon-card"><div class="emoji">📚</div><div class="label">XarxaLlibres</div><p>Recogida y distribución de libros</p></div>
+    <div class="icon-card"><div class="emoji">📝</div><div class="label">Exámenes</div><p>Vigilancia y organización</p></div>
+    <div class="icon-card"><div class="emoji">📦</div><div class="label">Materiales</div><p>Clasificación y empaquetado</p></div>
+    <div class="icon-card"><div class="emoji">🔄</div><div class="label">Refuerzo</div><p>Tareas de apoyo educativo</p></div>
   </div>
-  <p>Cualquier situación donde tengas que <strong>organizar personas en tareas con horarios</strong>.</p>
+  <p>Cualquier situación donde organices <strong>personas en tareas con horarios</strong>.</p>
 </section>
 
-<section>
-  <h2>¿Qué NO hace?</h2>
-  <blockquote class="warn">
-    ⚠️ Cosas importantes que debes saber:
-  </blockquote>
-  <ul>
-    <li>❌ <strong>No</strong> sabe qué profesor prefiere qué tarea (aunque puedes bloquearlas a mano)</li>
-    <li>❌ <strong>No</strong> gestiona sustituciones de última hora (tendrás que regenerar)</li>
-    <li>❌ <strong>No</strong> es una aplicación web — funciona solo en el ordenador donde la instalaste</li>
-    <li>❌ <strong>No</strong> envía los correos automáticamente — te los prepara para que los copies y pegues</li>
-  </ul>
-</section>
-
-<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- ═══════════════════════════════════════════════ -->
 <!-- 2. INSTALACIÓN -->
-<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- ═══════════════════════════════════════════════ -->
 <section>
-  <h2>2️⃣ Cómo instalar la aplicación</h2>
-  <p>Hay dos formas. La más fácil es con el <strong>lanzador automático</strong>.</p>
-  <h3>Opción 1: Lanzar.bat (la más fácil) 👈</h3>
+  <h2>2️⃣ Instalación</h2>
+  <h3>Opción 1: Lanzar.bat 👈</h3>
   <ol>
-    <li>Busca el archivo <code>lanzar.bat</code> en la carpeta del proyecto</li>
-    <li>Haz <strong>doble clic</strong> sobre él</li>
-    <li>Se abrirá una ventana negra (terminal) y luego la aplicación</li>
-    <li>¡Ya está! La aplicación se ha abierto</li>
+    <li>Haz doble clic en <code>lanzar.bat</code></li>
+    <li>Se abrirá una terminal y luego la aplicación</li>
   </ol>
-  <blockquote class="tip">
-    💡 Si no funciona, prueba la Opción 2.
-  </blockquote>
+  <h3>Opción 2: Manual</h3>
+  <ol>
+    <li>Abre una terminal (Windows+R → <code>cmd</code>)</li>
+    <li>Ve a la carpeta del proyecto: <code style="font-size:0.6rem;">cd C:\ruta\GeneradorCuadranteTareas</code></li>
+    <li>Instala dependencias: <code>pip install -r requirements.txt</code></li>
+    <li>Ejecuta: <code>python main.py</code></li>
+  </ol>
 </section>
 
 <section>
-  <h2>Opción 2: Manual (si lanzar.bat no funciona)</h2>
-  <p>Necesitas tener <strong>Python</strong> instalado. Si no lo tienes:</p>
-  <div class="step-box">
-    <span class="step-num">1</span>
-    Ve a <code>python.org</code> → descarga Python 3.11 o superior → instálalo (marca "Añadir a PATH")
-  </div>
-  <div class="step-box">
-    <span class="step-num">2</span>
-    Abre una terminal:
-    <p style="margin:2px 0 0 36px; font-size:0.75rem;">Windows: pulsa Windows + R, escribe <code>cmd</code>, pulsa Enter</p>
-  </div>
-  <div class="step-box">
-    <span class="step-num">3</span>
-    Ve a la carpeta del proyecto:
-    <pre style="margin:4px 0 0 36px;">cd C:\ruta\dondé\lo\descargaste\GeneradorCuadranteTareasProfesorado</pre>
-    <p style="margin:2px 0 0 36px; font-size:0.75rem;">(Cambia la ruta por la tuya. Si está en el escritorio: <code>cd C:\Users\tunombre\Desktop\GeneradorCuadranteTareasProfesorado</code>)</p>
-  </div>
-  <div class="step-box">
-    <span class="step-num">4</span>
-    Instala las dependencias (una sola vez):
-    <pre style="margin:4px 0 0 36px;">pip install -r requirements.txt</pre>
-  </div>
-  <div class="step-box">
-    <span class="step-num">5</span>
-    Ejecuta la aplicación:
-    <pre style="margin:4px 0 0 36px;">python main.py</pre>
-  </div>
-</section>
-
-<section>
-  <h2>A tener en cuenta</h2>
+  <h2>Solución de errores comunes</h2>
   <table>
-    <tr><th>Si ves este error...</th><th>Significa que...</th><th>Solución</th></tr>
-    <tr>
-      <td><code>'python' no se reconoce</code></td>
-      <td>Python no está instalado</td>
-      <td>Descárgalo de python.org</td>
-    </tr>
-    <tr>
-      <td><code>No module named PyQt6</code></td>
-      <td>Faltan las librerías gráficas</td>
-      <td>Ejecuta <code>pip install -r requirements.txt</code></td>
-    </tr>
-    <tr>
-      <td><code>No module named ortools</code></td>
-      <td>Falta el motor de optimización</td>
-      <td>Ejecuta <code>pip install ortools</code></td>
-    </tr>
-    <tr>
-      <td>La ventana se abre y se cierra</td>
-      <td>Hay un error en el código</td>
-      <td>Ejecuta desde terminal para ver el error</td>
-    </tr>
+    <tr><th>Error</th><th>Solución</th></tr>
+    <tr><td><code>'python' no se reconoce</code></td><td>Python no está instalado. Descarga de python.org</td></tr>
+    <tr><td><code>No module named PyQt6</code></td><td>Ejecuta <code>pip install -r requirements.txt</code></td></tr>
+    <tr><td><code>No module named ortools</code></td><td>Ejecuta <code>pip install ortools</code></td></tr>
+    <tr><td>Ventana se abre y cierra</td><td>Ejecuta desde terminal para ver el error</td></tr>
   </table>
 </section>
 
-<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- ═══════════════════════════════════════════════ -->
 <!-- 3. VENTANA PRINCIPAL -->
-<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- ═══════════════════════════════════════════════ -->
 <section>
-  <h2>3️⃣ Conoce la ventana principal</h2>
-  <p>Cuando abras la aplicación, verás esto:</p>
-  <div class="mockup" style="width:95%; font-size:0.5rem;">
-    ┌──────────────────────────────────────────────────────────────────────────┐<br>
-    │  📋 Generador Cuadrante Tareas Profesorado                  [☀️ Claro]  │  ← Cabecera (aquí el nombre y el botón de tema)<br>
-    ├──────────┬─────────────┬───────────────┬──────────┬────────────────────┤<br>
-    │ 🏠 Proyecto │ 👨‍🏫 Profes │ 📋 Necesidades │ ⚙️ Generar │ 📅 Cuadrante       │  ← Pestañas (haz clic para cambiar)<br>
-    ├──────────┴─────────────┴───────────────┴──────────┴────────────────────┤<br>
-    │                                                                          │<br>
-    │                                                                          │<br>
-    │  ┌──────────────────────────────────────────────────────────────────┐    │<br>
-    │  │                                                                  │    │  ← Zona de contenido<br>
-    │  │         Aquí aparece lo que toques en cada pestaña                │    │     (cambia según la pestaña activa)<br>
-    │  │                                                                  │    │<br>
-    │  └──────────────────────────────────────────────────────────────────┘    │<br>
-    │                                                                          │<br>
-    └──────────────────────────────────────────────────────────────────────────┘<br>
-  </div>
-  <p style="margin-top:8px;">Hay <strong>5 pestañas</strong>. Cada una sirve para una cosa distinta.</p>
-  <p>Haz clic en el nombre de la pestaña para cambiar de sección.</p>
-</section>
-
-<section>
-  <h2>Las 5 pestañas explicadas</h2>
+  <h2>3️⃣ La ventana principal</h2>
+  <p>Tiene <strong>5 pestañas</strong>. El orden lógico de trabajo:</p>
   <table>
-    <tr><th>Icono</th><th>Nombre</th><th>¿Para qué sirve?</th><th>¿Cuándo usarla?</th></tr>
-    <tr>
-      <td>🏠</td>
-      <td>Proyecto</td>
-      <td>Crear, guardar, cargar proyectos. Ver estadísticas generales.</td>
-      <td>Al empezar y al terminar</td>
-    </tr>
-    <tr>
-      <td>👨‍🏫</td>
-      <td>Profes</td>
-      <td>Añadir, editar y eliminar profesores. Gestionar horarios.</td>
-      <td>Una vez al principio (se guardan solos)</td>
-    </tr>
-    <tr>
-      <td>📋</td>
-      <td>Necesidades</td>
-      <td>Definir tareas que necesitan profesores.</td>
-      <td>Cada vez que cambien las tareas</td>
-    </tr>
-    <tr>
-      <td>⚙️</td>
-      <td>Generar</td>
-      <td>Ejecutar el solver para crear automáticamente el cuadrante.</td>
-      <td>Cuando tengas todo listo</td>
-    </tr>
-    <tr>
-      <td>📅</td>
-      <td>Cuadrante</td>
-      <td>Ver el resultado, navegar entre opciones, exportar.</td>
-      <td>Después de generar</td>
-    </tr>
+    <tr><th>Pestaña</th><th>Qué hacer</th></tr>
+    <tr><td>👨‍🏫 Profes</td><td>Añadir profesores y sus horarios (se guardan solos)</td></tr>
+    <tr><td>🏠 Proyecto</td><td>Crear, guardar, cargar proyectos y necesidades</td></tr>
+    <tr><td>📋 Necesidades</td><td>Definir tareas con fecha, hora y nº de profes</td></tr>
+    <tr><td>⚙️ Generar</td><td>Configurar opciones y ejecutar el solver</td></tr>
+    <tr><td>📅 Cuadrante</td><td>Ver resultados, navegar entre opciones, exportar</td></tr>
   </table>
-  <blockquote class="tip" style="margin-top:10px;">
-    💡 El orden lógico de trabajo es: <strong>👨‍🏫 Profes → 🏠 Proyecto → 📋 Necesidades → ⚙️ Generar → 📅 Cuadrante</strong>
-  </blockquote>
+  <blockquote class="tip">💡 Los profesores se guardan en <code>teachers.json</code> y se comparten entre todos los proyectos.</blockquote>
 </section>
 
-<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- ═══════════════════════════════════════════════ -->
 <!-- 4. PROYECTO -->
-<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- ═══════════════════════════════════════════════ -->
 <section>
-  <h2>4️⃣ Pestaña Proyecto — Lo primero que ves</h2>
-  <p>Un <strong>proyecto</strong> es como una carpeta que contiene todas las tareas de una actividad.</p>
-  <div class="two-col">
-    <div>
-      <h4>Ejemplos de proyectos:</h4>
-      <ul>
-        <li>"XarxaLlibres junio 2026"</li>
-        <li>"Semana de exámenes febrero"</li>
-        <li>"Apoyo refuerzo 1º trimestre"</li>
-        <li>"Recogida de libros septiembre"</li>
-      </ul>
-    </div>
-    <div>
-      <h4>Cada proyecto contiene:</h4>
-      <ul>
-        <li>Un nombre</li>
-        <li>Una lista de tareas (necesidades)</li>
-        <li>Las 10 opciones generadas</li>
-      </ul>
-      <blockquote class="warn" style="font-size:0.7rem; margin-top:6px;">
-        ⚠️ Los profesores NO están dentro del proyecto. Son globales y se comparten.
-      </blockquote>
-    </div>
-  </div>
+  <h2>4️⃣ Pestaña Proyecto</h2>
+  <p>Un proyecto contiene: un nombre, lista de tareas, y opciones generadas.</p>
+  <blockquote class="warn">⚠️ Los profesores NO están dentro del proyecto. Son globales.</blockquote>
 </section>
 
 <section>
-  <h2>4a. Crear un proyecto nuevo</h2>
-  <p>Sigue estos pasos:</p>
-  <div class="step-box">
-    <span class="step-num">1</span>
-    Pulsa el botón <span class="tag">➕ Nuevo</span>
-    <p style="margin:2px 0 0 36px; font-size:0.75rem; color:#64748b;">Esto limpia todo y prepara un proyecto vacío.</p>
-  </div>
-  <div class="step-box">
-    <span class="step-num">2</span>
-    Escribe un nombre en el campo "Nombre del proyecto"
-    <p style="margin:2px 0 0 36px; font-size:0.75rem; color:#64748b;">Ejemplo: <strong>Recogida libros junio 2026</strong></p>
-  </div>
-  <div class="step-box">
-    <span class="step-num">3</span>
-    (Opcional) Pulsa <span class="tag">📦 Cargar datos ficticios</span> para probar con datos de ejemplo
-    <p style="margin:2px 0 0 36px; font-size:0.75rem; color:#64748b;">Esto carga 15 profesores y 50 tareas automáticamente.</p>
-  </div>
-  <div class="step-box">
-    <span class="step-num">4</span>
-    Ve a <strong>📋 Necesidades</strong> para añadir tareas, o a <strong>👨‍🏫 Profes</strong> para gestionar profesores
-  </div>
-  <div class="step-box">
-    <span class="step-num">5</span>
-    Vuelve aquí y pulsa <span class="tag">💾 Guardar</span> para no perderlo
-  </div>
-</section>
-
-<section>
-  <h2>4b. Cargar un proyecto guardado</h2>
-  <div class="step-box">
-    <span class="step-num">1</span>
-    Busca el desplegable en la parte superior de la pestaña Proyecto
-    <p style="margin:2px 0 0 36px; font-size:0.75rem;">Muestra "Seleccionar proyecto..." con una lista de proyectos guardados.</p>
-  </div>
-  <div class="step-box">
-    <span class="step-num">2</span>
-    Haz clic y elige el proyecto que quieras
-    <p style="margin:2px 0 0 36px; font-size:0.75rem;">Automáticamente se cargan sus necesidades y opciones.</p>
-  </div>
-  <div class="step-box">
-    <span class="step-num">3</span>
-    Si el proyecto tenía opciones generadas, aparecerán en 📅 Cuadrante
-  </div>
-  <blockquote class="tip">
-    💡 Las opciones generadas se guardan solas cuando guardas el proyecto.
-    Al recargar, todo sigue como lo dejaste.
-  </blockquote>
-</section>
-
-<section>
-  <h2>4c. Todos los botones de Proyecto</h2>
+  <h2>Botones de Proyecto</h2>
   <table>
-    <tr><th>Botón</th><th>Qué hace</th><th>Consejo</th></tr>
-    <tr><td>➕ Nuevo</td><td>Empieza un proyecto vacío (pregunta antes de borrar)</td><td>Úsalo al empezar una actividad nueva</td></tr>
-    <tr><td>📋 Duplicar</td><td>Copia el proyecto actual con otro nombre</td><td>Útil para crear variantes</td></tr>
-    <tr><td>💾 Guardar</td><td>Guarda el proyecto en la carpeta projects/</td><td>Hazlo a menudo. También se auto-guarda cada 2 min</td></tr>
-    <tr><td>🗑️ Eliminar</td><td>Borra el proyecto (pide confirmación)</td><td>Cuidado: no podrás recuperarlo</td></tr>
-    <tr><td>📦 Cargar datos ficticios</td><td>Carga ejemplo con 15 profes y 50 tareas</td><td>Perfecto para explorar la app sin datos reales</td></tr>
-    <tr><td>📥 Importar proyecto</td><td>Carga un proyecto desde un archivo .json</td><td>Para compartir entre centros</td></tr>
-    <tr><td>📤 Exportar proyecto</td><td>Guarda el proyecto como .json</td><td>Haz copias de seguridad</td></tr>
-    <tr><td>📊 Exportar CSV</td><td>Exporta a Excel las asignaciones</td><td>Para análisis en hoja de cálculo</td></tr>
-    <tr><td>↩️ Deshacer</td><td>Deshace el último cambio</td><td>Hasta 50 pasos atrás</td></tr>
-    <tr><td>🔁 Rehacer</td><td>Vuelve a aplicar lo deshecho</td><td>Si te equivocaste al deshacer</td></tr>
+    <tr><th>Botón</th><th>Qué hace</th></tr>
+    <tr><td>➕ Nuevo</td><td>Proyecto vacío</td></tr>
+    <tr><td>📋 Duplicar</td><td>Copia el proyecto con otro nombre</td></tr>
+    <tr><td>💾 Guardar</td><td>Guarda el proyecto (también auto-guardado cada 2 min)</td></tr>
+    <tr><td>🗑️ Eliminar</td><td>Borra el proyecto</td></tr>
+    <tr><td>📦 Cargar datos ficticios</td><td>Carga 15 profes y 50 tareas de ejemplo</td></tr>
+    <tr><td>📥 Importar / 📤 Exportar</td><td>Compartir proyectos en JSON</td></tr>
+    <tr><td>📊 Exportar CSV</td><td>Exporta asignaciones a Excel</td></tr>
+    <tr><td>↩️ / 🔁</td><td>Deshacer / Rehacer (hasta 50 cambios)</td></tr>
   </table>
 </section>
 
 <section>
-  <h2>4d. Cómo leer el resumen de estadísticas</h2>
-  <p>En la parte superior ves unos indicadores como estos:</p>
+  <h2>Estadísticas del proyecto</h2>
+  <p>En la parte superior ves indicadores como:</p>
   <div class="mockup" style="font-size:0.6rem;">
-    👨‍🏫 15 profesores  📋 50 necesidades  🗓 65 franjas profe  ⏱ 150h disp.  ⏰ 120h neces.
+    👨‍🏫 15 profes  📋 50 necesidades  🗓 65 franjas  ⏱ 150h disp.  ⏰ 120h neces.
   </div>
-  <p style="margin-top:10px;">Te ayudan a saber de un vistazo si todo está bien:</p>
-  <table>
-    <tr><th>Indicador</th><th>Qué significa</th><th>Si el número es muy bajo...</th></tr>
-    <tr><td>👨‍🏫 Profesores</td><td>Total de profes dados de alta</td><td>Faltan profesores</td></tr>
-    <tr><td>📋 Necesidades</td><td>Total de tareas a cubrir</td><td>Faltan tareas (o sobran)</td></tr>
-    <tr><td>🗓 Franjas profe</td><td>Suma de todas las franjas horarias</td><td>Los profes tienen poca disponibilidad</td></tr>
-    <tr><td>⏱ Horas disponibles</td><td>Total de horas que los profes han puesto</td><td>No podrán cubrir todas las tareas</td></tr>
-    <tr><td>⏰ Horas necesarias</td><td>Horas mínimas para cubrir todo</td><td>Si es mayor que disponibles, hay problema</td></tr>
-  </table>
-  <blockquote class="warn" style="margin-top:8px;">
-    ⚠️ Regla de oro: las <strong>horas disponibles</strong> deben ser MAYORES que las <strong>horas necesarias</strong>.
-    Si no, el solver no podrá cubrir todas las tareas.
-  </blockquote>
+  <p>Si las horas disponibles son menores que las necesarias, el solver no podrá cubrir todo.</p>
 </section>
 
-<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- ═══════════════════════════════════════════════ -->
 <!-- 5. PROFESORES -->
-<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- ═══════════════════════════════════════════════ -->
 <section>
-  <h2>5️⃣ Pestaña Profesores — El corazón de la app</h2>
-  <p>Aquí <strong>das de alta a los profesores</strong> y dices en qué horarios están disponibles.</p>
-  <blockquote class="tip">
-    💡 Los profesores se guardan <strong>automáticamente</strong> en el archivo teachers.json.
-    No hace falta guardarlos a mano y se comparten entre todos los proyectos.
-  </blockquote>
+  <h2>5️⃣ Pestaña Profesores</h2>
   <p>La pantalla se divide en dos zonas:</p>
   <div class="two-col">
     <div>
-      <h4>Parte de arriba</h4>
-      <p style="font-size:0.8rem;">Lista de todos los profesores. Puedes hacer clic en uno para seleccionarlo.</p>
+      <h4>Arriba</h4>
+      <p>Lista de profesores con filtros. Haz clic para seleccionar.</p>
     </div>
     <div>
-      <h4>Parte de abajo</h4>
-      <p style="font-size:0.8rem;">Franjas de disponibilidad del profesor que tienes seleccionado.</p>
+      <h4>Abajo</h4>
+      <p>Franjas del profesor seleccionado. Aquí se gestionan sus horarios.</p>
     </div>
   </div>
-  <blockquote class="warn">
-    ⚠️ Los profesores son GLOBALES. Si los modificas, cambian para TODOS los proyectos.
-  </blockquote>
 </section>
 
 <section>
-  <h2>5a. Añadir un profesor — Paso a paso</h2>
-  <p>En la parte superior de la pestaña Profes ves un formulario:</p>
-  <div class="mockup" style="font-size:0.55rem;">
-    👤 Nombre: [____________________] ⏱ Max tot: [20] Max/día: [6] Turno: [Cualquiera ▼] [🎨] [➕ Añadir profe]
-  </div>
-  <p style="margin-top:8px;">Rellénalo así:</p>
+  <h2>5a. Añadir un profesor</h2>
   <div class="step-box">
     <span class="step-num">1</span>
-    <strong>Nombre:</strong> Escribe el nombre completo del profesor
-    <p style="margin:2px 0 0 36px; font-size:0.75rem; color:#64748b;">Ej: "Ana García López"</p>
+    <strong>Nombre:</strong> nombre completo
   </div>
   <div class="step-box">
     <span class="step-num">2</span>
-    <strong>Max tot:</strong> El máximo de horas que puede trabajar en toda la semana
-    <p style="margin:2px 0 0 36px; font-size:0.75rem; color:#64748b;">Ej: 20 → no puede hacer más de 20 horas en total (lunes a viernes)</p>
+    <strong>Max tot:</strong> horas máximas semanales
   </div>
   <div class="step-box">
     <span class="step-num">3</span>
-    <strong>Max/día:</strong> El máximo de horas que puede trabajar en un solo día
-    <p style="margin:2px 0 0 36px; font-size:0.75rem; color:#64748b;">Ej: 6 → aunque tenga 20h semanales, no puede hacer 10h en un día</p>
+    <strong>Max/día:</strong> horas máximas por día
   </div>
   <div class="step-box">
     <span class="step-num">4</span>
-    <strong>Turno:</strong> ¿En qué turno prefiere trabajar?
-    <p style="margin:2px 0 0 36px; font-size:0.75rem; color:#64748b;">Cualquiera | Mañana | Tarde</p>
+    <strong>Turno:</strong> Cualquiera / Mañana / Tarde (preferencia, no obligación)
   </div>
   <div class="step-box">
     <span class="step-num">5</span>
-    (Opcional) Pulsa <strong>🎨</strong> para elegir un color que lo identifique
+    (Opcional) Pulsa 🎨 para elegir un color
   </div>
   <div class="step-box">
     <span class="step-num">6</span>
@@ -487,1012 +258,436 @@
 </section>
 
 <section>
-  <h2>Ejemplo práctico: Añadir a "Ana García"</h2>
-  <p>Imagina que tienes que añadir a Ana García, que:</p>
-  <ul>
-    <li>Puede trabajar hasta <strong>20 horas</strong> en toda la semana</li>
-    <li>Como máximo <strong>6 horas</strong> al día</li>
-    <li>Prefiere <strong>mañanas</strong></li>
-    <li>Su color favorito es el <strong>azul</strong></li>
-  </ul>
-  <p>Rellenarías:</p>
+  <h2>5b. Filtrar profesores 🔍</h2>
+  <p>El panel de búsqueda tiene dos controles:</p>
   <div class="mockup" style="font-size:0.55rem;">
-    👤 Nombre: [Ana García López] ⏱ Max tot: [20] Max/día: [6] Turno: [Mañana ▼] [🎨➡️azul] [➕ Añadir profe]
+    0 profesores     [🗓 Todos ▼]                       🔍 Filtrar por nombre... [      ]
   </div>
-  <p>Y aparecería en la lista de abajo:</p>
-  <div class="mockup" style="font-size:0.5rem;">
-    ┌──────────────────────────────────────────────────────────────┐<br>
-    │ 👨‍🏫 Ana García López  ·  20h/sem  ·  6h/día  ·  Mañana  ❌ │<br>
-    └──────────────────────────────────────────────────────────────┘<br>
-  </div>
-</section>
-
-<section>
-  <h2>5b. El turno preferente explicado</h2>
-  <p>El turno ayuda al solver a hacer asignaciones más <strong>realistas</strong>:</p>
-  <table>
-    <tr><th>Turno</th><th>Significado</th><th>Ejemplo de asignación</th></tr>
-    <tr>
-      <td><span class="tag">Cualquiera</span></td>
-      <td>Puede trabajar en cualquier horario</td>
-      <td>Se le asignan tareas de mañana y tarde según convenga</td>
-    </tr>
-    <tr>
-      <td><span class="tag">Mañana</span></td>
-      <td>Prefiere trabajar solo por las mañanas</td>
-      <td>El solver <strong>prioriza</strong> asignarle tareas antes de las 14:00</td>
-    </tr>
-    <tr>
-      <td><span class="tag">Tarde</span></td>
-      <td>Prefiere trabajar solo por las tardes</td>
-      <td>El solver <strong>prioriza</strong> asignarle tareas después de las 14:00</td>
-    </tr>
-  </table>
-  <blockquote>
-    🔧 El turno es una <span class="highlight">preferencia</span>, no una obligación. Si no hay más remedio, el solver puede asignar a un profe de mañana a una tarea de tarde.
-  </blockquote>
-</section>
-
-<section>
-  <h2>5c. Truco: los colores</h2>
-  <p>Poner un <strong>color distinto</strong> a cada profesor tiene una gran ventaja:</p>
-  <div class="two-col">
-    <div>
-      <h4>Sin colores</h4>
-      <div class="mockup" style="font-size:0.5rem;">
-        Recogida 1º A (09:00-11:00)<br>
-        🔓 Ana García<br>
-        🔓 Carlos Pérez
-      </div>
-      <p style="font-size:0.75rem;">Tienes que leer los nombres para distinguirlos.</p>
-    </div>
-    <div>
-      <h4>Con colores</h4>
-      <div class="mockup" style="font-size:0.5rem;">
-        Recogida 1º A (09:00-11:00)<br>
-        <span style="color:#6366f1;">🔓 Ana García</span><br>
-        <span style="color:#ef4444;">🔓 Carlos Pérez</span>
-      </div>
-      <p style="font-size:0.75rem;">Los ves al instante: Ana en azul, Carlos en rojo.</p>
-    </div>
-  </div>
-  <blockquote class="tip">
-    💡 Asigna colores que se asocien fácilmente: azul para los de mañana, naranja para los de tarde, verde para los flexibles...
-  </blockquote>
-</section>
-
-<section>
-  <h2>5d. Seleccionar un profesor</h2>
-  <p>Una vez creados los profesores, <strong>haz clic en su nombre</strong> en la lista.</p>
-  <p>Sabrás que está seleccionado porque:</p>
   <ul>
-    <li>La fila se <strong>resalta en azul</strong></li>
-    <li>Abajo aparece: <strong>"Franjas de: [Nombre del profesor]"</strong></li>
+    <li><strong>🗓 Todos / Con franjas / Sin franjas</strong> — filtra por disponibilidad</li>
+    <li><strong>🔍 Filtrar por nombre</strong> — escribe cualquier parte del nombre</li>
   </ul>
-  <p>Solo puedes ver y editar las franjas del profesor seleccionado.</p>
+  <p>Ambos filtros se combinan. La lista se actualiza al instante.</p>
 </section>
 
 <section>
-  <h2>5e. Añadir franjas de disponibilidad</h2>
-  <p>Las <strong>franjas</strong> son los horarios en los que el profesor está disponible.</p>
-  <p>Selecciona un profesor, mira la parte de abajo de la pantalla:</p>
+  <h2>5c. Añadir franjas 📅</h2>
+  <p>Selecciona un profesor y usa los botones rápidos:</p>
   <div class="mockup" style="font-size:0.5rem;">
-    📅 Franjas de: Ana García López  (0 franjas)<br>
-    <br>
-    📅 Fecha: [22/06/2026 ▼]  [➕ Personalitzada]  [☕ Mañana 09-14h]  [🌤 Tarde 15-18h]  [🌞 Completo 09-18h]  [💾 Guardar plantilla]  [📂 Cargar plantilla]
+    📅 Fecha: [2026-06-22 ▼]  [☕ Mañana 09-14h]  [🌤 Tarde 15-18h]  [🌞 Completo 09-18h]  [➕ Personalitzada]  [📅 Rejilla semanal]
   </div>
-  <p style="margin-top:8px;">Tienes dos formas de añadir franjas:</p>
-</section>
-
-<section>
-  <h2>Botón rápido (1 clic) 👈 recomendado</h2>
-  <table>
-    <tr><th>Botón</th><th>Añade esta franja</th><th>¿Para quién?</th></tr>
-    <tr>
-      <td><span class="tag">☕ Mañana 09-14h</span></td>
-      <td>De 09:00 a 14:00 (5 horas)</td>
-      <td>Profesores que vienen por la mañana</td>
-    </tr>
-    <tr>
-      <td><span class="tag">🌤 Tarde 15-18h</span></td>
-      <td>De 15:00 a 18:00 (3 horas)</td>
-      <td>Profesores que vienen solo por la tarde</td>
-    </tr>
-    <tr>
-      <td><span class="tag">🌞 Completo 09-18h</span></td>
-      <td>De 09:00 a 18:00 (9 horas)</td>
-      <td>Profesores que están todo el día</td>
-    </tr>
-  </table>
-  <p>La franja se añade para la <strong>fecha que tengas seleccionada</strong> en el calendario.</p>
-  <p>Ejemplo: si el calendario marca 22/06/2026 y pulsas ☕, se añade "22/06/2026 09:00-14:00".</p>
-  <blockquote class="tip">
-    💡 Puedes pulsar el mismo botón varias veces para distintos días: cambia la fecha en el calendario y vuelve a pulsar.
-  </blockquote>
-</section>
-
-<section>
-  <h2>Franja personalizada</h2>
-  <p>Si el horario del profesor no coincide con los botones rápidos:</p>
-  <div class="step-box">
-    <span class="step-num">1</span>
-    Elige la <strong>📅 Fecha</strong> en el calendario
-  </div>
-  <div class="step-box">
-    <span class="step-num">2</span>
-    Pulsa <span class="tag">➕ Personalitzada</span>
-  </div>
-  <div class="step-box">
-    <span class="step-num">3</span>
-    Se abre una ventana. Escribe la hora de inicio y la hora de fin
-    <p style="margin:2px 0 0 36px; font-size:0.75rem; color:#64748b;">Ejemplo: Inicio 10:30, Fin 12:45</p>
-  </div>
-  <div class="step-box">
-    <span class="step-num">4</span>
-    Pulsa Aceptar
-  </div>
-  <blockquote class="warn">
-    ⚠️ La hora de fin debe ser <strong>posterior</strong> a la de inicio. 10:00-12:00 sí, 12:00-10:00 no.
-  </blockquote>
-</section>
-
-<section>
-  <h2>Ejemplo completo: horario de Ana</h2>
-  <p>Imagina que Ana García tiene este horario:</p>
-  <table>
-    <tr><th>Día</th><th>Mañana</th><th>Tarde</th></tr>
-    <tr><td>Lunes 22</td><td>09:00-14:00</td><td>—</td></tr>
-    <tr><td>Martes 23</td><td>09:00-14:00</td><td>16:00-19:00</td></tr>
-    <tr><td>Miércoles 24</td><td>—</td><td>15:00-18:00</td></tr>
-    <tr><td>Jueves 25</td><td>09:00-14:00</td><td>—</td></tr>
-    <tr><td>Viernes 26</td><td>09:00-12:00</td><td>—</td></tr>
-  </table>
-  <p>Para añadirlo:</p>
-  <ol style="font-size:0.8rem;">
-    <li>Selecciona Ana en la lista</li>
-    <li>Fecha: 22/06 → pulsa ☕ (Mañana 09-14h) → ✅ franja añadida</li>
-    <li>Fecha: 23/06 → pulsa ☕ → luego pulsa 🌤 (Tarde 15-18h) → ✅ dos franjas</li>
-    <li>Fecha: 24/06 → pulsa 🌤 → ✅</li>
-    <li>Fecha: 25/06 → pulsa ☕ → ✅</li>
-    <li>Fecha: 26/06 → pulsa ➕ Personalitzada → escribe 09:00 y 12:00 → ✅</li>
-  </ol>
-</section>
-
-<section>
-  <h2>5f. ¿Qué son las franjas? (Explicación visual)</h2>
-  <p>Cada franja es un <strong>bloque de tiempo</strong>:</p>
-  <div class="mockup" style="font-size:0.55rem;">
-    LUNES 22:<br>
-    ┌──────────────────────────────────────────────────┐<br>
-    │ 09:00                    14:00                  │  ← Franja ☕ Mañana<br>
-    │ ██████████████████████████████████████████████████ │<br>
-    │                                                    │<br>
-    │ 15:30                    18:30                    │  ← Franja 🌤 Tarde (otra)<br>
-    │                          ██████████████████████████ │<br>
-    └──────────────────────────────────────────────────┘<br>
-  </div>
-  <p>Dentro de esos bloques, el profesor puede hacer tareas. Fuera de ellos, no.</p>
-  <p>Reglas importantes:</p>
   <ul>
-    <li>La franja debe <strong>contener completamente</strong> la tarea (si la tarea es 10:00-11:30, la franja debe empezar ≤10:00 y terminar ≥11:30)</li>
-    <li>Puedes tener <strong>varias franjas el mismo día</strong> (mañana + tarde, por ejemplo)</li>
-    <li>Si un día no hay franja, el profesor no está disponible ese día</li>
+    <li><strong>☕🌤🌞</strong> — añaden la franja para la fecha seleccionada</li>
+    <li><strong>➕ Personalitzada</strong> — horario a medida</li>
+    <li><strong>📅 Rejilla semanal</strong> — marca días y turnos de un vistazo</li>
   </ul>
 </section>
 
 <section>
-  <h2>5g. Truco: errores tontos con franjas</h2>
-  <blockquote class="danger">
-    ❌ ERROR: la tarea es de 09:00 a 11:00 y el profesor tiene franja de 09:30 a 14:00
-  </blockquote>
-  <p>La franja empieza a las <strong>09:30</strong>, pero la tarea empieza a las <strong>09:00</strong>. El profesor <strong>no puede</strong> cubrirla porque la franja no contiene la tarea (la franja debería empezar ≤ 09:00).</p>
-  <blockquote class="tip">
-    ✅ Solución: la franja debe empezar <strong>antes o igual</strong> que la tarea y terminar <strong>después o igual</strong> que la tarea.
-  </blockquote>
-  <blockquote class="danger">
-    ❌ ERROR: el profesor tiene franja de 09:00-14:00 todos los días pero se olvidó poner la del viernes
-  </blockquote>
-  <p>El viernes no tiene franja, así que el solver no le asignará nada ese día.</p>
-</section>
-
-<section>
-  <h2>5h. Eliminar profesor o franja</h2>
-  <div class="two-col">
-    <div>
-      <h4>❌ junto al nombre</h4>
-      <p style="font-size:0.8rem;">Elimina el profesor <strong>completamente</strong>.</p>
-      <p style="font-size:0.75rem;">Se borran también todas sus franjas. Ya no aparecerá en ningún cuadrante.</p>
-    </div>
-    <div>
-      <h4>❌ junto a la franja</h4>
-      <p style="font-size:0.8rem;">Elimina <strong>solo esa franja</strong>.</p>
-      <p style="font-size:0.75rem;">El profesor sigue existiendo, pero ya no estará disponible en ese horario.</p>
-    </div>
-  </div>
-  <p style="margin-top:8px;">Ejemplo de cómo se ve:</p>
+  <h2>5d. Herramientas de franjas</h2>
+  <p>Segunda fila de botones:</p>
   <div class="mockup" style="font-size:0.5rem;">
-    🕐 22/06/2026  09:00 - 14:00  ❌   ← pulsa ❌ para borrar solo esta franja<br>
-    🕐 22/06/2026  15:30 - 18:30  ❌
+    [💾 Guardar plantilla]  [📂 Cargar plantilla]  [👥 Copiar horario]  [📋 Duplicar a otro día]  [📋 Duplicar a todos]
   </div>
+  <ul>
+    <li><strong>💾/📂 Plantilla</strong> — guarda/carga horarios entre profesores</li>
+    <li><strong>👥 Copiar horario</strong> — copia franjas de otro profe al seleccionado</li>
+    <li><strong>📋 Duplicar a otro día</strong> — copia franjas de una fecha a otra</li>
+    <li><strong>📋 Duplicar a todos</strong> — copia una fecha a otra para TODOS los profes</li>
+  </ul>
+  <p>Junto a cada franja hay botones 📋 (duplicar) y ❌ (eliminar).</p>
 </section>
 
 <section>
-  <h2>5i. Buscar profesores 🔍</h2>
-  <p>Si tienes muchos profesores, usa el campo de búsqueda:</p>
-  <div class="mockup" style="font-size:0.55rem;">
-    0 profesores                                          🔍 Filtrar profes... [    ]
-  </div>
-  <div class="step-box">
-    <span class="step-num">1</span>
-    Escribe cualquier parte del nombre en el campo "🔍 Filtrar profes..."
-  </div>
-  <div class="step-box">
-    <span class="step-num">2</span>
-    La lista se filtra <strong>automáticamente</strong> mientras escribes
-    <p style="margin:2px 0 0 36px; font-size:0.75rem;">Ej: escribe "Ana" y solo se verán los profes que tengan "Ana" en el nombre</p>
-  </div>
-  <div class="step-box">
-    <span class="step-num">3</span>
-    Para volver a ver todos, borra el texto del filtro
-  </div>
+  <h2>5e. Editar profesor o franja</h2>
+  <ul>
+    <li><strong>Doble clic</strong> en el nombre del profesor → editar nombre</li>
+    <li><strong>Doble clic</strong> en una franja → editar fecha/hora</li>
+    <li><strong>📋</strong> junto al nombre → duplicar profesor (con franjas, turno y color)</li>
+    <li><strong>📋</strong> junto a la franja → duplicar franja</li>
+  </ul>
 </section>
 
-<section>
-  <h2>5j. Plantillas de horarios 🗃️ (truco avanzado)</h2>
-  <p>¿Tienes varios profesores con el <strong>mismo horario</strong>? Usa plantillas.</p>
-  <div class="step-box">
-    <span class="step-num">1</span>
-    Selecciona un profesor que ya tenga sus franjas puestas
-  </div>
-  <div class="step-box">
-    <span class="step-num">2</span>
-    Pulsa <span class="tag">💾 Guardar plantilla</span>
-  </div>
-  <div class="step-box">
-    <span class="step-num">3</span>
-    Escribe un nombre para la plantilla (ej: "Mañana completa")
-  </div>
-  <div class="step-box">
-    <span class="step-num">4</span>
-    Selecciona OTRO profesor que no tenga franjas
-  </div>
-  <div class="step-box">
-    <span class="step-num">5</span>
-    Pulsa <span class="tag">📂 Cargar plantilla</span> y elige el nombre
-  </div>
-  <div class="step-box">
-    <span class="step-num">6</span>
-    ¡Las franjas se copian automáticamente!
-  </div>
-  <blockquote class="warn">
-    ⚠️ Las plantillas se pierden al cerrar la aplicación. Son para usar en una misma sesión.
-  </blockquote>
-</section>
-
-<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- ═══════════════════════════════════════════════ -->
 <!-- 6. NECESIDADES -->
-<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- ═══════════════════════════════════════════════ -->
 <section>
-  <h2>6️⃣ Pestaña Necesidades — Las tareas a cubrir</h2>
-  <p>Una <strong>necesidad</strong> (o tarea) es algo que requiere profesores durante un rato.</p>
-  <blockquote>
-    📌 Ejemplos: "Recogida 1º ESO A", "Clasificación inicial", "Distribución libros 2º ESO"
-  </blockquote>
-  <p>Cada necesidad tiene estos datos:</p>
+  <h2>6️⃣ Pestaña Necesidades</h2>
+  <p>Cada necesidad tiene: nombre, fecha, inicio, fin, mínimo y máximo de profesores.</p>
   <table>
-    <tr><th>Campo</th><th>Qué significa</th><th>Ejemplo</th></tr>
-    <tr><td>Nombre</td><td>Qué tarea es</td><td>"Recogida 1º ESO A"</td></tr>
-    <tr><td>📅 Fecha</td><td>Qué día se hace</td><td>22/06/2026</td></tr>
-    <tr><td>🕐 Inicio</td><td>A qué hora empieza</td><td>09:00</td></tr>
-    <tr><td>🕐 Fin</td><td>A qué hora termina</td><td>11:00</td></tr>
-    <tr><td>👤 Min</td><td>Nº mínimo de profes obligatorio</td><td>2</td></tr>
-    <tr><td>👤 Max</td><td>Nº máximo de profes que pueden estar</td><td>4</td></tr>
+    <tr><th>Campo</th><th>Ejemplo</th></tr>
+    <tr><td>Nombre</td><td>"Recogida 1º ESO A"</td></tr>
+    <tr><td>📅 Fecha</td><td>22/06/2026</td></tr>
+    <tr><td>🕐 Inicio - Fin</td><td>09:00 - 11:00 (2 horas)</td></tr>
+    <tr><td>👤 Min - Max</td><td>2 - 4 profesores</td></tr>
+    <tr><td>🏷️ Etiquetas</td><td>"mañana, 1ºESO" (opcional, para filtrar)</td></tr>
   </table>
+  <blockquote class="tip">💡 Las etiquetas permiten filtrar necesidades por categoría (ej: "urgencia", "mañana", "1ºESO").</blockquote>
 </section>
 
 <section>
-  <h2>6a. Añadir una necesidad paso a paso</h2>
-  <p>En la parte superior de la pestaña Necesidades ves un formulario:</p>
-  <div class="mockup" style="font-size:0.5rem;">
-    📝 Nombre: [____________________] 📅 Fecha: [22/06/2026 ▼] 🕐 Inicio: [09:00] 🕐 Fin: [11:00] 👤 Min: [2] 👤 Max: [4] [➕➕ Añadir necesidad]
-  </div>
-  <div class="step-box">
-    <span class="step-num">1</span>
-    <strong>📝 Nombre:</strong> Describe la tarea brevemente
-    <p style="margin:2px 0 0 36px; font-size:0.75rem; color:#64748b;">"Recogida 1º ESO A", "Clasificación de libros", etc.</p>
-  </div>
-  <div class="step-box">
-    <span class="step-num">2</span>
-    <strong>📅 Fecha:</strong> Elige la fecha con el calendario
-  </div>
-  <div class="step-box">
-    <span class="step-num">3</span>
-    <strong>🕐 Inicio y Fin:</strong> Escribe las horas (formato HH:MM, 24h)
-    <p style="margin:2px 0 0 36px; font-size:0.75rem; color:#64748b;">Ejemplo: 09:00 y 11:00 (la tarea dura 2 horas)</p>
-  </div>
-  <div class="step-box">
-    <span class="step-num">4</span>
-    <strong>👤 Min:</strong> ¿Cuántos profesores son <strong>imprescindibles</strong>?
-    <p style="margin:2px 0 0 36px; font-size:0.75rem; color:#64748b;">Si pones 2, el solver se asegurará de que al menos 2 profes estén asignados</p>
-  </div>
-  <div class="step-box">
-    <span class="step-num">5</span>
-    <strong>👤 Max:</strong> ¿Cuántos profesores <strong>como máximo</strong> pueden estar?
-    <p style="margin:2px 0 0 36px; font-size:0.75rem; color:#64748b;">Si pones 4, aunque haya 10 profes libres, solo pondrá 4</p>
-  </div>
-  <div class="step-box">
-    <span class="step-num">6</span>
-    Pulsa <span class="tag">➕➕ Añadir necesidad</span>
-  </div>
-</section>
-
-<section>
-  <h2>6b. Entendiendo mínimo y máximo</h2>
-  <div class="two-col">
-    <div>
-      <h4>Mínimo (min)</h4>
-      <div class="mockup" style="font-size:0.5rem;">
-        min=2 → obligatorio 2 profes<br>
-        Si solo hay 1 disponible ❌
-      </div>
-      <p style="font-size:0.8rem;">Es el número <strong>obligatorio</strong>. El solver buscará al menos esa cantidad.</p>
-    </div>
-    <div>
-      <h4>Máximo (max)</h4>
-      <div class="mockup" style="font-size:0.5rem;">
-        max=4 → tope 4 profes<br>
-        Aunque sobren, no pondrá más
-      </div>
-      <p style="font-size:0.8rem;">Es el <strong>tope</strong>. El solver no asignará más de esa cantidad.</p>
-    </div>
-  </div>
-  <p style="margin-top:10px;">El solver intenta <strong>maximizar</strong> las asignaciones, así que tenderá a acercarse al máximo siempre que pueda.</p>
+  <h2>6a. Añadir necesidad</h2>
+  <p>Rellena el formulario superior y pulsa <strong>➕➕ Añadir necesidad</strong>.</p>
   <p>Reglas:</p>
   <ul>
-    <li><code>min</code> debe ser al menos 1</li>
-    <li><code>max</code> debe ser mayor o igual que <code>min</code></li>
+    <li><code>min ≥ 1</code>, <code>max ≥ min</code></li>
+    <li><code>inicio &lt; fin</code></li>
+    <li>El solver intenta llegar al máximo, pero nunca baja del mínimo</li>
   </ul>
 </section>
 
 <section>
-  <h2>6c. Ejemplo de necesidades reales</h2>
-  <p>Para la recogida de libros, podrías tener algo así:</p>
-  <table>
-    <tr><th>Nombre</th><th>Fecha</th><th>Horario</th><th>Min</th><th>Max</th></tr>
-    <tr><td>Recogida 1º ESO A</td><td>22/06</td><td>08:30-10:00</td><td>2</td><td>4</td></tr>
-    <tr><td>Recogida 1º ESO B</td><td>22/06</td><td>08:30-10:00</td><td>2</td><td>3</td></tr>
-    <tr><td>Recogida 2º ESO A</td><td>22/06</td><td>10:00-12:00</td><td>2</td><td>3</td></tr>
-    <tr><td>Recogida 2º ESO B</td><td>22/06</td><td>10:00-12:00</td><td>2</td><td>3</td></tr>
-    <tr><td>Clasificación inicial</td><td>22/06</td><td>16:00-18:00</td><td>2</td><td>4</td></tr>
-    <tr><td>Empaquetado urgente</td><td>22/06</td><td>18:00-19:30</td><td>1</td><td>3</td></tr>
-  </table>
-  <blockquote class="tip" style="margin-top:8px;">
-    💡 Fíjate que 1º A y 1º B son a la misma hora. El solver NO pondrá el mismo profesor en las dos. Cada tarea necesita personas distintas.
-  </blockquote>
-</section>
-
-<section>
-  <h2>6d. Buscar necesidades 🔍</h2>
-  <p>Igual que con los profesores:</p>
-  <div class="step-box">
-    <span class="step-num">1</span>
-    Escribe en el campo "🔍 Filtrar necesidades..."
-  </div>
-  <div class="step-box">
-    <span class="step-num">2</span>
-    Filtra por nombre o por fecha
-    <p style="margin:2px 0 0 36px; font-size:0.75rem; color:#64748b;">Ej: escribe "Recogida" y solo verás las tareas que contengan esa palabra</p>
-  </div>
-</section>
-
-<section>
-  <h2>6e. Eliminar necesidades ❌</h2>
-  <p>Cada necesidad tiene un botón ❌ a la derecha:</p>
+  <h2>6b. Buscar y filtrar 🔍</h2>
+  <p>Escribe en el campo de búsqueda para filtrar por nombre, fecha o etiqueta.</p>
   <div class="mockup" style="font-size:0.5rem;">
-    📋 Recogida 1º ESO A  —  22/06/2026 09:00-11:00  |  👤 [2-4] profes  ❌<br>
-    📋 Recogida 2º ESO A  —  22/06/2026 11:00-13:00  |  👤 [2-3] profes  ❌
+    📋 50 necesidades     [📋 Duplicar necesidades a otro día]     🔍 Filtrar por nombre, fecha o etiqueta... [       ]
   </div>
-  <p style="margin-top:8px;">Pulsa ❌ para eliminar esa tarea.</p>
-  <blockquote class="warn">
-    ⚠️ Si eliminas una necesidad después de generar el cuadrante, el cuadrante deja de ser válido. Tendrás que generar de nuevo.
-  </blockquote>
+  <p>Junto a cada necesidad hay botones 📋 (duplicar) y ❌ (eliminar).</p>
 </section>
 
 <section>
-  <h2>6f. Truco: nombres de tareas claros</h2>
-  <p>Pon nombres que se entiendan <strong>sin tener que mirar los detalles</strong>:</p>
-  <table>
-    <tr><th>❌ Mal nombre</th><th>✅ Buen nombre</th></tr>
-    <tr><td>"Tarea 1"</td><td>"Recogida 1º ESO A"</td></tr>
-    <tr><td>"Clasif"</td><td>"Clasificación libros 2º ESO"</td></tr>
-    <tr><td>"Mañana"</td><td>"Preparación lotes 4º ESO"</td></tr>
-    <tr><td>"Ayuda"</td><td>"Apoyo distribución 3º ESO"</td></tr>
-  </table>
-  <p>Los nombres claros ayudan a:</p>
-  <ul>
-    <li>Entender el cuadrante de un vistazo</li>
-    <li>Los profesores saben qué tienen que hacer</li>
-    <li>El correo individual se entiende mejor</li>
-  </ul>
+  <h2>6c. Duplicar necesidades</h2>
+  <p><strong>📋 Duplicar necesidades a otro día</strong> — copia todas las necesidades de una fecha a otra. Ideal para semanas con el mismo patrón de tareas.</p>
+  <p><strong>📋</strong> junto a cada necesidad — duplica solo esa tarea con "(copia)" en el nombre.</p>
 </section>
 
-<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- ═══════════════════════════════════════════════ -->
 <!-- 7. GENERAR -->
-<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- ═══════════════════════════════════════════════ -->
 <section>
-  <h2>7️⃣ Pestaña Generar — El momento de la verdad</h2>
-  <p>Aquí es donde la aplicación hace su magia: <strong>calcula automáticamente</strong> quién hace cada tarea.</p>
+  <h2>7️⃣ Pestaña Generar</h2>
+  <p>Aquí el solver calcula la mejor asignación de profesores a tareas.</p>
   <blockquote class="warn">
-    ⚠️ Antes de pulsar el botón, asegúrate de que:
-    <ul>
-      <li>Hay al menos 1 profesor con franjas de disponibilidad</li>
-      <li>Hay al menos 1 necesidad (tarea) creada</li>
-      <li>Las franjas de los profesores cubren las horas de las tareas</li>
-    </ul>
+    ⚠️ Antes de pulsar el botón, asegúrate de que hay profesores con franjas y al menos una necesidad.
   </blockquote>
 </section>
 
 <section>
-  <h2>7a. La validación previa (el programa te avisa)</h2>
-  <p>Cuando pulsas <span class="tag">🚀 Generar Cuadrante</span>, lo primero que hace el programa es <strong>revisar</strong> que todo tenga sentido:</p>
-  <div class="mockup" style="font-size:0.5rem;">
-    🔍 Revisando cobertura...<br>
-    <br>
-    ⚠️ «Recogida 1º ESO A» necesita 2 profes, solo 1 puede cubrirla<br>
-    ⏰ Horas necesarias (120h) superan las disponibles (100h)<br>
-    <br>
-    ┌──────────────────────────────────────────────────────┐<br>
-    │ ⚠️ Se detectaron los siguientes problemas:           │<br>
-    │                                                     │<br>
-    │ ¿Deseas continuar de todas formas?                  │<br>
-    │                                                     │<br>
-    │               [Sí]  [No]                            │<br>
-    └──────────────────────────────────────────────────────┘
-  </div>
-  <p>Puedes:</p>
-  <ul>
-    <li>Pulsar <strong>Sí</strong> → continuar aunque haya advertencias</li>
-    <li>Pulsar <strong>No</strong> → volver atrás y ajustar los datos</li>
-  </ul>
-  <blockquote class="tip">
-    💡 Si el programa te avisa de algo, <strong>intenta solucionarlo antes de seguir</strong>. El resultado será mejor.
-  </blockquote>
-</section>
-
-<section>
-  <h2>7b. Durante el cálculo (el spinner)</h2>
-  <p>Cuando el solver empieza a trabajar, aparece esto:</p>
+  <h2>7a. Configurar opciones</h2>
+  <p>Antes de generar, elige cuántas opciones quieres:</p>
   <div class="mockup" style="font-size:0.55rem;">
-    ┌────────────────────────────────────┐<br>
-    │                                    │<br>
-    │         ⣾  (girando)               │<br>
-    │                                    │<br>
-    │    🧠 Resolviendo...               │<br>
-    │    Puede tardar hasta 2 minutos    │<br>
-    │                                    │<br>
-    └────────────────────────────────────┘
+    🔢 Opciones a generar: [5 ▼]  (1-50)
   </div>
-  <p style="margin-top:8px;">Mientras el spinner está visible:</p>
   <ul>
-    <li>El programa está <strong>calculando</strong> — no lo cierres</li>
-    <li>No puedes hacer clic en nada más (el diálogo es modal)</li>
-    <li>No pasa nada si el spinner se queda quieto — el solver está trabajando internamente</li>
+    <li>Más opciones = más variedad, pero tarda más</li>
+    <li>Por defecto: 5 opciones</li>
+    <li>Rango: 1 a 50</li>
   </ul>
 </section>
 
 <section>
-  <h2>7c. ¿Cuánto tarda?</h2>
-  <p>Depende de la cantidad de datos:</p>
-  <table>
-    <tr><th>Profesores</th><th>Tareas</th><th>Tiempo aproximado</th><th>¿Es normal?</th></tr>
-    <tr><td>5-8</td><td>10-20</td><td>5-15 segundos</td><td>Sí ✅</td></tr>
-    <tr><td>10-15</td><td>25-50</td><td>30 seg - 2 minutos</td><td>Sí ✅</td></tr>
-    <tr><td>20+</td><td>60+</td><td>3-5 minutos</td><td>Sí, pero pesado</td></tr>
-  </table>
-  <blockquote class="warn">
-    ⏳ <strong>Importante:</strong> No hagas clic varias veces. El spinner ya está trabajando. Si pulsas otra vez, se abriría otro diálogo encima.
-  </blockquote>
+  <h2>7b. Validación previa</h2>
+  <p>Antes de calcular, el programa revisa si hay problemas de cobertura.</p>
+  <p>Si los hay, te avisa y puedes:</p>
+  <ul>
+    <li><strong>Sí</strong> → continuar a pesar de las advertencias</li>
+    <li><strong>No</strong> → volver atrás y ajustar datos</li>
+  </ul>
 </section>
 
 <section>
-  <h2>7d. El panel de log (el texto de abajo)</h2>
-  <p>En la parte inferior de la pestaña Generar hay un panel de <strong>log</strong> que muestra lo que hace el programa:</p>
-  <div class="mockup" style="font-size:0.5rem;">
-    ============================================================<br>
-    Proyecto: XarxaLlibres 2026 - Recogida y distribución<br>
-    Profesores: 15<br>
-    Necesidades: 50  |  H. mín necesarias: 120h<br>
-    Franjas disponibilidad totales profes: 65<br>
-    Construyendo modelo CP-SAT...<br>
-    Generando opciones (10 variantes con distintas semillas)...<br>
-    ✅ Se generaron 10 opciones distintas<br>
-    Opción 1: 48 asignaciones, 45/50 necesidades, 120h30m totales<br>
-    Opción 2: 47 asignaciones, 44/50 necesidades, 118h15m totales<br>
-    ...
+  <h2>7c. El spinner (durante el cálculo)</h2>
+  <p>Aparece un diálogo compacto mientras el solver trabaja:</p>
+  <div class="mockup" style="font-size:0.55rem;">
+    ┌──────────────────────┐<br>
+    │       ⣾              │<br>
+    │   Generando...       │<br>
+    └──────────────────────┘
   </div>
-  <p style="margin-top:8px;">Sirve para ver qué ha pasado y detectar problemas.</p>
+  <ul>
+    <li>No puedes hacer clic en nada más (es modal)</li>
+    <li>Puede tardar desde segundos hasta varios minutos</li>
+    <li>No cierres la aplicación mientras calcula</li>
+  </ul>
+</section>
+
+<section>
+  <h2>7d. Tiempos estimados</h2>
+  <table>
+    <tr><th>Profesores</th><th>Tareas</th><th>Tiempo</th></tr>
+    <tr><td>5-8</td><td>10-20</td><td>5-15 segundos</td></tr>
+    <tr><td>10-15</td><td>25-50</td><td>30s - varios minutos</td></tr>
+    <tr><td>20+</td><td>60+</td><td>3-5 minutos</td></tr>
+  </table>
 </section>
 
 <section>
   <h2>7e. Después de generar</h2>
-  <p>Cuando termina, la aplicación hace esto <strong>automáticamente</strong>:</p>
+  <p>Cuando termina, automáticamente:</p>
   <ol>
-    <li>Cambia a la pestaña <strong>📅 Cuadrante</strong></li>
-    <li>Muestra la primera opción (Opción 1)</li>
-    <li>Aparece una notificación: "✅ 10 opciones generadas"</li>
-    <li>Las opciones se guardan en la carpeta <code>projects/</code></li>
+    <li>Se guardan todas las opciones</li>
+    <li>Se muestran los HTML generados</li>
+    <li>Se abre la pestaña 📅 Cuadrante con la primera opción</li>
+    <li>Aparece una notificación: "✅ N opciones generadas. Usa ◀ ▶ para cambiar entre ellas"</li>
   </ol>
-  <p>Si ves el mensaje <strong>"Sin solución posible"</strong>:</p>
-  <ul>
-    <li>Significa que no se pudo generar ningún cuadrante válido</li>
-    <li>Revisa profesores, horarios y necesidades</li>
-    <li>Seguramente faltan profesores disponibles en las horas necesarias</li>
-  </ul>
-</section>
-
-<!-- ═══════════════════════════════════════════════════════════════ -->
-<!-- 8. CUADRANTE -->
-<!-- ═══════════════════════════════════════════════════════════════ -->
-<section>
-  <h2>8️⃣ Pestaña Cuadrante — El resultado final</h2>
-  <p>Aquí ves el cuadrante generado. Es el <strong>resultado</strong> de todo el trabajo.</p>
-  <p>La pantalla tiene dos partes:</p>
-  <div class="two-col">
-    <div>
-      <h4>Barra de herramientas (arriba)</h4>
-      <p style="font-size:0.8rem;">Botones para navegar, exportar y cambiar la vista.</p>
-    </div>
-    <div>
-      <h4>Calendario (abajo)</h4>
-      <p style="font-size:0.8rem;">Los días en columnas con las tareas y los profesores asignados.</p>
-    </div>
-  </div>
+  <p>Todas las opciones están disponibles para navegar con ◀ ▶ — sin diálogos intermedios.</p>
 </section>
 
 <section>
-  <h2>8a. Cómo leer el cuadrante</h2>
-  <p>Cada <strong>columna</strong> es un día. Dentro de cada columna, cada tarjeta es una tarea:</p>
-  <div class="mockup" style="font-size:0.48rem;">
-    ┌──────────── LUN 22 ────────────┐  ┌──────── MAR 23 ──────────┐<br>
-    │ ┌──────────────────────────┐   │  │ ┌──────────────────────┐ │<br>
-    │ │    08:30 - 10:00         │   │  │ │   08:30 - 10:00      │ │<br>
-    │ │ Recogida 1º ESO A       │   │  │ │ Recogida 1º Batx A   │ │<br>
-    │ │ min 2 · max 4           │   │  │ │ min 2 · max 3        │ │<br>
-    │ │ 🔒 Ana García (azul)    │   │  │ │ 🔓 Carlos Pérez (rojo)│ │<br>
-    │ │ 🔓 Carlos Pérez (rojo)  │   │  │ │ 🔓 Maria López (verde)│ │<br>
-    │ │ 🔓 Maria López (verde)  │   │  │ └──────────────────────┘ │<br>
-    │ └──────────────────────────┘   │  └───────────────────────────┘<br>
-    │ ┌──────────────────────────┐   │<br>
-    │ │    10:00 - 12:00         │   │<br>
-    │ │ Recogida 2º ESO A       │   │<br>
-    │ │ min 2 · max 3           │   │<br>
-    │ │ 🔓 Jose Martínez (morado)│  │<br>
-    │ └──────────────────────────┘   │<br>
-    └────────────────────────────────┘
-  </div>
-</section>
-
-<section>
-  <h2>8b. Navegar entre las 10 opciones ◀ ▶</h2>
-  <div class="two-col">
-    <div>
-      <h4>◀ Botón izquierdo</h4>
-      <p style="font-size:0.8rem;">Va a la opción anterior.<br>Opción 1 → 10 → 9...</p>
-    </div>
-    <div>
-      <h4>▶ Botón derecho</h4>
-      <p style="font-size:0.8rem;">Va a la siguiente opción.<br>Opción 1 → 2 → 3...</p>
-    </div>
-  </div>
-  <p style="margin-top:10px;">Entre los botones ves:</p>
+  <h2>7f. El panel de log</h2>
+  <p>En la parte inferior hay un registro detallado:</p>
   <div class="mockup" style="font-size:0.5rem;">
-    ◀  Opción 3 de 10 (48 asig. · 120h30m)  ▶
+    ============================================================<br>
+    Proyecto: XarxaLlibres 2026<br>
+    Profesores: 15  |  Necesidades: 50  |  H. mín necesarias: 120h<br>
+    Franjas disponibilidad totales profes: 65<br>
+    Generando 5 opciones con distintas semillas...<br>
+    ✅ Se generaron 5 opciones distintas<br>
+    Opción 1: 48 asignaciones, 45/50 necesidades, 120h30m totales<br>
+    ...
   </div>
-  <p style="margin-top:6px;">Eso te dice:</p>
-  <ul>
-    <li><strong>Opción 3 de 10</strong> → estás viendo la tercera variante</li>
-    <li><strong>48 asig.</strong> → 48 asignaciones (suma de profes × tareas)</li>
-    <li><strong>120h30m</strong> → horas totales asignadas</li>
-  </ul>
-  <blockquote class="tip">
-    💡 Prueba las 10 opciones. Algunas pueden tener mejor distribución que otras.
-    Fíjate en el número de asignaciones (más es mejor) y en qué opción cubre más necesidades.
-  </blockquote>
+</section>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- 8. CUADRANTE -->
+<!-- ═══════════════════════════════════════════════ -->
+<section>
+  <h2>8️⃣ Pestaña Cuadrante</h2>
+  <p>Aquí ves el resultado. Navega entre opciones con ◀ ▶.</p>
 </section>
 
 <section>
-  <h2>8c. Truco: cómo elegir la mejor opción</h2>
-  <p>No te quedes con la primera. Compáralas:</p>
+  <h2>8a. Navegar entre opciones ◀ ▶</h2>
+  <div class="mockup" style="font-size:0.5rem;">
+    ◀  Opción 3 de 5 (48 asig. · 120h30m)  ▶  ❌
+  </div>
+  <ul>
+    <li><strong>◀</strong> — opción anterior</li>
+    <li><strong>▶</strong> — siguiente opción</li>
+    <li><strong>❌</strong> — elimina todas las opciones generadas</li>
+    <li>Entre los botones ves el resumen de la opción actual</li>
+  </ul>
+  <blockquote class="tip">💡 Prueba todas las opciones. Fíjate en cuál cubre más necesidades y distribuye mejor la carga.</blockquote>
+</section>
+
+<section>
+  <h2>8b. Elegir la mejor opción</h2>
   <table>
     <tr><th>Qué mirar</th><th>Qué es mejor</th></tr>
-    <tr><td>Más asignaciones</td><td>→ Más profesores trabajando → mejor repartido</td></tr>
-    <tr><td>Más necesidades cubiertas</td><td>→ Menos tareas sin cubrir</td></tr>
-    <tr><td>Horas bien distribuidas</td><td>→ Nadie sobrecargado vs nadie sin nada</td></tr>
-    <tr><td>Carga equilibrada</td><td>→ Todos los profes tienen horas similares</td></tr>
+    <tr><td>Más asignaciones</td><td>→ mejor repartido</td></tr>
+    <tr><td>Más necesidades cubiertas</td><td>→ menos tareas sin cubrir</td></tr>
+    <tr><td>Horas equilibradas</td><td>→ nadie sobrecargado</td></tr>
   </table>
-  <p>Usa el botón <span class="tag">📊 Stats</span> para ver la carga de cada profesor en cada opción.</p>
+  <p>Usa <span class="tag-green">📊 Stats</span> para ver la carga detallada de cada profesor.</p>
 </section>
 
 <section>
-  <h2>8d. Vista normal vs compacta</h2>
-  <p>Pulsa <span class="tag">📅 Cambiar a vista compacta</span> para cambiar el aspecto:</p>
+  <h2>8c. Vista normal vs compacta</h2>
+  <p>Pulsa <span class="tag">📅 Cambiar a vista compacta</span>:</p>
   <div class="two-col">
     <div>
       <h4>Normal</h4>
-      <p style="font-size:0.78rem;">Días como columnas horizontales.</p>
-      <p style="font-size:0.72rem;">Ves la semana entera. Tienes que hacer scroll horizontal si hay muchos días.</p>
+      <p>Días como columnas horizontales. Ves la semana entera.</p>
     </div>
     <div>
       <h4>Compacta</h4>
-      <p style="font-size:0.78rem;">Días apilados en vertical.</p>
-      <p style="font-size:0.72rem;">Ocupa menos espacio horizontal. Se ve mejor en pantallas pequeñas.</p>
+      <p>Días apilados en vertical. Mejor para pantallas pequeñas.</p>
     </div>
   </div>
-  <p>Pulsa el mismo botón para volver al modo anterior. El texto cambia según el modo actual.</p>
 </section>
 
 <section>
-  <h2>8e. Bloquear asignaciones 🔒 (la función más potente)</h2>
-  <p>¿Sabes que <strong>Ana</strong> es la única que puede hacer la <strong>Recogida 1º ESO A</strong>?</p>
-  <p>Pues puedes <strong>bloquearla</strong> para que el solver la ponga ahí sí o sí.</p>
-  <div class="step-box">
-    <span class="step-num">1</span>
-    En el cuadrante, busca la tarea y haz <strong>clic sobre el nombre</strong> del profesor
-  </div>
-  <div class="step-box">
-    <span class="step-num">2</span>
-    Verás que cambia de <strong>🔓 a 🔒</strong>
-    <p style="margin:2px 0 0 36px; font-size:0.75rem; color:#64748b;">🔓 Ana García  →  🔒 Ana García (ahora está bloqueada)</p>
-  </div>
-  <div class="step-box">
-    <span class="step-num">3</span>
-    Repite con todos los bloqueos que quieras
-  </div>
-  <div class="step-box">
-    <span class="step-num">4</span>
-    Pulsa <span class="tag">🔒 Regenerar bloqueos</span>
-    <p style="margin:2px 0 0 36px; font-size:0.75rem; color:#64748b;">El solver recalcula respetando tus bloqueos. Aparece el mismo spinner de carga.</p>
-  </div>
-  <div class="step-box">
-    <span class="step-num">5</span>
-    ¡Nuevas opciones generadas con Ana fija en esa tarea!
-  </div>
-  <blockquote class="tip">
-    💡 Para desbloquear, vuelve a hacer clic sobre el nombre (🔒 → 🔓).
-  </blockquote>
-</section>
-
-<section>
-  <h2>8f. Truco: bloqueos inteligentes</h2>
-  <blockquote class="tip">
-    💡 No bloquees demasiadas cosas. El solver necesita libertad para encontrar la mejor combinación. Bloquea solo lo <strong>estrictamente necesario</strong>.
-  </blockquote>
-  <p>Buenos usos de bloqueos:</p>
+  <h2>8d. Bloquear asignaciones 🔒</h2>
+  <p>Haz <strong>clic en el nombre</strong> de un profesor dentro de una tarea para bloquearlo ahí.</p>
   <ul>
-    <li>✅ Un profesor con formación específica para una tarea</li>
-    <li>✅ Un profesor que ha pedido expresamente estar en esa tarea</li>
-    <li>✅ Un profesor que <strong>no</strong> puede estar en una tarea concreta (aunque en este caso mejor quitarle la franja)</li>
+    <li>🔓 → 🔒 (queda fijada)</li>
+    <li>Pulsa <span class="tag-beige">🔒 Regenerar Bloqueos</span> para recalcular respetando bloqueos</li>
+    <li>Las bloqueadas se ven con fondo semitransparente y borde del color del profe</li>
   </ul>
-  <p>Malos usos:</p>
+  <blockquote class="tip">💡 Bloquea solo lo necesario. El solver necesita libertad para optimizar.</blockquote>
+</section>
+
+<section>
+  <h2>8e. Asignación manual</h2>
+  <p><strong>Clic derecho</strong> en una tarea del cuadrante → menú contextual:</p>
   <ul>
-    <li>❌ Bloquear todo "por si acaso" → el solver no podrá optimizar</li>
-    <li>❌ Bloquear a un profesor en una tarea donde no tiene disponibilidad → el solver fallará</li>
+    <li><strong>➕ Asignar profesor</strong> — añade un profesor disponible</li>
+    <li><strong>❌ Quitar profesor</strong> — quita un profesor asignado</li>
+    <li><strong>📝 Editar necesidad</strong> — abre el diálogo de edición</li>
   </ul>
 </section>
 
 <section>
-  <h2>8g. Panel de estadísticas 📊</h2>
-  <p>Pulsa <span class="tag">📊 Stats</span> y verás una ventana con:</p>
-  <div class="mockup" style="font-size:0.5rem;">
-    ┌─────────────────────────────────────────┐<br>
-    │   📊 Estadísticas del cuadrante         │<br>
-    │                                         │<br>
-    │   📋 Asignaciones totales: 48           │<br>
-    │   ✅ Necesidades cubiertas: 45 de 50    │<br>
-    │   ⏰ Horas totales asignadas: 120h30m   │<br>
-    │   👨‍🏫 Total profes: 15                  │<br>
-    │   ⏰ Horas disponibles: 150h            │<br>
-    │   📋 Horas mínimas necesarias: 100h     │<br>
-    │   📊 Cobertura: 80%                    │<br>
-    │                                         │<br>
-    │   Carga por profesor:                   │<br>
-    │   Ana García: 12h                       │<br>
-    │   Carlos Pérez: 10h                     │<br>
-    │   ...                                   │<br>
-    └─────────────────────────────────────────┘
-  </div>
-  <p style="margin-top:8px;">Úsalo para comprobar que ningún profesor está sobrecargado.</p>
+  <h2>8f. Arrastrar profesor 🔄</h2>
+  <p>Arrastra el nombre de un profesor de una tarea a otra para reasignarlo al instante.</p>
+  <p>Al arrastrar, ves un borde verde punteado al pasar sobre la tarea destino.</p>
 </section>
 
 <section>
-  <h2>8h. Truco: detectar sobrecarga</h2>
-  <p>Mira las estadísticas y pregúntate:</p>
-  <ul>
-    <li>¿Hay algún profesor con <strong>muchas más horas</strong> que el resto?</li>
-    <li>¿Hay profesores con <strong>0 horas</strong>? (Quizás no se usaron bien)</li>
-    <li>¿La cobertura es baja? (menos del 70% → hay que mejorar)</li>
-  </ul>
-  <p>Si ves desequilibrios, prueba otra opción con ◀ ▶ o ajusta los datos.</p>
+  <h2>8g. Duplicar día 📋</h2>
+  <p>Botón <span class="tag">📋 Duplicar día</span> en el toolbar del cuadrante:</p>
+  <p>Copia las necesidades y asignaciones de una fecha a otra. Luego puedes ajustar y regenerar.</p>
 </section>
 
-<!-- ═══════════════════════════════════════════════════════════════ -->
+<section>
+  <h2>8h. Barra de herramientas</h2>
+  <p>Los botones están organizados en <strong>3 grupos</strong> con supertítulos y fondo común:</p>
+  <table>
+    <tr><th>Grupo</th><th>Botones (orden)</th><th>Qué hace</th></tr>
+    <tr><td rowspan="2"><strong>Generar HTML</strong></td><td><span class="tag-beige">🌐 Generar HTML</span></td><td>Genera el HTML y lo abre en el navegador</td></tr>
+    <tr><td>📅 Vista (combo)</td><td>Elige vista: Cuadrante / Profesor / Tarea / Word / Para imprimir (por defecto)</td></tr>
+    <tr><td rowspan="4"><strong>Acciones</strong></td><td><span class="tag-beige">🔒 Regenerar Bloqueos</span></td><td>Recalcula respetando asignaciones bloqueadas</td></tr>
+    <tr><td>📂 Carpeta</td><td>Abre la carpeta de exportaciones</td></tr>
+    <tr><td>📊 Stats</td><td>Panel de estadísticas detalladas</td></tr>
+    <tr><td>📅 Compacta</td><td>Alterna vista normal / compacta</td></tr>
+    <tr><td rowspan="3"><strong>Exportar</strong></td><td><span class="tag-beige">📄 DOCX</span></td><td>Exporta como documento Word (.doc) — solo cuadrantes</td></tr>
+    <tr><td>📅 Calendario ICS</td><td>Exporta asignaciones a Google Calendar/Outlook</td></tr>
+    <tr><td>🖼️ PNG</td><td>Captura el cuadrante como imagen</td></tr>
+  </table>
+  <p>Los botones <span class="tag-beige">beige</span> destacan las acciones principales.</p>
+  <p>El botón <span class="tag-green">❌</span> junto a ◀ ▶ elimina todas las opciones generadas y limpia el cuadrante.</p>
+</section>
+
+<!-- ═══════════════════════════════════════════════ -->
 <!-- 9. EXPORTAR -->
-<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- ═══════════════════════════════════════════════ -->
 <section>
-  <h2>9️⃣ Exportar — Compartir el resultado</h2>
-  <p>Una vez tienes el cuadrante que te gusta, puedes <strong>exportarlo</strong> para compartirlo.</p>
+  <h2>9️⃣ Exportar</h2>
   <table>
-    <tr><th>Formato</th><th>Botón</th><th>Qué genera</th><th>Para qué sirve</th></tr>
-    <tr>
-      <td>🌐 HTML</td>
-      <td>"Abrir en navegador"</td>
-      <td>Página web con cuadrante + correos</td>
-      <td>✅ Imprimir, enviar por email, guardar como PDF</td>
-    </tr>
-    <tr>
-      <td>🖼️ PNG</td>
-      <td>"PNG"</td>
-      <td>Imagen del cuadrante</td>
-      <td>Pegar en Word, PowerPoint, WhatsApp</td>
-    </tr>
-    <tr>
-      <td>📊 CSV</td>
-      <td>"Exportar CSV" (en Proyecto)</td>
-      <td>Hoja de cálculo</td>
-      <td>Analizar en Excel, LibreOffice, Google Sheets</td>
-    </tr>
-    <tr>
-      <td>📤 JSON</td>
-      <td>En cada pestaña</td>
-      <td>Archivo de datos</td>
-      <td>Copias de seguridad, compartir con otros centros</td>
-    </tr>
+    <tr><th>Formato</th><th>Cómo</th><th>Para qué</th></tr>
+    <tr><td>🌐 HTML</td><td>Grupo "Generar HTML" → elige vista → pulsa el botón beige</td><td>Página interactiva con 5 vistas + correos. Imprimir, PDF, enviar.</td></tr>
+    <tr><td>📄 DOCX</td><td>Grupo "Exportar" → botón beige "DOCX"</td><td>Documento Word con solo los cuadrantes (tablas limpias, sin extras)</td></tr>
+    <tr><td>📅 Calendario ICS</td><td>Grupo "Exportar" → "Calendario ICS"</td><td>Exporta asignaciones a Google Calendar, Outlook</td></tr>
+    <tr><td>🖼️ PNG</td><td>Grupo "Exportar" → "PNG"</td><td>Imagen del cuadrante para informes</td></tr>
+    <tr><td>📊 CSV</td><td>En Proyecto → "CSV"</td><td>Excel/LibreOffice</td></tr>
+    <tr><td>📤 JSON</td><td>En cada pestaña</td><td>Copias de seguridad, compartir</td></tr>
   </table>
 </section>
 
 <section>
-  <h2>9a. Exportar HTML — El más completo</h2>
-  <p>Pulsa <span class="tag">🌐 Abrir en navegador</span> → se abre tu navegador con una página que tiene:</p>
+  <h2>9a. Exportar HTML — 5 vistas</h2>
+  <p>En el grupo <strong>Generar HTML</strong> (el primero de la barra), elige la vista en el combo y pulsa el botón beige:</p>
   <table>
-    <tr><th>Sección</th><th>Qué contiene</th></tr>
-    <tr><td>📅 Cuadrante visual</td><td>El calendario igual que en la app</td></tr>
-    <tr><td>📋 Correo GENERAL</td><td>Un email de equipo con todo el resumen semanal. Ideal para jefatura.</td></tr>
-    <tr><td>👤 Correos INDIVIDUALES</td><td>Un email para CADA profesor con SOLO sus tareas. Listo para enviar.</td></tr>
+    <tr><th>Vista</th><th>Para qué sirve</th></tr>
+    <tr><td>📅 Cuadrante</td><td>Por días con colores. Igual que en la app.</td></tr>
+    <tr><td>👤 Por profesor</td><td>Cada profe con sus tareas. Para imprimir y dar a cada uno.</td></tr>
+    <tr><td>📋 Por tarea</td><td>Cada tarea con sus profes. Para ver si falta gente.</td></tr>
+    <tr><td>📄 Estilo Word</td><td>Tabla Calibri con bordes negros. Cópiala y pégala en Word.</td></tr>
+    <tr><td>🖨️ Para imprimir</td><td>Minimalista. Tabla limpia. Consume menos tinta. <strong>(Por defecto)</strong></td></tr>
   </table>
-  <p>Cómo usar los correos:</p>
-  <div class="step-box">
-    <span class="step-num">1</span>
-    Busca el correo que quieras (general o de un profesor concreto)
-  </div>
-  <div class="step-box">
-    <span class="step-num">2</span>
-    Pulsa el botón <span class="tag">📋 Copiar</span> que está al lado
-  </div>
-  <div class="step-box">
-    <span class="step-num">3</span>
-    Abre tu correo (Gmail, Outlook, etc.) y pega (Ctrl+V)
-  </div>
-  <div class="step-box">
-    <span class="step-num">4</span>
-    ¡Listo! El email tiene el asunto y el cuerpo completos
-  </div>
-  <blockquote class="tip">
-    💡 El HTML está diseñado para imprimirse: pulsa Ctrl+P en el navegador y elige "Guardar como PDF".
-  </blockquote>
+  <p>Todas las vistas incluyen al final: carga de trabajo por profesor (barras — se ven en pantalla pero no se imprimen) y correos listos para copiar.</p>
+  <p>Dentro del HTML hay dos botones: <span class="tag-green">🖨️ Imprimir / PDF</span> y <span class="tag-green">📄 Word</span> (descarga la página como .doc).</p>
 </section>
 
 <section>
-  <h2>9b. Exportar PNG 🖼️</h2>
-  <p>Sirve para capturar el cuadrante como <strong>imagen</strong>.</p>
-  <div class="step-box">
-    <span class="step-num">1</span>
-    Pulsa <span class="tag">🖼️ PNG</span>
-  </div>
-  <div class="step-box">
-    <span class="step-num">2</span>
-    Elige dónde guardarlo (Escritorio, Documentos...)
-  </div>
-  <div class="step-box">
-    <span class="step-num">3</span>
-    Ponle nombre al archivo y pulsa Guardar
-  </div>
-  <blockquote class="warn">
-    ⚠️ La imagen captura solo lo que se ve en pantalla. Si hay scroll lateral, parte del cuadrante puede no salir. Usa la vista compacta si necesitas capturar todo.
-  </blockquote>
+  <h2>9b. Correos electrónicos 📧</h2>
+  <p>En el HTML exportado, al final hay:</p>
+  <ul>
+    <li><strong>📋 General</strong> — resumen para todo el equipo</li>
+    <li><strong>👤 Individuales</strong> — un correo por profesor con SOLO sus tareas</li>
+  </ul>
+  <p>Cada correo tiene un botón <span class="tag">📋 Copiar</span> para pegarlo en Gmail/Outlook.</p>
 </section>
 
-<section>
-  <h2>9c. Exportar CSV 📊</h2>
-  <p>Genera un archivo que se abre con <strong>Excel, LibreOffice o Google Sheets</strong>.</p>
-  <p>El archivo tiene esta pinta cuando lo abres:</p>
-  <table>
-    <tr><th>Fecha</th><th>Inicio</th><th>Fin</th><th>Tarea</th><th>Min</th><th>Max</th><th>Profesor</th><th>Horas</th></tr>
-    <tr><td>22/06/2026</td><td>09:00</td><td>11:00</td><td>Recogida 1º ESO A</td><td>2</td><td>4</td><td>Ana García; Carlos Pérez</td><td>2.0</td></tr>
-    <tr><td>22/06/2026</td><td>10:00</td><td>12:00</td><td>Recogida 2º ESO A</td><td>2</td><td>3</td><td>Maria López; Jose Martínez</td><td>2.0</td></tr>
-  </table>
-  <p>Cada fila es una tarea con los profesores asignados separados por punto y coma.</p>
-  <blockquote class="tip">
-    💡 Ideal para: hacer gráficos, calcular horas totales por profesor, o llevar un registro histórico.
-  </blockquote>
-</section>
-
-<section>
-  <h2>9d. Exportar / Importar JSON 📥📤</h2>
-  <p>El JSON es el <strong>formato interno</strong> de la aplicación. Sirve para guardar y restaurar datos.</p>
-  <table>
-    <tr><th>Pestaña</th><th>Exporta</th><th>Importa</th></tr>
-    <tr><td>👨‍🏫 Profes</td><td>Solo la lista de profesores</td><td>Solo profesores (reemplaza todos)</td></tr>
-    <tr><td>📋 Necesidades</td><td>Solo las tareas</td><td>Solo tareas (añade a las actuales)</td></tr>
-    <tr><td>🏠 Proyecto</td><td>Proyecto completo (nombre + tareas + profesores)</td><td>Proyecto completo</td></tr>
-  </table>
-  <blockquote class="tip">
-    💡 El JSON es útil para: compartir la configuración con otro centro, hacer copias de seguridad, o transferir datos entre ordenadores.
-  </blockquote>
-</section>
-
-<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- ═══════════════════════════════════════════════ -->
 <!-- 10. ADICIONALES -->
-<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- ═══════════════════════════════════════════════ -->
 <section>
   <h2>🔟 Funcionalidades adicionales</h2>
-  <p>La aplicación tiene varias funciones extra que hacen la experiencia más cómoda.</p>
+  <div class="icon-row">
+    <div class="icon-card"><div class="emoji">🌓♿</div><div class="label">Temas</div><p>Claro·Oscuro·Alto contraste</p></div>
+    <div class="icon-card"><div class="emoji">📋</div><div class="label">Duplicar</div><p>Días, franjas, necesidades</p></div>
+    <div class="icon-card"><div class="emoji">📝</div><div class="label">Editar</div><p>Desde el cuadrante</p></div>
+    <div class="icon-card"><div class="emoji">⌨️</div><div class="label">Atajos</div><p>Ctrl+S, Z, Y, N, D, F1</p></div>
+  </div>
 </section>
 
 <section>
-  <h2>Tema claro / oscuro 🌓</h2>
-  <p>En la esquina superior derecha de la ventana hay un botón:</p>
-  <div class="mockup" style="font-size:0.55rem;">
-    📋 Generador Cuadrante Tareas Profesorado                     [☀️ Claro]
-  </div>
-  <p style="margin-top:8px;">Púlsalo para cambiar entre:</p>
-  <div class="two-col">
+  <h2>Tema claro / oscuro / alto contraste 🌓♿</h2>
+  <p>Botón en la esquina superior derecha: cambia cíclicamente entre 3 modos.</p>
+  <div class="three-col">
     <div>
-      <h4>☀️ Claro (por defecto)</h4>
-      <p style="font-size:0.8rem;">Fondo blanco, texto oscuro. Mejor para interiores bien iluminados.</p>
+      <h4>☀️ Claro</h4>
+      <p>Fondo blanco. Por defecto.</p>
     </div>
     <div>
       <h4>🌙 Oscuro</h4>
-      <p style="font-size:0.8rem;">Fondo oscuro, texto claro. Menos fatiga visual, mejor para pantallas OLED.</p>
+      <p>Fondo oscuro. Menos fatiga visual.</p>
+    </div>
+    <div>
+      <h4>♿ Alto contraste</h4>
+      <p>Fondo negro, texto blanco, botones amarillos. Accesibilidad y exteriores.</p>
     </div>
   </div>
-  <p>El cambio es instantáneo. Puedes alternar cuando quieras.</p>
 </section>
 
 <section>
   <h2>Auto-guardado 💾</h2>
-  <p>La aplicación guarda el proyecto <strong>cada 2 minutos</strong> automáticamente.</p>
-  <p>En la pestaña Proyecto verás un indicador:</p>
-  <div class="mockup" style="font-size:0.5rem;">
-    ... [↩️] [🔁]  ⚠️ Sin guardar
-  </div>
-  <ul>
-    <li><strong>⚠️ Sin guardar</strong> → hay cambios pendientes (aún no se han guardado)</li>
-    <li>Si no aparece nada → todo está guardado</li>
-  </ul>
-  <blockquote class="tip">
-    💡 Si haces muchos cambios seguidos, espera 2 minutos o pulsa 💾 Guardar manualmente.
-  </blockquote>
+  <p>La aplicación guarda el proyecto <strong>cada 2 minutos</strong> automáticamente si hay cambios.</p>
+  <p>En Proyecto ves el indicador <strong>⚠️ Sin guardar</strong> si hay cambios pendientes.</p>
 </section>
 
 <section>
-  <h2>Deshacer / Rehacer ↩️ 🔁</h2>
-  <p>¿Te equivocaste al añadir o borrar algo? No pasa nada:</p>
-  <div class="two-col">
-    <div>
-      <h4>↩️ Deshacer</h4>
-      <p style="font-size:0.8rem;">Deshace el último cambio. Puedes deshacer hasta 50 cambios hacia atrás.</p>
-    </div>
-    <div>
-      <h4>🔁 Rehacer</h4>
-      <p style="font-size:0.8rem;">Si deshiciste algo y te arrepentiste, puedes rehacerlo.</p>
-    </div>
-  </div>
-  <blockquote class="tip">
-    💡 Los botones están en la pestaña Proyecto. Funcionan para cambios en profesores y necesidades.
-  </blockquote>
-</section>
-
-<section>
-  <h2>Persistencia de opciones 💾</h2>
-  <p>Cuando generas opciones, se guardan <strong>automáticamente</strong> en la carpeta <code>projects/</code>.</p>
-  <p>Esto significa que:</p>
+  <h2>Deshacer / Rehacer ↩️🔁</h2>
+  <p>Hasta 50 cambios hacia atrás. Botones en la pestaña Proyecto o atajos:</p>
   <ul>
-    <li>Puedes <strong>cerrar la aplicación</strong> sin perder las opciones</li>
-    <li>Al volver a abrir y cargar el proyecto, las opciones siguen ahí</li>
-    <li>Puedes seguir navegando entre las 10 opciones donde lo dejaste</li>
-  </ul>
-  <p>El archivo generado se llama: <code>[nombre del proyecto]_generated.json</code></p>
-  <blockquote class="tip">
-    💡 Puedes compartir ese archivo con otro centro para que vean las opciones sin tener que regenerar.
-  </blockquote>
-</section>
-
-<section>
-  <h2>📂 Abrir carpeta</h2>
-  <p>En la pestaña Cuadrante, pulsa <span class="tag">📂 Carpeta</span> para abrir directamente la carpeta donde se guardan los HTML exportados.</p>
-  <p>Útil para:</p>
-  <ul>
-    <li>Localizar rápidamente los archivos generados</li>
-    <li>Moverlos a otra carpeta</li>
-    <li>Adjuntarlos a un email</li>
+    <li><strong>Ctrl+Z</strong> — deshacer</li>
+    <li><strong>Ctrl+Y</strong> — rehacer</li>
   </ul>
 </section>
 
-<!-- ═══════════════════════════════════════════════════════════════ -->
+<section>
+  <h2>⌨️ Atajos de teclado</h2>
+  <table>
+    <tr><th>Atajo</th><th>Qué hace</th></tr>
+    <tr><td>F1</td><td>Abrir este manual</td></tr>
+    <tr><td>Ctrl+S</td><td>Guardar proyecto</td></tr>
+    <tr><td>Ctrl+Z</td><td>Deshacer</td></tr>
+    <tr><td>Ctrl+Y</td><td>Rehacer</td></tr>
+    <tr><td>Ctrl+N</td><td>Nuevo proyecto</td></tr>
+    <tr><td>Ctrl+D</td><td>Cargar datos ficticios</td></tr>
+    <tr><td>Esc</td><td>Limpiar barra de estado</td></tr>
+  </table>
+</section>
+
+<section>
+  <h2>Barra de estado ℹ️</h2>
+  <p>En la parte inferior de la ventana hay una barra que muestra mensajes contextuales y los atajos de teclado disponibles.</p>
+</section>
+
+<section>
+  <h2>Diálogo de bienvenida 🎉</h2>
+  <p>La primera vez que abres la aplicación, aparece una guía interactiva con los pasos básicos. Puedes cerrarla y siempre acceder a ella desde el botón 📖 Ayuda.</p>
+</section>
+
+<!-- ═══════════════════════════════════════════════ -->
 <!-- 11. PROBLEMAS -->
-<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- ═══════════════════════════════════════════════ -->
 <section>
   <h2>1️⃣1️⃣ Solución de problemas</h2>
-  <p>Aquí tienes los problemas más comunes y cómo solucionarlos.</p>
 </section>
 
 <section>
   <h2>❌ "Sin solución posible"</h2>
-  <p>El solver no encuentra ninguna forma de asignar profesores a tareas.</p>
   <table>
-    <tr><th>Posible causa</th><th>Cómo solucionarlo</th></tr>
-    <tr>
-      <td>Faltan profesores disponibles en el horario de las tareas</td>
-      <td>Añade más franjas horarias a los profesores existentes o crea nuevos profesores</td>
-    </tr>
-    <tr>
-      <td>Las horas totales disponibles son insuficientes</td>
-      <td>Aumenta <code>max_hours</code> de los profesores, reduce tareas, o reduce el min de algunas</td>
-    </tr>
-    <tr>
-      <td>Una tarea requiere muchos profes (ej: min=4) y no hay tantos libres a esa hora</td>
-      <td>Reduce el mínimo de esa tarea o añade más profes con disponibilidad en ese horario</td>
-    </tr>
-    <tr>
-      <td>Bloqueos incompatibles</td>
-      <td>Has bloqueado a un profesor en una tarea donde no puede estar. Desbloquéalo y prueba otra combinación</td>
-    </tr>
+    <tr><th>Causa</th><th>Solución</th></tr>
+    <tr><td>Faltan profes disponibles en el horario de las tareas</td><td>Añade más franjas o más profesores</td></tr>
+    <tr><td>Horas disponibles insuficientes</td><td>Aumenta max_hours de los profes o reduce tareas</td></tr>
+    <tr><td>Una tarea requiere muchos profes y no hay suficientes a esa hora</td><td>Reduce el mínimo de esa tarea</td></tr>
+    <tr><td>Bloqueos incompatibles</td><td>Desbloquea asignaciones conflictivas</td></tr>
   </table>
 </section>
 
 <section>
-  <h2>❌ "El solver tarda mucho"</h2>
-  <p>Es normal que tarde. Pero si ves que se alarga más de la cuenta:</p>
+  <h2>❌ El solver tarda mucho</h2>
   <table>
-    <tr><th>Situación</th><th>Tiempo estimado</th><th>Recomendación</th></tr>
-    <tr><td>5-8 profes, 10-20 tareas</td><td>5-15 segundos</td><td>Normal ✅</td></tr>
-    <tr><td>10-15 profes, 25-50 tareas</td><td>30s - 2 minutos</td><td>Normal ✅ (toma un café ☕)</td></tr>
-    <tr><td>20+ profes, 60+ tareas</td><td>3-5 minutos</td><td>Considera dividir en dos proyectos más pequeños</td></tr>
+    <tr><th>Profesores</th><th>Tareas</th><th>Tiempo</th></tr>
+    <tr><td>5-8</td><td>10-20</td><td>5-15s ✅ normal</td></tr>
+    <tr><td>10-15</td><td>25-50</td><td>30s - varios min ✅ normal</td></tr>
+    <tr><td>20+</td><td>60+</td><td>3-5 min. Considera dividir en dos proyectos</td></tr>
   </table>
-  <blockquote class="tip">
-    💡 Cada opción tiene un límite de 10 segundos. Si en 10s no encuentra la solución óptima, da la mejor que haya encontrado hasta ese momento. Esto garantiza que siempre obtengas algo, aunque no sea perfecto.
-  </blockquote>
+  <p>Cada opción tiene límite de 10s. Si no encuentra la óptima, da la mejor hasta ese momento.</p>
 </section>
 
 <section>
-  <h2>❌ "La aplicación no arranca"</h2>
+  <h2>❌ La aplicación no arranca</h2>
   <table>
-    <tr><th>Qué ves</th><th>Qué significa</th><th>Qué hacer</th></tr>
-    <tr>
-      <td>Error 'python' no se reconoce</td>
-      <td>Python no está instalado</td>
-      <td>Descarga Python de python.org e instálalo</td>
-    </tr>
-    <tr>
-      <td>Error "No module named PyQt6"</td>
-      <td>Falta la biblioteca gráfica</td>
-      <td>Ejecuta <code>pip install -r requirements.txt</code></td>
-    </tr>
-    <tr>
-      <td>Error "No module named ortools"</td>
-      <td>Falta el motor de optimización</td>
-      <td>Ejecuta <code>pip install ortools</code></td>
-    </tr>
-    <tr>
-      <td>Ventana se abre y se cierra sola</td>
-      <td>Hay un error en el código</td>
-      <td>Abre una terminal, ejecuta <code>python main.py</code> y mira el mensaje de error</td>
-    </tr>
-    <tr>
-      <td>La pantalla se ve rara o cortada</td>
-      <td>Resolución muy baja</td>
-      <td>La app necesita al menos 1280×720. Maximiza la ventana.</td>
-    </tr>
+    <tr><th>Error</th><th>Solución</th></tr>
+    <tr><td>'python' no se reconoce</td><td>Instala Python desde python.org</td></tr>
+    <tr><td>No module named PyQt6</td><td><code>pip install -r requirements.txt</code></td></tr>
+    <tr><td>No module named ortools</td><td><code>pip install ortools</code></td></tr>
+    <tr><td>Ventana se abre y cierra</td><td>Ejecuta desde terminal para ver el error</td></tr>
+    <tr><td>Pantalla cortada</td><td>Necesita al menos 1280×720. Maximiza la ventana.</td></tr>
   </table>
 </section>
 
@@ -1500,83 +695,46 @@
   <h2>❌ Problemas con el cuadrante</h2>
   <table>
     <tr><th>Problema</th><th>Solución</th></tr>
-    <tr>
-      <td>No veo el cuadrante</td>
-      <td>¿Has pulsado "Generar Cuadrante"? Si no, no hay nada que ver. También comprueba que hay profesores y necesidades.</td>
-    </tr>
-    <tr>
-      <td>Faltan tareas en el cuadrante</td>
-      <td>El solver no pudo asignarles profesores. Prueba otra opción con ◀ ▶ o añade más disponibilidad.</td>
-    </tr>
-    <tr>
-      <td>Un profesor tiene demasiadas horas</td>
-      <td>Reduce su <code>max_hours</code> o <code>max_hours_per_day</code> en la pestaña Profes y regenera.</td>
-    </tr>
-    <tr>
-      <td>Los botones del cuadrante están grises</td>
-      <td>Están desactivados porque no hay nada generado. Ve a ⚙️ y genera primero.</td>
-    </tr>
+    <tr><td>No veo el cuadrante</td><td>¿Has pulsado "Generar Cuadrante"? Comprueba que hay profes y necesidades.</td></tr>
+    <tr><td>Faltan tareas en el cuadrante</td><td>El solver no pudo asignarles profes. Prueba otra opción o añade más disponibilidad.</td></tr>
+    <tr><td>Un profesor tiene demasiadas horas</td><td>Reduce su max_hours o max_hours_per_day y regenera.</td></tr>
+    <tr><td>Botones del cuadrante grises</td><td>No hay opciones generadas. Ve a ⚙️ y genera primero.</td></tr>
   </table>
 </section>
 
 <section>
-  <h2>❌ Errores tontos (y cómo evitarlos)</h2>
-  <blockquote class="danger">
-    ❌ "Puse a un profesor disponible de 10:00 a 12:00 pero la tarea empieza a las 09:00"
-  </blockquote>
-  <p>La franja debe empezar <strong>antes</strong> que la tarea. Si la tarea es 09:00-11:00, la franja debe ser ≤09:00.</p>
-  <blockquote class="danger">
-    ❌ "Puse min=4 y max=2" (el mínimo mayor que el máximo)
-  </blockquote>
-  <p>El mínimo debe ser menor o igual que el máximo. Siempre: min ≤ max.</p>
-  <blockquote class="danger">
-    ❌ "Puse 25:00 como hora" (hora inexistente)
-  </blockquote>
-  <p>Las horas van de 00:00 a 23:59. Usa formato 24h.</p>
-  <blockquote class="danger">
-    ❌ "Borré un profesor sin querer"
-  </blockquote>
-  <p>Usa ↩️ Deshacer en la pestaña Proyecto para recuperarlo.</p>
+  <h2>❌ Errores tontos</h2>
+  <blockquote class="danger">❌ Franja 10:00-12:00 pero tarea empieza a las 09:00</blockquote>
+  <p>La franja debe empezar antes que la tarea. Franja ≤ tarea.</p>
+  <blockquote class="danger">❌ min=4 y max=2</blockquote>
+  <p>El mínimo debe ser ≤ máximo.</p>
+  <blockquote class="danger">❌ Hora 25:00</blockquote>
+  <p>Las horas van de 00:00 a 23:59.</p>
+  <blockquote class="danger">❌ Borré un profesor sin querer</blockquote>
+  <p>Usa ↩️ Deshacer (Ctrl+Z) para recuperarlo.</p>
 </section>
 
-<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- ═══════════════════════════════════════════════ -->
 <!-- TRUCOS FINALES -->
-<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- ═══════════════════════════════════════════════ -->
 <section>
-  <h2>💡 Trucos y consejos finales</h2>
+  <h2>💡 Trucos finales</h2>
   <div class="two-col">
     <div>
       <h4>Para ahorrar tiempo</h4>
-      <ul style="font-size:0.78rem;">
-        <li>Usa <strong>📦 Cargar datos ficticios</strong> para explorar la app antes de meter tus datos</li>
-        <li>Los <strong>botones rápidos</strong> (☕🌤🌞) son más rápidos que crear franjas a mano</li>
-        <li>Usa <strong>plantillas</strong> para profesores con el mismo horario</li>
+      <ul>
+        <li>Usa <strong>📦 Cargar datos ficticios</strong> para explorar la app</li>
+        <li>Botones rápidos ☕🌤🌞 para franjas</li>
+        <li>Plantillas para profesores con mismo horario</li>
+        <li>📋 Duplicar día para copiar necesidades/franjas</li>
       </ul>
     </div>
     <div>
       <h4>Para mejores resultados</h4>
-      <ul style="font-size:0.78rem;">
-        <li>Prueba las <strong>10 opciones</strong>, no te quedes con la primera</li>
-        <li>Mira <strong>📊 Stats</strong> para ver la carga de cada profesor</li>
-        <li>Bloquea solo lo <strong>imprescindible</strong> — deja libertad al solver</li>
-      </ul>
-    </div>
-  </div>
-  <div class="two-col" style="margin-top:8px;">
-    <div>
-      <h4>Para compartir</h4>
-      <ul style="font-size:0.78rem;">
-        <li>El <strong>HTML</strong> es el mejor formato (cuadrante + correos)</li>
-        <li>Los correos tienen botón <strong>📋 Copiar</strong> para pegarlos en Gmail/Outlook</li>
-        <li>El HTML se puede <strong>imprimir como PDF</strong> (Ctrl+P)</li>
-      </ul>
-    </div>
-    <div>
-      <h4>Para no perder datos</h4>
-      <ul style="font-size:0.78rem;">
-        <li>La app <strong>auto-guarda</strong> cada 2 minutos, pero pulsa 💾 Guardar antes de cerrar</li>
-        <li>Exporta el proyecto en <strong>JSON</strong> como copia de seguridad</li>
-        <li>Los profesores se guardan <strong>solos</strong> en teachers.json</li>
+      <ul>
+        <li>Prueba <strong>varias opciones</strong> con ◀ ▶</li>
+        <li>Mira <strong>📊 Stats</strong> para ver la carga</li>
+        <li>Bloquea solo lo <strong>imprescindible</strong></li>
       </ul>
     </div>
   </div>
@@ -1584,364 +742,30 @@
 
 <section>
   <h2>Checklist para tu primer cuadrante</h2>
-  <p>Marca estas casillas mentalmente:</p>
   <div style="text-align:left; display:inline-block;">
-    <p>☐ 1. Abrí la aplicación (lanzar.bat o python main.py)</p>
-    <p>☐ 2. Añadí al menos 1 profesor en 👨‍🏫 Profes</p>
-    <p>☐ 3. Le puse franjas de disponibilidad (botones ☕🌤🌞)</p>
-    <p>☐ 4. Creé un proyecto en 🏠 Proyecto (o usé "Nuevo")</p>
-    <p>☐ 5. Añadí al menos 1 necesidad en 📋 Necesidades</p>
-    <p>☐ 6. Pulsé 🚀 Generar Cuadrante en ⚙️</p>
-    <p>☐ 7. Esperé a que terminara el spinner</p>
-    <p>☐ 8. Navegué entre las opciones con ◀ ▶</p>
-    <p>☐ 9. Exporté el resultado (🌐 HTML o 🖼️ PNG)</p>
-    <p>☐ 10. 🎉 ¡Cuadrante listo!</p>
+    <p>☐ 1. Abrí la aplicación</p>
+    <p>☐ 2. Añadí al menos 1 profesor con franjas</p>
+    <p>☐ 3. Creé un proyecto (o usé "Nuevo")</p>
+    <p>☐ 4. Añadí al menos 1 necesidad</p>
+    <p>☐ 5. Configuré el nº de opciones</p>
+    <p>☐ 6. Pulsé 🚀 Generar Cuadrante</p>
+    <p>☐ 7. Navegué entre opciones con ◀ ▶</p>
+    <p>☐ 8. Exporté el resultado (🌐 HTML o 🖼️ PNG)</p>
+    <p>☐ 9. 🎉 ¡Cuadrante listo!</p>
   </div>
-</section>
-
-<!-- ═══════════════════════════════════════════════════════════════ -->
-<!-- TRUCOS Y CONSEJOS -->
-<!-- ═══════════════════════════════════════════════════════════════ -->
-<section>
-  <h2>⚡ Trucos y consejos avanzados</h2>
-  <p style="font-size:0.9rem;">Domina el producto como un experto con estos trucos:</p>
-</section>
-
-<section>
-  <h2>⌨️ Atajos de teclado</h2>
-  <p>No hace falta usar siempre el ratón. Memoriza estos atajos:</p>
-  <table>
-    <tr><th>Atajo</th><th>Qué hace</th></tr>
-    <tr><td><code>F1</code></td><td>Abrir este manual</td></tr>
-    <tr><td><code>Ctrl + S</code></td><td>Guardar el proyecto actual</td></tr>
-    <tr><td><code>Ctrl + Z</code></td><td>Deshacer último cambio</td></tr>
-    <tr><td><code>Ctrl + Y</code></td><td>Rehacer cambio deshecho</td></tr>
-    <tr><td><code>Ctrl + N</code></td><td>Crear un proyecto nuevo</td></tr>
-    <tr><td><code>Ctrl + D</code></td><td>Cargar datos ficticios de demostración</td></tr>
-    <tr><td><code>Esc</code></td><td>Limpiar mensaje de la barra de estado</td></tr>
-  </table>
-  <blockquote class="tip">💡 Todos los atajos se muestran al pasar el ratón sobre el botón correspondiente.</blockquote>
-</section>
-
-<section>
-  <h2>🎨 Personalización visual</h2>
-  <div class="two-col">
-    <div>
-      <h3>Tema claro/oscuro</h3>
-      <p>Pulsa el botón <strong>🌙 Oscuro / ☀️ Claro</strong> en la cabecera para cambiar entre temas. La aplicación recuerda tu preferencia durante la sesión.</p>
-      <h3>Colores de profesor</h3>
-      <p>Al crear un profesor, pulsa <strong>🎨</strong> para elegir un color HEX personalizado. Así identificas rápidamente a cada profe en el cuadrante.</p>
-    </div>
-    <div>
-      <h3>Vista compacta/normal</h3>
-      <p>En la pestaña <strong>📅 Cuadrante</strong>, usa el botón <strong>📅 Cambiar a vista compacta</strong> para que todos los días se muestren en vertical en lugar de columnas. Ideal para pantallas pequeñas.</p>
-      <h3>Scrollbars finos</h3>
-      <p>Las barras de scroll son extra finas (6px) para no robar espacio visual. Funcionan igual que las normales.</p>
-    </div>
-  </div>
-</section>
-
-<section>
-  <h2>🧠 Trucos del solver CP-SAT</h2>
-  <div class="two-col">
-    <div>
-      <h3>¿Por qué 10 opciones?</h3>
-      <p>Cada opción usa una <strong>semilla aleatoria distinta</strong> en el solver, lo que produce soluciones diferentes. Como el problema tiene muchas soluciones posibles, 10 opciones suelen ser suficientes para encontrar una que guste a todos.</p>
-      <h3>Sin solución — ¿qué hago?</h3>
-      <p>Si el solver no encuentra solución, suele ser porque:</p>
-      <ul>
-        <li>No hay suficientes profesores disponibles para cubrir todas las necesidades</li>
-        <li>Los horarios de los profesores no cubren las horas de las necesidades</li>
-        <li>Hay demasiadas necesidades solapadas y pocos profesores</li>
-      </ul>
-      <blockquote class="tip">💡 Prueba a aumentar <code>max_hours</code> o <code>max_hours_per_day</code> de los profesores, o añade más franjas de disponibilidad.</blockquote>
-    </div>
-    <div>
-      <h3>El solver va lento</h3>
-      <p>Con 15 profesores y 50 necesidades, el solver puede tardar hasta <strong>2 minutos</strong> en generar las 10 opciones. Es normal. El spinner animado te indica que está trabajando.</p>
-      <p>Si necesitas resultados más rápidos, reduce el número de necesidades o de profesores.</p>
-      <h3>Validación previa</h3>
-      <p>Antes de generar, la app comprueba automáticamente si hay necesidades que ningún profesor puede cubrir. Si las hay, te avisa y te deja decidir si continuar o no.</p>
-      <blockquote class="warn">⚠️ Presta atención a los avisos de cobertura. Si una necesidad requiere 3 profes y solo 1 puede cubrirla, el solver no encontrará solución.</blockquote>
-    </div>
-  </div>
-</section>
-
-<section>
-  <h2>🔒 Bloqueo de asignaciones — uso experto</h2>
-  <p>El bloqueo es una de las funciones más potentes. Te permite <strong>fijar</strong> asignaciones concretas y dejar que el solver optimice el resto.</p>
-  <div class="step-box">
-    <span class="step-num">1</span>
-    En <strong>📅 Cuadrante</strong>, haz clic en el nombre de un profesor dentro de una tarea
-  </div>
-  <div class="step-box">
-    <span class="step-num">2</span>
-    Verás que aparece <strong>🔒</strong> en lugar de 🔓 — esa asignación queda fijada
-  </div>
-  <div class="step-box">
-    <span class="step-num">3</span>
-    Repite con todas las asignaciones que quieras forzar
-  </div>
-  <div class="step-box">
-    <span class="step-num">4</span>
-    Pulsa <strong>🔒 Regenerar bloqueos</strong> — el solver respetará tus decisiones y optimizará el resto
-  </div>
-  <blockquote class="tip">💡 Los bloqueos se guardan con el proyecto. Si cierras y vuelves a abrir, los bloqueos siguen ahí.</blockquote>
-  <blockquote class="danger">⚠️ Si bloqueas asignaciones incompatibles (un profesor en dos tareas a la misma hora), el solver fallará. ¡Bloquea con sentido común!</blockquote>
-</section>
-
-<section>
-  <h2>📋 Trucos para necesidades</h2>
-  <div class="two-col">
-    <div>
-      <h3>Mínimo y máximo</h3>
-      <p>Usa el campo <strong>Min</strong> para indicar cuántos profesores <em>se necesitan</em> y <strong>Max</strong> para el máximo que <em>pueden</em> trabajar. El solver siempre intenta llegar al máximo.</p>
-      <p>Ejemplo: si pones min=2, max=4, el solver intentará asignar 4 si hay profesores disponibles, pero nunca menos de 2.</p>
-    </div>
-    <div>
-      <h3>Solapamiento intencionado</h3>
-      <p>Si dos necesidades ocurren a la misma hora, el solver <strong>no puede</strong> asignar el mismo profesor a ambas. Esto es automático.</p>
-      <p>Para tareas que requieren muchos profesores simultáneamente (ej: recogida masiva), pon min=4, max=6.</p>
-      <h3>Fechas futuras</h3>
-      <p>El calendario permite cualquier fecha. Puedes planificar con semanas o meses de antelación.</p>
-    </div>
-  </div>
-</section>
-
-<section>
-  <h2>📁 Gestión de proyectos</h2>
-  <div class="two-col">
-    <div>
-      <h3>Auto-guardado</h3>
-      <p>Cada <strong>2 minutos</strong>, si hay cambios sin guardar, la app guarda automáticamente. Nunca pierdas tu trabajo. Lo indica el label <strong>⚠️ Sin guardar</strong> en la pestaña Proyecto.</p>
-      <h3>Duplicar proyectos</h3>
-      <p>Usa el botón <strong>📋 Duplicar</strong> para crear una copia exacta del proyecto. Útil para experimentar sin miedo: duplica, modifica, genera, compara.</p>
-    </div>
-    <div>
-      <h3>Proyectos vs Profesores</h3>
-      <p>Los <strong>profesores</strong> se guardan en <code>teachers.json</code> y son globales — los usan todos los proyectos. Las <strong>necesidades</strong> son específicas de cada proyecto.</p>
-      <p>Esto significa que si añades un profesor, estará disponible en todos tus proyectos.</p>
-      <h3>Importar/Exportar</h3>
-      <p>Puedes importar y exportar proyectos completos (con necesidades y profesores), solo profesores o solo necesidades. Ideal para compartir entre centros o cursos.</p>
-    </div>
-  </div>
-</section>
-
-<section>
-  <h2>⏱ Gestión de horarios — trucos</h2>
-  <div class="two-col">
-    <div>
-      <h3>Franjas preseleccionadas</h3>
-      <p>Usa los botones <strong>☕ Mañana 09-14h</strong>, <strong>🌤 Tarde 15-18h</strong> y <strong>🌞 Completo 09-18h</strong> para añadir franjas rápidas. Selecciona la fecha con el calendario y pulsa.</p>
-      <h3>Franja personalizada</h3>
-      <p>Si necesitas un horario concreto (ej: 10:30-12:45), pulsa <strong>➕ Personalitzada</strong>. Aparece un diálogo simple con dos campos de hora.</p>
-    </div>
-    <div>
-      <h3>Plantillas de horarios</h3>
-      <p>¿Varios profesores tienen el mismo horario? Añade las franjas a uno, pulsa <strong>💾 Guardar plantilla</strong>, ponle un nombre, y luego cárgalo en otros profesores con <strong>📂 Cargar plantilla</strong>.</p>
-      <h3>Días sin franja = no disponible</h3>
-      <p>Si un profesor no tiene ninguna franja para un día concreto, el solver considera que no está disponible ese día. No hace falta poner "día libre" explícitamente.</p>
-    </div>
-  </div>
-</section>
-
-<section>
-  <h2>🔄 Deshacer y Rehacer</h2>
-  <p>La app guarda un historial de hasta <strong>50 cambios</strong> (altas/bajas de profesores y necesidades).</p>
-  <div class="two-col">
-    <div>
-      <h3>Cómo funciona</h3>
-      <p>Cada vez que añades o eliminas un profesor o una necesidad, se guarda una foto del estado anterior. Puedes deshacer pulsando <strong>↩️ Deshacer</strong> o <strong>Ctrl+Z</strong>.</p>
-    </div>
-    <div>
-      <h3>Límites</h3>
-      <p>Si deshaces 5 cambios y luego haces uno nuevo, los cambios "rehechos" se pierden (como en cualquier editor). El historial se reinicia al cerrar la app.</p>
-    </div>
-  </div>
-  <blockquote class="tip">💡 El deshacer solo afecta a profesores y necesidades del proyecto, no a asignaciones generadas. Para cambiar asignaciones, regenera el cuadrante.</blockquote>
-</section>
-
-<section>
-  <h2>📤 Exportaciones — trucos</h2>
-  <div class="two-col">
-    <div>
-      <h3>HTML con correos</h3>
-      <p>El HTML generado incluye correos electrónicos <strong>listos para copiar</strong> con un clic. Hay un correo general para todo el equipo y correos individuales para cada profesor con sus tareas.</p>
-      <p>El asunto del correo se ha corregido: ahora pone <strong>"Asunto"</strong> (no "Assumpte").</p>
-      <h3>Imprimir / PDF</h3>
-      <p>Abre el HTML en el navegador, pulsa <strong>🖨️ Imprimir / Guardar PDF</strong>. La página está optimizada para impresión en horizontal (landscape).</p>
-    </div>
-    <div>
-      <h3>CSV para Excel</h3>
-      <p>El CSV se exporta con codificación UTF-8 con BOM, que Excel abre correctamente con caracteres españoles (tildes, ñ).</p>
-      <h3>PNG del cuadrante</h3>
-      <p>Pulsa <strong>🖼️ PNG</strong> para capturar el cuadrante como imagen. Ideal para incluir en informes, presentaciones o WhatsApp.</p>
-    </div>
-  </div>
-</section>
-
-<section>
-  <h2>📊 Estadísticas — cómo interpretarlas</h2>
-  <p>Pulsa <strong>📊 Stats</strong> en la pestaña Cuadrante para ver:</p>
-  <table>
-    <tr><th>Dato</th><th>Qué significa</th></tr>
-    <tr><td>Necesidades cubiertas</td><td>Cuántas tareas tienen al menos el mínimo de profesores asignados</td></tr>
-    <tr><td>Asignaciones totales</td><td>Suma de todas las asignaciones (profesor + tarea). Una tarea con 3 profes cuenta como 3 asignaciones</td></tr>
-    <tr><td>Carga por profesor</td><td>Horas totales que cada profesor tiene asignadas. Revisa que nadie sobrepase su límite</td></tr>
-    <tr><td>Cobertura</td><td>Porcentaje de horas disponibles que se están usando. Si es muy bajo, los profes tienen demasiadas horas libres</td></tr>
-    <tr><td>Horas disponibles vs necesarias</td><td>Compara el total de horas de todos los profes con las horas mínimas requeridas. Si necesarias > disponibles, es imposible cubrir todo</td></tr>
-  </table>
-  <blockquote class="tip">💡 Usa las estadísticas para equilibrar la carga. Si un profesor tiene muchas más horas que otros, bloquea alguna asignación suya y regenera.</blockquote>
-</section>
-
-<section>
-  <h2>🧰 Casos de uso reales</h2>
-  <div class="two-col">
-    <div>
-      <h3>📚 Recogida de libros (XarxaLlibres)</h3>
-      <p>El caso más típico: varios cursos, varios días, varios profesores. Usa los datos ficticios como plantilla y modifica nombres, fechas y horarios.</p>
-      <h3>📝 Apoyo en exámenes</h3>
-      <p>Necesitas profesores de apoyo durante exámenes finales. Crea necesidades cortas (1-2h) con min=1, max=2 durante los días de exámenes.</p>
-    </div>
-    <div>
-      <h3>🏫 Guardias de patio</h3>
-      <p>Asigna profesores a guardias de patio/comedor. Franjas de 30-60 minutos, varios profes por franja, todos los días lectivos.</p>
-      <h3>🎪 Eventos especiales</h3>
-      <p>Jornadas culturales, visitas, excursiones... Crea necesidades para cada actividad y deja que el solver optimice quién va a cada sitio.</p>
-    </div>
-  </div>
-  <blockquote class="tip">💡 Para eventos puntuales, duplica un proyecto existente y modifica las fechas. Ahorrarás mucho tiempo.</blockquote>
-</section>
-
-<section>
-  <h2>🐛 Solución de problemas comunes</h2>
-  <table>
-    <tr><th>Problema</th><th>Solución</th></tr>
-    <tr>
-      <td>El solver no encuentra solución</td>
-      <td>Añade más profesores, más franjas de disponibilidad, o reduce las horas máximas de las necesidades</td>
-    </tr>
-    <tr>
-      <td>Una necesidad aparece en rojo en validación</td>
-      <td>Ningún profesor tiene una franja que cubra completamente ese horario. Añade una franja adecuada o cambia el horario de la necesidad</td>
-    </tr>
-    <tr>
-      <td>No veo las 10 opciones</td>
-      <td>Algunas semillas pueden dar la misma solución. El solver elimina duplicados automáticamente. Si solo ves 5-6 opciones, es normal</td>
-    </tr>
-    <tr>
-      <td>La app no se abre</td>
-      <td>Asegúrate de tener Python 3.9+ y ejecuta <code>pip install -r requirements.txt</code>. Si usas <code>lanzar.bat</code>, comprueba que la ruta a Python es correcta</td>
-    </tr>
-    <tr>
-      <td>No se guarda el proyecto</td>
-      <td>Comprueba que la carpeta <code>projects/</code> existe y tiene permisos de escritura. La app la crea automáticamente</td>
-    </tr>
-    <tr>
-      <td>El spinner se congela</td>
-      <td>Es normal mientras el solver está trabajando. El spinner debería seguir animado, pero si se congela es porque el solver está usando todo el procesador. Espera a que termine</td>
-    </tr>
-    <tr>
-      <td>Los bloqueos no funcionan</td>
-      <td>Asegúrate de haber pulsado <strong>🔒 Regenerar bloqueos</strong> después de bloquear. Si bloqueas asignaciones incompatibles, el solver fallará</td>
-    </tr>
-    <tr>
-      <td>El CSV sale con caracteres raros</td>
-      <td>Excel a veces no detecta UTF-8 automáticamente. Abre el CSV con "Importar" en lugar de "Abrir", o usa LibreOffice que lo detecta bien</td>
-    </tr>
-  </table>
-</section>
-
-<section>
-  <h2>💎 Lo que hace única a esta app</h2>
-  <div class="two-col">
-    <div>
-      <h3>✅ Optimización real</h3>
-      <p>No es un simple reparto. Usa <strong>Google OR-Tools CP-SAT</strong>, el mismo motor que usan empresas de logística para optimizar rutas de reparto. Esto garantiza que las asignaciones son óptimas dentro de las restricciones.</p>
-      <h3>✅ 10 opciones para elegir</h3>
-      <p>Otros generadores dan una única solución. Este da 10 opciones distintas para que elijas la que mejor se adapta a tu centro.</p>
-    </div>
-    <div>
-      <h3>✅ Bloqueo inteligente</h3>
-      <p>Puedes forzar asignaciones concretas y dejar que el solver optimice el resto. Ideal para cuando sabes que "Ana tiene que estar en la recogida de 1º ESO" pero no sabes qué más asignarle.</p>
-      <h3>✅ Sin conexión a internet</h3>
-      <p>Toda la app funciona localmente. No envía datos a ningún servidor. Los datos de profesores y proyectos están en tu ordenador.</p>
-    </div>
-  </div>
-</section>
-
-<!-- ═══════════════════════════════════════════════════════════════ -->
-<!-- GLOSARIO -->
-<!-- ═══════════════════════════════════════════════════════════════ -->
-<section>
-  <h2>📖 Glosario de términos</h2>
-  <table>
-    <tr><th>Término</th><th>Significado</th></tr>
-    <tr><td>Proyecto</td><td>Conjunto de tareas agrupadas bajo un nombre. Se guarda en projects/.</td></tr>
-    <tr><td>Profesor</td><td>Persona que puede ser asignada a tareas. Tiene nombre, horarios y límites.</td></tr>
-    <tr><td>Necesidad</td><td>Tarea que requiere 1 o más profesores durante un tiempo concreto.</td></tr>
-    <tr><td>Franja</td><td>Bloque de tiempo en el que un profesor está disponible. Ej: 09:00-14:00.</td></tr>
-    <tr><td>Opción</td><td>Una posible asignación de profesores a tareas. El solver genera 10.</td></tr>
-    <tr><td>Solver</td><td>El "motor" que calcula las asignaciones. Usa Google OR-Tools CP-SAT.</td></tr>
-    <tr><td>Bloqueo</td><td>Cuando tú decides que un profesor concreto haga una tarea concreta (🔒).</td></tr>
-    <tr><td>Spinner</td><td>El símbolo ⣾ que gira mientras el solver está trabajando.</td></tr>
-    <tr><td>Log</td><td>Panel de texto donde se muestran los mensajes del solver.</td></tr>
-    <tr><td>Toast</td><td>Notificación emergente que aparece y desaparece sola (verde, amarilla o roja).</td></tr>
-    <tr><td>JSON</td><td>Formato de archivo para guardar datos (profesores, proyectos).</td></tr>
-    <tr><td>CSV</td><td>Formato de hoja de cálculo (abre con Excel o LibreOffice).</td></tr>
-    <tr><td>Plantilla</td><td>Conjunto de franjas guardado para reutilizar en otros profesores.</td></tr>
-  </table>
-</section>
-
-<!-- ═══════════════════════════════════════════════════════════════ -->
-<!-- CIERRE -->
-<!-- ═══════════════════════════════════════════════════════════════ -->
-<section>
-  <h2>🎉 ¡Enhorabuena!</h2>
-  <p style="font-size:1rem;">Ya sabes todo lo necesario para usar el Generador Cuadrante Tareas.</p>
-  <div class="icon-row" style="margin-top:20px;">
-    <div class="icon-card" style="background:#eef2ff;border-color:#6366f1;">
-      <div class="emoji">👨‍🏫</div>
-      <div class="label">1. Profesores</div>
-    </div>
-    <div class="icon-card" style="background:#eef2ff;border-color:#6366f1;">
-      <div class="emoji">🏠</div>
-      <div class="label">2. Proyecto</div>
-    </div>
-    <div class="icon-card" style="background:#eef2ff;border-color:#6366f1;">
-      <div class="emoji">📋</div>
-      <div class="label">3. Necesidades</div>
-    </div>
-    <div class="icon-card" style="background:#eef2ff;border-color:#6366f1;">
-      <div class="emoji">⚙️</div>
-      <div class="label">4. Generar</div>
-    </div>
-    <div class="icon-card" style="background:#eef2ff;border-color:#6366f1;">
-      <div class="emoji">📅</div>
-      <div class="label">5. Cuadrante</div>
-    </div>
-  </div>
-  <p style="margin-top:20px;">
-    <strong>IES Serra Perenxisa</strong> · Proyecto XarxaLlibres
-  </p>
-  <p class="footer-note" style="margin-top:16px;">
-    Pulsa Esc para el índice global · ⬅ ➡ para navegar · Espacio para avanzar
-  </p>
 </section>
 
 </div>
 </div>
 <script src="https://unpkg.com/reveal.js@5.1.0/dist/reveal.js"></script>
 <script>
-  Reveal.initialize({
-    hash: true,
-    controls: true,
-    progress: true,
-    center: true,
-    transition: 'slide',
-    width: 960,
-    height: 700,
-  });
+Reveal.initialize({
+  hash: true,
+  controls: true,
+  progress: true,
+  center: true,
+  slideNumber: true
+});
 </script>
 </body>
 </html>

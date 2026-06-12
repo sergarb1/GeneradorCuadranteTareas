@@ -22,16 +22,18 @@
 | 👨‍🏫 **Profesores globales** | Los profesores y su disponibilidad se guardan en `teachers.json` y se comparten entre todos los proyectos |
 | 📋 **Necesidades por proyecto** | Cada proyecto define sus propias tareas con fecha, hora y rango de profesores necesarios |
 | 🧠 **Optimización CP-SAT** | Google OR-Tools genera la mejor asignación posible maximizando el número total de asignaciones |
-| 🎯 **10 opciones navegables** | El solver genera **10 variantes** y cambias entre ellas con ◀ ▶ sin perder ninguna |
+| 🎯 **Opciones configurables (1-50)** | Elige cuántas variantes generar; cambia entre ellas con ◀ ▶ sin perder ninguna |
 | ⏳ **Loading animado** | Spinner visual mientras el solver piensa — evita clicks múltiples |
-| 🔒 **Bloquear asignaciones** | Fija un profesor a una tarea (clic en el cuadrante) y regenera el resto |
+| 🔒 **Bloquear asignaciones** | Fija un profesor a una tarea — highlight con 0.35 opacity + borde 2px del color del profe — y regenera el resto |
 | 🚫 **Sin solapamientos** | Un profesor no puede estar en dos sitios a la vez |
 | ⏱ **Límites personalizados** | Horas máximas totales y por día para cada profesor |
 | 🎨 **Colores y turnos** | Color HEX personalizado + turno (mañana/tarde/cualquiera) por profesor |
 | 📧 **Correos integrados** | Genera correo **general** para el equipo y **correos individuales** para cada profesor |
 | 📅 **Vista calendario** | Visualización por días con tarjetas de tareas — modo compacto y normal |
 | 🖼️ **Exportar PNG** | Captura el cuadrante como imagen PNG |
-| 🌓 **Tema claro/oscuro** | Conmutación instantánea con un solo clic |
+| 📄 **Exportar DOCX** | Documento Word con solo los cuadrantes (tablas limpias, sin extras) |
+| 📅 **Exportar ICS** | Calendario para Google Calendar / Outlook |
+| 🌓 **Tema claro/oscuro/alto contraste** | 3 modos: claro → oscuro → ♿ alto contraste |
 | ↩️🔁 **Deshacer/Rehacer** | Botones con texto, hasta 50 estados de deshacer en edición |
 | 🔍 **Búsqueda y filtros** | Filtra profesores y necesidades por texto |
 | 📥📤 **Importar / Exportar JSON** | Profesores, necesidades o proyectos completos desde cualquier pestaña |
@@ -43,11 +45,23 @@
 | 🖨️ **Exportación HTML** | Vista optimizada para impresión como PDF desde el navegador |
 | 💾 **Persistencia local** | Las opciones generadas se guardan al proyecto y persisten al recargar |
 | 🖥️ **Layout compacto** | Optimizado para 1280×720, columnas estrechas, scrollbars finos, toolbar en 2 filas |
+| 📋 **Duplicar profesor** | Botón 📋 junto al nombre para copiar profesor con todas sus franjas |
+| 📋 **Duplicar necesidad** | Botón 📋 junto a la tarea para crear variantes rápidas |
+| 📋 **Duplicar franja** | Botón 📋 junto a la franja para copiarla y ajustar fecha/hora |
+| 📋 **Duplicar necesidades a otro día** | Copia todas las necesidades de una fecha a otra en bloque |
+| 📋 **Duplicar franjas a otro día** | Copia las franjas de un profesor de una fecha a otra en bloque |
+| 📋 **Duplicar día desde cuadrante** | Copia necesidades de una fecha a otra directamente desde el cuadrante |
+| 📝 **Editar necesidad desde cuadrante** | Menú contextual → "📝 Editar necesidad" para modificar sin cambiar de pestaña |
+| 🌐 **HTML multi-vista** | 5 vistas seleccionables: Cuadrante, Profesores, Tareas, Estilo Word, Para imprimir |
+| 📄 **Estilo Word** | Tabla con bordes negros y Calibri para copiar/pegar directamente en Word |
+| 🖨️ **Vista para imprimir** | Diseño minimalista con tabla de resumen de carga, consume menos tinta |
 | 💬 **Tooltips descriptivos** | Todos los botones e inputs tienen tooltips explicativos al pasar el ratón |
 | ⌨️ **Atajos de teclado** | Ctrl+S guardar, Ctrl+Z deshacer, Ctrl+Y rehacer, Ctrl+N nuevo, Ctrl+D datos ejemplo, F1 ayuda |
 | 📖 **Ayuda integrada** | Botón 📖 Ayuda en cabecera + F1 abre el manual completo en el navegador |
 | ℹ️ **Barra de estado** | Barra inferior con mensajes contextuales y recordatorio de atajos |
 | 🎉 **Diálogo de bienvenida** | Guía inicial interactiva para nuevos usuarios al abrir la app |
+| 🖱️ **Asignación manual** | Menú contextual (clic derecho) en las tareas del cuadrante para añadir o quitar profesores manualmente |
+| 🔄 **Arrastrar profesor** | Arrastra el nombre de un profesor de una tarea a otra para reasignarlo al instante |
 
 ---
 
@@ -82,9 +96,9 @@ O haz doble clic en `lanzar.bat` (Windows).
 1. 👨‍🏫 Profes     →  Añade profesores con disponibilidad, turno y color (o importa JSON)
 2. 🏠 Proyecto     →  Crea o selecciona un proyecto (o importa proyecto completo)
 3. 📋 Necesidades  →  Añade tareas con fecha, hora y mínimo/máximo (o importa JSON)
-4. ⚙️ Generar      →  El solver genera 10 opciones (con loading animado y validación previa)
+4. ⚙️ Generar      →  Configura 1-50 opciones, el solver calcula (con loading animado y validación previa)
 5. 🔒 Cuadrante    →  Bloquea profes a tareas (clic) y regenera si es necesario
-6. 📅 Navega       →  Cambia entre opciones con ◀ ▶, exporta HTML/PNG/CSV
+6. 📅 Navega       →  Cambia entre opciones con ◀ ▶, exporta HTML/PNG/DOCX/ICS
 ```
 
 ### Atajos de teclado
@@ -143,9 +157,9 @@ Maximizar Σ x[n, p]
 
 ```
 GeneradorCuadranteTareasProfesorado/
-├── gui.py              # 🖥️ Interfaz gráfica PyQt6 (~2280 líneas)
+├── gui.py              # 🖥️ Interfaz gráfica PyQt6 (~3448 líneas)
 ├── scheduler.py        # 🧠 Modelo CP-SAT con OR-Tools
-├── html_exporter.py    # 📄 Generación HTML (cuadrante + correos)
+├── html_exporter.py    # 📄 Generación HTML multi-vista (5 vistas + correos)
 ├── seed_data.py        # 🌱 Datos de ejemplo XarxaLlibres (15 profes, 50 tareas)
 ├── main.py             # 🚀 Punto de entrada
 ├── teachers.json       # 👨‍🏫 Profesores (se crea al usar)
