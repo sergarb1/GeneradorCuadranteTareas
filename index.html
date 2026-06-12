@@ -284,13 +284,18 @@
     </div>
     <div class="feature-card">
       <div class="icon">📧</div>
+      <h4>Email del profesor</h4>
+      <p>Campo opcional para correo — se usa como ATTENDEE en exportación ICS</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon">📧</div>
       <h4>Correos integrados</h4>
       <p>Mensajes individuales + resumen general, copia al portapapeles</p>
     </div>
     <div class="feature-card">
       <div class="icon">📊</div>
       <h4>Estadísticas</h4>
-      <p>Panel con carga por profesor, cobertura y horas totales</p>
+      <p>Genera HTML con carga por profesor, cobertura y horas totales</p>
     </div>
     <div class="feature-card">
       <div class="icon">🌓</div>
@@ -308,14 +313,14 @@
       <p>Imprimible como PDF, listo para compartir</p>
     </div>
     <div class="feature-card">
-      <div class="icon">🖼️</div>
-      <h4>Exportar PNG</h4>
-      <p>Captura el cuadrante como imagen</p>
-    </div>
-    <div class="feature-card">
       <div class="icon">📄</div>
       <h4>Exportar DOCX</h4>
       <p>Documento Word con solo los cuadrantes</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon">📝</div>
+      <h4>Exportar Markdown</h4>
+      <p>Tablas por día en formato MD</p>
     </div>
     <div class="feature-card">
       <div class="icon">📅</div>
@@ -395,12 +400,25 @@
 
   <!-- ── Install ── -->
   <h2 id="instalacion">📦 Instalación</h2>
-  <p>Clona el repositorio e instala las dependencias:</p>
+
+  <h3>Requisitos previos</h3>
+  <ul>
+    <li><strong>Python 3.11 o superior</strong> — <a href="https://python.org/downloads">descargar</a></li>
+    <li><strong>pip</strong> (incluido con Python; si no, ejecuta <code>python -m ensurepip</code>)</li>
+  </ul>
+
+  <h3>Pasos</h3>
   <pre>git clone https://github.com/tu-usuario/GeneradorCuadranteTareasProfesorado.git
 cd GeneradorCuadranteTareasProfesorado
 pip install -r requirements.txt
 python main.py</pre>
-  <p>O simplemente haz doble clic en <code>lanzar.bat</code> (Windows).</p>
+
+  <h3>Lanzadores rápidos</h3>
+  <table style="width:100%; border-collapse:collapse;">
+    <tr><th style="text-align:left;padding:8px 12px;border-bottom:2px solid var(--border);">Sistema</th><th style="text-align:left;padding:8px 12px;border-bottom:2px solid var(--border);">Ejecutar</th></tr>
+    <tr><td style="padding:8px 12px;border-bottom:1px solid var(--border);">🪟 Windows</td><td style="padding:8px 12px;border-bottom:1px solid var(--border);">Doble clic en <code>lanzar.bat</code></td></tr>
+    <tr><td style="padding:8px 12px;border-bottom:1px solid var(--border);">🐧 Linux / macOS</td><td style="padding:8px 12px;">Doble clic en <code>lanzar.sh</code> (o <code>bash lanzar.sh</code>)</td></tr>
+  </table>
 
   <!-- ── Structure ── -->
   <h2>📁 Estructura</h2>
@@ -415,8 +433,9 @@ GeneradorCuadranteTareasProfesorado/
 ├── AGENTS.md           #   Guía para IA y esquemas de datos
 ├── projects/           #   Proyectos guardados + opciones generadas
 ├── output/             #   HTML generados
-├── lanzar.bat          #   Lanzador Windows
-├── index.html          #   Página del proyecto
+├── lanzar.bat           #   Lanzador Windows
+├── lanzar.sh            #   Lanzador Linux/macOS
+├── index.html           #   Página del proyecto
 ├── requirements.txt    #   Dependencias Python
 └── README.md           #   Documentación</pre>
 
@@ -451,6 +470,7 @@ Objetivo:  Maximizar Σ x (más asignaciones posible)</pre>
     <li>Los profesores son <strong>globales</strong> (compartidos entre todos los proyectos)</li>
     <li>Asignación de <strong>turno</strong> preferente: Cualquiera / Mañana / Tarde</li>
     <li><strong>Color HEX</strong> personalizado con selector visual</li>
+    <li><strong>Email</strong> opcional (se usa como ATTENDEE en cada evento al exportar ICS)</li>
     <li>Límite de horas semanales y por día</li>
     <li>Franjas de disponibilidad con botones predefinidos (Mañana 09-14h, Tarde 15-18h, Completo 09-18h)</li>
     <li>Franjas personalizadas con diálogo de hora libre</li>
@@ -495,7 +515,7 @@ Objetivo:  Maximizar Σ x (más asignaciones posible)</pre>
     <li>Duplicar día: botón "📋 Duplicar día" copia necesidades entre fechas para editar y regenerar</li>
     <li>Lock highlight: asignaciones bloqueadas con fondo 0.35 opacity + borde 2px del color del profe</li>
     <li>Estadísticas: carga por profesor, cobertura global, horas totales</li>
-    <li>Toolbar en 3 grupos: <strong>Generar HTML</strong> (botón + combo vista), <strong>Acciones</strong> (Regenerar Bloqueos, Carpeta, Stats, Compacta), <strong>Exportar</strong> (DOCX, Calendario ICS, PNG)</li>
+    <li>Toolbar en 3 grupos: <strong>Generar HTML</strong> (botón + combo vista), <strong>Acciones</strong> (Regenerar Bloqueos, Duplicar día, Carpeta, Stats, Compacta), <strong>Exportar</strong> (DOCX, MD, Calendario ICS)</li>
     <li>Scrollbars finos (6px) para máximo espacio útil</li>
   </ul>
 
@@ -514,8 +534,8 @@ Objetivo:  Maximizar Σ x (más asignaciones posible)</pre>
     <li><strong>HTML</strong> con <strong>5 vistas</strong> seleccionables: 📅 Cuadrante, 👤 Por profesor, 📋 Por tarea, 📄 Estilo Word (copia/pega a Word), 🖨️ Para imprimir</li>
     <li>Correos electrónicos generales e individuales integrados en el HTML con botón "📋 Copiar"</li>
     <li><strong>DOCX</strong>: documento Word con solo los cuadrantes (tablas limpias, sin extras)</li>
-    <li><strong>ICS</strong>: calendario para Google Calendar / Outlook</li>
-    <li><strong>PNG</strong>: captura directa del cuadrante</li>
+    <li><strong>ICS</strong>: calendario para Google Calendar / Outlook — incluye ATTENDEE por profesor si tiene email</li>
+    <li><strong>Markdown</strong>: tablas por día en formato MD</li>
     <li><strong>CSV</strong>: datos tabulares para hoja de cálculo</li>
     <li><strong>JSON</strong>: profesores, necesidades o proyecto completo</li>
   </ul>

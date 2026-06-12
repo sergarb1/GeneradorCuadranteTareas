@@ -11,87 +11,87 @@ TEACHER_COLORS = ["#6366f1","#ef4444","#10b981","#8b5cf6","#f59e0b","#06b6d4","#
 # Datos semilla de 15 profesores con turno, color y franjas de disponibilidad
 SEED_TEACHERS = [
     # --- Original 8 conservados con turno y color ---
-    {"name":"Ana Alumnez","max_hours":20,"max_hours_per_day":6,"turno":"Cualquiera","color":"#6366f1",
+    {"name":"Ana Alumnez","max_hours":20,"max_hours_per_day":6,"turno":"Cualquiera","color":"#6366f1","email":"ana.alumnez@ies.edu",
      "time_slots":[
          {"date":"2026-06-22","start":"09:00","end":"14:00"},{"date":"2026-06-22","start":"15:30","end":"18:30"},
          {"date":"2026-06-23","start":"09:00","end":"14:00"},{"date":"2026-06-23","start":"15:30","end":"18:30"},
          {"date":"2026-06-24","start":"09:00","end":"14:00"},{"date":"2026-06-24","start":"15:30","end":"18:30"},
          {"date":"2026-06-25","start":"09:00","end":"14:00"},{"date":"2026-06-25","start":"15:30","end":"18:30"},
          {"date":"2026-06-26","start":"09:00","end":"14:00"}]},
-    {"name":"Carlos Profesorez","max_hours":25,"max_hours_per_day":7,"turno":"Mañana","color":"#ef4444",
+    {"name":"Carlos Profesorez","max_hours":25,"max_hours_per_day":7,"turno":"Mañana","color":"#ef4444","email":"carlos.profesorez@ies.edu",
      "time_slots":[
          {"date":"2026-06-22","start":"08:00","end":"15:00"},{"date":"2026-06-23","start":"08:00","end":"15:00"},
          {"date":"2026-06-24","start":"08:00","end":"15:00"},{"date":"2026-06-25","start":"08:00","end":"15:00"},
          {"date":"2026-06-26","start":"08:00","end":"15:00"}]},
-    {"name":"Maria Inventadez","max_hours":12,"max_hours_per_day":4,"turno":"Tarde","color":"#10b981",
+    {"name":"Maria Inventadez","max_hours":12,"max_hours_per_day":4,"turno":"Tarde","color":"#10b981","email":"maria.inventadez@ies.edu",
      "time_slots":[
          {"date":"2026-06-22","start":"16:00","end":"20:00"},{"date":"2026-06-23","start":"16:00","end":"20:00"},
          {"date":"2026-06-24","start":"16:00","end":"20:00"},{"date":"2026-06-25","start":"16:00","end":"20:00"}]},
-    {"name":"Jose Ficticiez","max_hours":20,"max_hours_per_day":6,"turno":"Cualquiera","color":"#8b5cf6",
+    {"name":"Jose Ficticiez","max_hours":20,"max_hours_per_day":6,"turno":"Cualquiera","color":"#8b5cf6","email":"jose.ficticiez@ies.edu",
      "time_slots":[
          {"date":"2026-06-22","start":"09:00","end":"14:00"},{"date":"2026-06-22","start":"15:00","end":"19:00"},
          {"date":"2026-06-23","start":"09:00","end":"14:00"},{"date":"2026-06-23","start":"15:00","end":"19:00"},
          {"date":"2026-06-24","start":"09:00","end":"14:00"},{"date":"2026-06-24","start":"15:00","end":"19:00"},
          {"date":"2026-06-25","start":"09:00","end":"14:00"},{"date":"2026-06-25","start":"15:00","end":"19:00"}]},
-    {"name":"Laura Ejemplarez","max_hours":18,"max_hours_per_day":6,"turno":"Mañana","color":"#f59e0b",
+    {"name":"Laura Ejemplarez","max_hours":18,"max_hours_per_day":6,"turno":"Mañana","color":"#f59e0b","email":"laura.ejemplarez@ies.edu",
      "time_slots":[
          {"date":"2026-06-22","start":"09:00","end":"14:00"},{"date":"2026-06-22","start":"16:00","end":"19:00"},
          {"date":"2026-06-23","start":"09:00","end":"14:00"},{"date":"2026-06-23","start":"16:00","end":"19:00"},
          {"date":"2026-06-24","start":"09:00","end":"14:00"},{"date":"2026-06-24","start":"16:00","end":"19:00"},
          {"date":"2026-06-25","start":"09:00","end":"14:00"},{"date":"2026-06-25","start":"16:00","end":"19:00"},
          {"date":"2026-06-26","start":"09:00","end":"14:00"}]},
-    {"name":"David Simuladez","max_hours":25,"max_hours_per_day":8,"turno":"Mañana","color":"#06b6d4",
+    {"name":"David Simuladez","max_hours":25,"max_hours_per_day":8,"turno":"Mañana","color":"#06b6d4","email":"david.simuladez@ies.edu",
      "time_slots":[
          {"date":"2026-06-22","start":"08:00","end":"12:00"},{"date":"2026-06-22","start":"14:00","end":"18:00"},
          {"date":"2026-06-23","start":"08:00","end":"12:00"},{"date":"2026-06-23","start":"14:00","end":"18:00"},
          {"date":"2026-06-24","start":"08:00","end":"12:00"},{"date":"2026-06-24","start":"14:00","end":"18:00"},
          {"date":"2026-06-25","start":"08:00","end":"12:00"},{"date":"2026-06-25","start":"14:00","end":"18:00"},
          {"date":"2026-06-26","start":"08:00","end":"12:00"},{"date":"2026-06-26","start":"14:00","end":"18:00"}]},
-    {"name":"Sofia Irrealmez","max_hours":10,"max_hours_per_day":4,"turno":"Mañana","color":"#ec4899",
+    {"name":"Sofia Irrealmez","max_hours":10,"max_hours_per_day":4,"turno":"Mañana","color":"#ec4899","email":"sofia.irrealmez@ies.edu",
      "time_slots":[
          {"date":"2026-06-22","start":"09:00","end":"12:00"},{"date":"2026-06-23","start":"09:00","end":"12:00"},
          {"date":"2026-06-24","start":"09:00","end":"12:00"},{"date":"2026-06-25","start":"09:00","end":"12:00"},
          {"date":"2026-06-26","start":"09:00","end":"12:00"}]},
-    {"name":"Pablo Fingirez","max_hours":18,"max_hours_per_day":6,"turno":"Tarde","color":"#3b82f6",
+    {"name":"Pablo Fingirez","max_hours":18,"max_hours_per_day":6,"turno":"Tarde","color":"#3b82f6","email":"pablo.fingirez@ies.edu",
      "time_slots":[
          {"date":"2026-06-22","start":"14:00","end":"19:00"},{"date":"2026-06-23","start":"14:00","end":"19:00"},
          {"date":"2026-06-24","start":"14:00","end":"19:00"},{"date":"2026-06-25","start":"14:00","end":"19:00"},
          {"date":"2026-06-26","start":"14:00","end":"19:00"}]},
     # --- 7 nuevos profesores para estrés ---
-    {"name":"Elena Textualdez","max_hours":22,"max_hours_per_day":7,"turno":"Mañana","color":"#f97316",
+    {"name":"Elena Textualdez","max_hours":22,"max_hours_per_day":7,"turno":"Mañana","color":"#f97316","email":"elena.textualdez@ies.edu",
      "time_slots":[
          {"date":"2026-06-22","start":"07:30","end":"14:30"},{"date":"2026-06-23","start":"07:30","end":"14:30"},
          {"date":"2026-06-24","start":"07:30","end":"14:30"},{"date":"2026-06-25","start":"07:30","end":"14:30"},
          {"date":"2026-06-26","start":"07:30","end":"14:30"}]},
-    {"name":"Ramon Librez","max_hours":15,"max_hours_per_day":5,"turno":"Tarde","color":"#14b8a6",
+    {"name":"Ramon Librez","max_hours":15,"max_hours_per_day":5,"turno":"Tarde","color":"#14b8a6","email":"ramon.librez@ies.edu",
      "time_slots":[
          {"date":"2026-06-22","start":"15:00","end":"20:00"},{"date":"2026-06-23","start":"15:00","end":"20:00"},
          {"date":"2026-06-24","start":"15:00","end":"20:00"},{"date":"2026-06-25","start":"15:00","end":"20:00"},
          {"date":"2026-06-26","start":"15:00","end":"20:00"}]},
-    {"name":"Beatriz Papelmez","max_hours":20,"max_hours_per_day":6,"turno":"Cualquiera","color":"#84cc16",
+    {"name":"Beatriz Papelmez","max_hours":20,"max_hours_per_day":6,"turno":"Cualquiera","color":"#84cc16","email":"beatriz.papelmez@ies.edu",
      "time_slots":[
          {"date":"2026-06-22","start":"09:00","end":"13:00"},{"date":"2026-06-22","start":"15:30","end":"19:30"},
          {"date":"2026-06-23","start":"09:00","end":"13:00"},{"date":"2026-06-23","start":"15:30","end":"19:30"},
          {"date":"2026-06-24","start":"09:00","end":"13:00"},{"date":"2026-06-24","start":"15:30","end":"19:30"},
          {"date":"2026-06-25","start":"09:00","end":"13:00"},{"date":"2026-06-25","start":"15:30","end":"19:30"}]},
-    {"name":"Miguel Cuaderniez","max_hours":16,"max_hours_per_day":5,"turno":"Mañana","color":"#e11d48",
+    {"name":"Miguel Cuaderniez","max_hours":16,"max_hours_per_day":5,"turno":"Mañana","color":"#e11d48","email":"miguel.cuaderniez@ies.edu",
      "time_slots":[
          {"date":"2026-06-22","start":"08:00","end":"13:00"},{"date":"2026-06-23","start":"08:00","end":"13:00"},
          {"date":"2026-06-24","start":"08:00","end":"13:00"},{"date":"2026-06-25","start":"08:00","end":"13:00"},
          {"date":"2026-06-26","start":"08:00","end":"13:00"}]},
-    {"name":"Teresa Estucherez","max_hours":14,"max_hours_per_day":5,"turno":"Tarde","color":"#0ea5e9",
+    {"name":"Teresa Estucherez","max_hours":14,"max_hours_per_day":5,"turno":"Tarde","color":"#0ea5e9","email":"teresa.estucherez@ies.edu",
      "time_slots":[
          {"date":"2026-06-22","start":"16:00","end":"21:00"},{"date":"2026-06-23","start":"16:00","end":"21:00"},
          {"date":"2026-06-24","start":"16:00","end":"21:00"},{"date":"2026-06-25","start":"16:00","end":"21:00"},
          {"date":"2026-06-26","start":"16:00","end":"21:00"}]},
-    {"name":"Andres Mozillarez","max_hours":24,"max_hours_per_day":8,"turno":"Cualquiera","color":"#a855f7",
+    {"name":"Andres Mozillarez","max_hours":24,"max_hours_per_day":8,"turno":"Cualquiera","color":"#a855f7","email":"andres.mozillarez@ies.edu",
      "time_slots":[
          {"date":"2026-06-22","start":"08:30","end":"12:30"},{"date":"2026-06-22","start":"13:30","end":"17:30"},
          {"date":"2026-06-23","start":"08:30","end":"12:30"},{"date":"2026-06-23","start":"13:30","end":"17:30"},
          {"date":"2026-06-24","start":"08:30","end":"12:30"},{"date":"2026-06-24","start":"13:30","end":"17:30"},
          {"date":"2026-06-25","start":"08:30","end":"12:30"},{"date":"2026-06-25","start":"13:30","end":"17:30"},
          {"date":"2026-06-26","start":"08:30","end":"12:30"},{"date":"2026-06-26","start":"13:30","end":"17:30"}]},
-    {"name":"Carmen Blocdez","max_hours":10,"max_hours_per_day":4,"turno":"Mañana","color":"#22c55e",
+    {"name":"Carmen Blocdez","max_hours":10,"max_hours_per_day":4,"turno":"Mañana","color":"#22c55e","email":"carmen.blocdez@ies.edu",
      "time_slots":[
          {"date":"2026-06-22","start":"08:00","end":"12:00"},{"date":"2026-06-23","start":"08:00","end":"12:00"},
          {"date":"2026-06-24","start":"08:00","end":"12:00"},{"date":"2026-06-25","start":"08:00","end":"12:00"},

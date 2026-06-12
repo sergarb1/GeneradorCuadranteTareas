@@ -916,6 +916,13 @@ class App(QMainWindow):
         self.t_turno.setToolTip("Preferencia de turno: el solver prioriza asignar en este horario")
         f.addWidget(self.t_turno)
         f.addSpacing(4)
+        f.addWidget(QLabel("📧 Email:"))
+        self.t_email = QLineEdit()
+        self.t_email.setPlaceholderText("profe@ies.edu")
+        self.t_email.setFixedWidth(140)
+        self.t_email.setToolTip("Correo electrónico del profesor (opcional, se usa en exportación ICS)")
+        f.addWidget(self.t_email)
+        f.addSpacing(4)
         self.t_color_btn = QPushButton("🎨")
         self.t_color_btn.setFixedWidth(32)
         self.t_color_btn.setToolTip("Elegir color personalizado para identificar al profesor en el cuadrante")
@@ -1269,6 +1276,12 @@ class App(QMainWindow):
         self.lock_regenerate_btn.clicked.connect(self._regenerate_with_locks)
         self.lock_regenerate_btn.setEnabled(False)
         ac_lay.addWidget(self.lock_regenerate_btn)
+        self.dup_day_btn = QPushButton("📋 Duplicar día")
+        self.dup_day_btn.setObjectName("cta")
+        self.dup_day_btn.setToolTip("Copiar todas las necesidades y asignaciones de un día a otro, incluyendo las asignaciones actuales")
+        self.dup_day_btn.clicked.connect(self._duplicate_day_from_schedule)
+        self.dup_day_btn.setEnabled(False)
+        ac_lay.addWidget(self.dup_day_btn)
         self.open_folder_btn = QPushButton("📂 Carpeta")
         self.open_folder_btn.setToolTip("Abrir la carpeta donde se guardan los archivos HTML generados")
         self.open_folder_btn.setObjectName("secondary")
@@ -1304,12 +1317,12 @@ class App(QMainWindow):
         self.ics_btn.clicked.connect(self._export_ics)
         self.ics_btn.setEnabled(False)
         ex_lay.addWidget(self.ics_btn)
-        self.png_btn = QPushButton("🖼️ PNG")
-        self.png_btn.setToolTip("Capturar el cuadrante actual como imagen PNG")
-        self.png_btn.setObjectName("secondary")
-        self.png_btn.clicked.connect(self._export_png)
-        self.png_btn.setEnabled(False)
-        ex_lay.addWidget(self.png_btn)
+        self.md_btn = QPushButton("📝 MD")
+        self.md_btn.setToolTip("Exportar el cuadrante como Markdown (tablas por día)")
+        self.md_btn.setObjectName("secondary")
+        self.md_btn.clicked.connect(self._export_md)
+        self.md_btn.setEnabled(False)
+        ex_lay.addWidget(self.md_btn)
         tb1.addLayout(ex_w)
 
         tb1.addStretch()
@@ -1443,7 +1456,7 @@ class App(QMainWindow):
             ("⚙️  Generar",              "Pulsa el botón grande y el solver CP-SAT genera varias opciones distintas.\n"
              "Puede tardar hasta 2 minutos — un spinner animado te indica que está trabajando."),
             ("📅  Cuadrante", "Navega entre opciones con ◀ ▶, bloquea asignaciones con clic,\n"
-             "abre en el navegador para imprimir, exporta PNG o copia correos."),
+             "abre en el navegador para imprimir, exporta Markdown o copia correos."),
         ]
         for icon_title, body in steps:
             f = QFrame()
@@ -1544,8 +1557,9 @@ class App(QMainWindow):
             row.addWidget(dot)
             pref = t.get("preferred_tasks", [])
             pref_str = f"  ⭐ {len(pref)} pref." if pref else ""
-            # Etiqueta con nombre, límites, franjas y turno
-            txt = QLabel(f"👤 {t['name']:16s}  ⏱ {t['max_hours']}h  📅 {t['max_hours_per_day']}h/d  🗓 {n_slots} franjas  {turno_icon.get(turno, '⏰')} {turno}{pref_str}")
+            email = t.get("email")
+            email_str = f"  📧 {email}" if email else ""
+            txt = QLabel(f"👤 {t['name']:16s}  ⏱ {t['max_hours']}h  📅 {t['max_hours_per_day']}h/d  🗓 {n_slots} franjas  {turno_icon.get(turno, '⏰')} {turno}{email_str}{pref_str}")
             txt.setToolTip("Doble clic para editar nombre")
             txt.mouseDoubleClickEvent = lambda e, idx=i: self._edit_teacher_name(idx)
             row.addWidget(txt, 1)
@@ -1653,10 +1667,11 @@ class App(QMainWindow):
             self.toast.show("Límites deben ser enteros", "warning"); return
         turno = self.t_turno.currentText()
         color = self._teacher_color_pick
+        email = self.t_email.text().strip()
         # Crea el objeto profesor y lo añade a la lista global
         self.teachers.append({
             "name": name, "max_hours": mx, "max_hours_per_day": mxd,
-            "time_slots": [], "turno": turno, "color": color
+            "time_slots": [], "turno": turno, "color": color, "email": email or None
         })
         _save_teachers(self.teachers)
         self._selected_teacher_idx = len(self.teachers) - 1
@@ -1664,6 +1679,7 @@ class App(QMainWindow):
         self._refresh_tslot_panel()
         self._update_stats()
         self.t_name.clear()
+        self.t_email.clear()
         self._teacher_color_pick = TEACHER_COLORS[len(self.teachers) % len(TEACHER_COLORS)]
         self.toast.show(f"Profe «{name}» añadido")
 
@@ -2329,6 +2345,11 @@ class App(QMainWindow):
             "max": int(max_ed.text()),
             "tags": tags_ed.text().strip(),
         }
+        # Actualiza referencias obsoletas en last_assignment
+        if self.last_assignment:
+            for a in self.last_assignment:
+                if a["need"] is n:
+                    a["need"] = self.needs[idx]
         self._rebuild_need_list()
         self._mark_dirty()
         self._update_stats()
@@ -2650,52 +2671,81 @@ class App(QMainWindow):
             self.toast.show(f"Error al exportar: {e}", "error")
 
     def _show_stats(self):
-        """Muestra un diálogo con estadísticas detalladas del cuadrante actual."""
+        """Genera un HTML con estadísticas detalladas y lo abre en el navegador."""
         if not self.last_assignment:
             self.toast.show("Genera un cuadrante primero", "warning"); return
-        d = QDialog(self)
-        d.setWindowTitle("📊 Estadísticas")
-        d.setMinimumSize(500, 400)
-        v = QVBoxLayout(d)
-        v.setSpacing(10)
-        v.setContentsMargins(20, 16, 20, 16)
+        project_name = self.project_name_input.text().strip() or "Cuadrante"
         total_min = sum(duration_min(a["need"]) for a in self.last_assignment)
         unique = len({a["need_idx"] for a in self.last_assignment})
-        # Acumula minutos por profesor para mostrar la carga individual
         teacher_mins = {}
+        teacher_max = {t["name"]: t["max_hours"] * 60 for t in self.teachers}
         for a in self.last_assignment:
             name = a["teacher"]["name"]
             teacher_mins[name] = teacher_mins.get(name, 0) + duration_min(a["need"])
-        stats_text = f"""📊 <b>Estadísticas del cuadrante</b><br><br>
-📋 Total necesidades: {len(self.needs)}<br>
-✅ Necesidades cubiertas: {unique}<br>
-📌 Asignaciones totales: {len(self.last_assignment)}<br>
-⏱ Horas totales asignadas: {total_min // 60}h {total_min % 60:02d}m<br><br>
-<b>Carga por profesor:</b><br>"""
+        avail_min = sum(duration_min(s) for t in self.teachers for s in t.get("time_slots", []))
+        need_min = sum(n["min"] * duration_min(n) for n in self.needs)
+        max_possible = sum((n["max"] or n["min"]) * duration_min(n) for n in self.needs)
+
+        rows = ""
         for name in sorted(teacher_mins.keys()):
             m = teacher_mins[name]
             hh = m // 60
             mm = m % 60
-            stats_text += f"  {name}: {hh}h {mm:02d}m<br>"
-        lbl = QLabel(stats_text)
-        lbl.setTextFormat(Qt.TextFormat.RichText)
-        lbl.setWordWrap(True)
-        v.addWidget(lbl)
-        # Calcula horas disponibles totales y mínimas necesarias para la cobertura
-        avail_min = sum(duration_min(s) for t in self.teachers for s in t.get("time_slots", []))
-        need_min = sum(n["min"] * duration_min(n) for n in self.needs)
-        cov_text = f"""<br><b>Cobertura:</b><br>
-👨‍🏫 Total profes: {len(self.teachers)}<br>
-⏰ Horas disponibles: {avail_min // 60}h<br>
-📋 Horas mínimas necesarias: {need_min // 60}h<br>
-📊 Cobertura: {total_min}/{avail_min}h ({total_min*100//max(avail_min,1)}%)"""
-        lbl2 = QLabel(cov_text)
-        lbl2.setTextFormat(Qt.TextFormat.RichText)
-        v.addWidget(lbl2)
-        bb = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok)
-        bb.accepted.connect(d.accept)
-        v.addWidget(bb)
-        d.exec()
+            cap = teacher_max.get(name, 1)
+            pct = min(m * 100 // cap, 100)
+            rows += f"<tr><td>{name}</td><td>{hh}h {mm:02d}m / {cap//60}h</td><td><div class='bar'><div class='fill' style='width:{pct}%'></div></div>{pct}%</td></tr>\n"
+
+        html = f"""<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="UTF-8"><title>📊 Estadísticas - {project_name}</title>
+<style>
+  *, *::before, *::after {{ margin:0; padding:0; box-sizing:border-box; }}
+  body {{ font-family:'Segoe UI',-apple-system,sans-serif; background:#f1f5f9; color:#0f172a; padding:30px; }}
+  .card {{ background:#fff; border-radius:14px; padding:28px 32px; margin-bottom:20px; box-shadow:0 1px 4px rgba(0,0,0,.06); }}
+  h1 {{ font-size:1.6rem; margin-bottom:6px; }}
+  .sub {{ color:#64748b; font-size:0.92rem; margin-bottom:20px; }}
+  .grid {{ display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:12px; margin-bottom:20px; }}
+  .stat {{ background:#f8fafc; border-radius:10px; padding:16px; text-align:center; }}
+  .stat .num {{ font-size:1.8rem; font-weight:700; color:#16a34a; }}
+  .stat .lbl {{ font-size:0.82rem; color:#64748b; margin-top:4px; }}
+  table {{ width:100%; border-collapse:collapse; font-size:0.92rem; }}
+  th {{ text-align:left; padding:10px 8px; border-bottom:2px solid #e2e8f0; color:#64748b; font-weight:600; font-size:0.82rem; text-transform:uppercase; }}
+  td {{ padding:8px; border-bottom:1px solid #f1f5f9; }}
+  .bar {{ display:inline-block; width:80px; height:8px; background:#e2e8f0; border-radius:4px; vertical-align:middle; margin-right:8px; }}
+  .fill {{ height:100%; background:#16a34a; border-radius:4px; }}
+  .coverage {{ font-size:0.95rem; line-height:1.8; }}
+  .coverage span {{ font-weight:600; color:#16a34a; }}
+</style></head>
+<body>
+  <div class="card">
+    <h1>📊 Estadísticas del cuadrante</h1>
+    <p class="sub">{project_name}</p>
+    <div class="grid">
+      <div class="stat"><div class="num">{len(self.needs)}</div><div class="lbl">📋 Necesidades totales</div></div>
+      <div class="stat"><div class="num">{unique}</div><div class="lbl">✅ Necesidades cubiertas</div></div>
+      <div class="stat"><div class="num">{len(self.last_assignment)}</div><div class="lbl">📌 Asignaciones totales</div></div>
+      <div class="stat"><div class="num">{total_min // 60}h {total_min % 60:02d}m</div><div class="lbl">⏱ Horas asignadas</div></div>
+    </div>
+    <h2 style="font-size:1rem;margin-bottom:12px;">👨‍🏫 Carga por profesor</h2>
+    <table><thead><tr><th>Profesor</th><th>Horas</th><th>Proporción</th></tr></thead><tbody>{rows}</tbody></table>
+  </div>
+  <div class="card">
+    <h2 style="font-size:1rem;margin-bottom:12px;">📊 Cobertura general</h2>
+    <div class="coverage">
+      👨‍🏫 Profesores: <span>{len(self.teachers)}</span><br>
+      ⏰ Horas disponibles totales: <span>{avail_min // 60}h</span><br>
+      📋 Horas mínimas necesarias: <span>{need_min // 60}h</span><br>
+      🎯 Horas máximas posibles: <span>{max_possible // 60}h</span><br>
+      📈 Cobertura real: <span>{total_min}/{avail_min}h ({total_min*100//max(avail_min,1)}%)</span>
+    </div>
+  </div>
+</body></html>"""
+        path = os.path.join("output", f"stats_{project_name.replace(' ','_')}.html")
+        os.makedirs("output", exist_ok=True)
+        with open(path, "w", encoding="utf-8") as f:
+            f.write(html)
+        webbrowser.open(os.path.abspath(path))
+        self.toast.show(f"📊 Estadísticas abiertas en el navegador")
 
     def _toggle_compact_view(self):
         """Alterna entre vista normal (columnas) y compacta (una columna por día)."""
@@ -2814,19 +2864,37 @@ class App(QMainWindow):
         self._log(f"Regenerando con {len(self._locked_assignments)} bloqueos...")
         self._launch_solver(locked=self._locked_assignments, n_options=5, generate_html=False)
 
-    def _export_png(self):
-        """Captura el contenido completo del cuadrante como imagen PNG."""
+    def _export_md(self):
+        """Exporta el cuadrante actual como Markdown con tablas por día."""
         if not self.last_assignment:
             self.toast.show("No hay cuadrante que exportar", "warning"); return
-        path, _ = QFileDialog.getSaveFileName(self, "Exportar PNG", "cuadrante.png", "PNG (*.png)")
+        path, _ = QFileDialog.getSaveFileName(self, "Exportar Markdown", "cuadrante.md", "Markdown (*.md)")
         if not path: return
         try:
-            sz = self.cal_container.sizeHint()
-            pixmap = QPixmap(sz)
-            pixmap.fill(Qt.GlobalColor.transparent)
-            self.cal_container.render(pixmap, QPoint(), QRegion(QRect(QPoint(), sz)))
-            pixmap.save(path, "PNG")
-            self.toast.show("PNG guardado")
+            groups = {}
+            for x in self.last_assignment:
+                key = x["need_idx"]
+                if key not in groups:
+                    groups[key] = {"need": self.needs[key] if 0 <= key < len(self.needs) else x["need"], "teachers": []}
+                groups[key]["teachers"].append(x["teacher"]["name"])
+            dates = sorted({g["need"]["date"] for g in groups.values()})
+            lines = [f"# Cuadrante — {self.project_name_input.text().strip() or 'Sin nombre'}", ""]
+            for day in dates:
+                day_items = sorted(
+                    [(i, g) for i, g in groups.items() if g["need"]["date"] == day],
+                    key=lambda x: x[1]["need"]["start"]
+                )
+                lines.append(f"## {day}")
+                lines.append("| Hora | Tarea | Profesorado |")
+                lines.append("|------|-------|-------------|")
+                for ni, g in day_items:
+                    n = g["need"]
+                    teachers = ", ".join(sorted(g["teachers"])) if g["teachers"] else "_—_"
+                    lines.append(f"| {n['start']}-{n['end']} | {n['name']} | {teachers} |")
+                lines.append("")
+            with open(path, "w", encoding="utf-8") as f:
+                f.write("\n".join(lines))
+            self.toast.show("📝 Markdown guardado")
         except Exception as e:
             self.toast.show(f"Error: {e}", "error")
 
@@ -2848,18 +2916,22 @@ class App(QMainWindow):
             for a in self.last_assignment:
                 nd = a["need"]
                 tname = a["teacher"]["name"]
+                temail = a["teacher"].get("email") or ""
                 ds = nd["date"].replace("-", "")
                 start_dt = f"{ds}T{nd['start'].replace(':', '')}00"
                 end_dt = f"{ds}T{nd['end'].replace(':', '')}00"
                 summary = f"{nd['name']} - {tname}"
-                lines.extend([
+                event = [
                     "BEGIN:VEVENT",
                     f"DTSTART:{start_dt}",
                     f"DTEND:{end_dt}",
                     f"SUMMARY:{summary}",
                     f"DESCRIPTION:Tarea: {nd['name']}\\nProfesor: {tname}\\nProyecto: {self.project_name_input.text().strip() or 'Cuadrante'}",
-                    "END:VEVENT",
-                ])
+                ]
+                if temail:
+                    event.append(f"ATTENDEE;CN={tname}:mailto:{temail}")
+                event.append("END:VEVENT")
+                lines.extend(event)
             lines.append("END:VCALENDAR")
             with open(path, "w", encoding="utf-8") as f:
                 f.write("\r\n".join(lines))
@@ -3154,8 +3226,10 @@ class App(QMainWindow):
             self.stats_btn.setEnabled(False)
             self.compact_btn.setEnabled(False)
             self.lock_regenerate_btn.setEnabled(False)
-            self.png_btn.setEnabled(False)
+            self.dup_day_btn.setEnabled(False)
+            self.md_btn.setEnabled(False)
             self.ics_btn.setEnabled(False)
+
             self.docx_btn.setEnabled(False)
             self.view_combo.setEnabled(False)
             self.nav_prev_btn.setEnabled(False)
@@ -3169,9 +3243,10 @@ class App(QMainWindow):
         self.open_folder_btn.setEnabled(True)
         self.stats_btn.setEnabled(True)
         self.compact_btn.setEnabled(True)
+        self.dup_day_btn.setEnabled(True)
         self.compact_btn.setText("📅 Cambiar a vista normal" if self._compact_view else "📅 Cambiar a vista compacta")
         self.lock_regenerate_btn.setEnabled(bool(self._locked_assignments))
-        self.png_btn.setEnabled(True)
+        self.md_btn.setEnabled(True)
         self.ics_btn.setEnabled(True)
         self.docx_btn.setEnabled(True)
         self.view_combo.setEnabled(True)
@@ -3195,10 +3270,12 @@ class App(QMainWindow):
         # Agrupa asignaciones por necesidad (varios profes por tarea)
         a = self.last_assignment
         groups = {}
-        for x in sorted(a, key=lambda x: (x["need"]["date"], x["need"]["start"])):
+        for x in a:
             key = x["need_idx"]
+            if key < 0 or key >= len(self.needs):
+                continue
             if key not in groups:
-                groups[key] = {"need": x["need"], "teachers": []}
+                groups[key] = {"need": self.needs[key], "teachers": []}
             groups[key]["teachers"].append(x["teacher"]["name"])
         unique_needs = len({x["need_idx"] for x in a})
         self.cal_summary.setText(f"📋 {len(self.needs)} neces. · ✅ {unique_needs} cubiertas · "

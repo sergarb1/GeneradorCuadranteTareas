@@ -11,7 +11,7 @@ Características recientes de UX pulida:
 - **Diálogo de bienvenida** interactivo en primer inicio
 - **Botón 📖 Ayuda** en la cabecera que abre el manual
 - **Toolbar agrupada**: 3 grupos con supertítulo (Generar HTML, Acciones, Exportar)
-- **Botones CTA** con fondo beige claro (#ece5da): Generar HTML, Regenerar Bloqueos, DOCX
+- **Botones CTA** con fondo beige claro (#ece5da): Generar HTML, Regenerar Bloqueos, Duplicar día, DOCX
 - **Exportar DOCX** con plantilla dedicada (solo cuadrantes, sin extras)
 - **Exportar ICS** como "Calendario ICS"
 
@@ -26,6 +26,7 @@ Características recientes de UX pulida:
     "max_hours_per_day": int,       # Límite máximo por día en horas
     "turno": str,                   # "Cualquiera" | "Mañana" | "Tarde"
     "color": str,                   # Color HEX (ej: "#6366f1") — opcional
+    "email": str,                   # Correo electrónico (opcional, se usa en ICS como ATTENDEE)
     "preferred_tasks": [str],       # Nombres de tareas preferidas — opcional
     "time_slots": [                  # Lista de franjas de disponibilidad
         {
@@ -167,7 +168,7 @@ Archivo JSON con un array de objetos necesidad:
 | 📥 **Importar JSON** | Cada pestaña tiene su botón de importación |
 | 📤 **Exportar JSON** | Profesores, necesidades o proyecto completo |
 | 📊 **Exportar CSV** | Botón en pestaña Proyecto |
-| 📈 **Panel de estadísticas** | Botón 📊 Stats en pestaña Cuadrante |
+| 📈 **Estadísticas** | Botón 📊 Stats — genera HTML y abre en navegador |
 | 📅 **Vista compacta/normal** | Botón "Cambiar a vista compacta/normal" en pestaña Cuadrante |
 | ↩️ **Deshacer/Rehacer** | Botones "↩️ Deshacer / 🔁 Rehacer" en pestaña Proyecto (hasta 50 estados) |
 | 💾 **Auto-guardado** | Cada 2 minutos si hay cambios sin guardar |
@@ -175,7 +176,7 @@ Archivo JSON con un array de objetos necesidad:
 | 🗃️ **Plantillas de horarios** | Guardar/cargar franjas de un profesor como plantilla |
 | ✅ **Validación previa** | Antes de generar, avisa si hay necesidades sin cobertura |
 | ⚠️ **Advertencias de cobertura** | Muestra qué necesidades no pueden cubrirse y horas insuficientes |
-| 🖼️ **Exportar PNG** | Captura del cuadrante como imagen |
+| 📝 **Exportar Markdown** | Exporta el cuadrante como Markdown (tablas por día) |
 | 🕐 **Icono en franjas** | Las franjas de disponibilidad muestran 🕐 |
 | 🔒 **Bloquear asignaciones** | Clic en profesor en cuadrante → 🔒, botón "🔒 Regenerar Bloqueos" |
 | 🖱️ **Asignación manual** | Menú contextual (clic derecho) en tareas del cuadrante para asignar/quitar profesores manualmente |
@@ -192,6 +193,7 @@ Archivo JSON con un array de objetos necesidad:
 | 🌐 **HTML multi-vista** | 5 vistas: Cuadrante, Profesores, Tareas, Estilo Word, Para imprimir |
 | 📄 **Estilo Word** | Tabla con bordes negros y Calibri para copiar a Word directamente |
 | 📄 **Exportar DOCX** | Botón "📄 DOCX" en grupo Exportar (plantilla dedicada solo cuadrantes) |
+| 📝 **Exportar Markdown** | Botón "📝 MD" en grupo Exportar |
 | 📅 **Exportar ICS** | Botón "📅 Calendario ICS" en grupo Exportar |
 
 ## Archivos del proyecto
@@ -207,4 +209,7 @@ Archivo JSON con un array de objetos necesidad:
 | `projects/*.json` | Proyectos guardados |
 | `projects/*_generated.json` | Opciones generadas guardadas |
 | `output/*.html` | Cuadrantes generados |
+| `output/*.ics` | Calendarios ICS exportados |
+| `lanzar.bat` | Lanzador Windows |
+| `lanzar.sh` | Lanzador Linux/macOS |
 | `AGENTS.md` | Esta guía |

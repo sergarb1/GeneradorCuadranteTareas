@@ -63,7 +63,7 @@
     <div class="icon-card"><div class="emoji">👨‍🏫</div><div class="label">Profesores</div><p>Añadir y configurar</p></div>
     <div class="icon-card"><div class="emoji">📋</div><div class="label">Tareas</div><p>Crear necesidades</p></div>
     <div class="icon-card"><div class="emoji">🧠</div><div class="label">Solver</div><p>Genera el cuadrante</p></div>
-    <div class="icon-card"><div class="emoji">📤</div><div class="label">Exportar</div><p>HTML, PNG, ICS, DOCX</p></div>
+    <div class="icon-card"><div class="emoji">📤</div><div class="label">Exportar</div><p>HTML, Markdown, ICS, DOCX</p></div>
   </div>
   <p class="footer-note">Pulsa ➡ o espacio para avanzar · Esc para ver índice</p>
 </section>
@@ -91,7 +91,7 @@
   </div>
   <div class="step-box">
     <span class="step-num">5</span>
-    Ve a <strong>📅 Cuadrante</strong> → usa ◀ ▶ para ver las opciones, o el grupo <strong>Generar HTML</strong> (elige vista y pulsa 🌐 Generar HTML) y exporta desde <strong>Exportar</strong> (DOCX, ICS, PNG)
+    Ve a <strong>📅 Cuadrante</strong> → usa ◀ ▶ para ver las opciones, o el grupo <strong>Generar HTML</strong> (elige vista y pulsa 🌐 Generar HTML) y exporta desde <strong>Exportar</strong> (DOCX, ICS, MD)
   </div>
 </section>
 
@@ -114,7 +114,7 @@
       <ul>
         <li>Varias opciones de cuadrante</li>
         <li>Correos individuales para cada profe</li>
-        <li>Exportación a HTML, PNG, CSV</li>
+        <li>Exportación a HTML, Markdown, CSV</li>
       </ul>
     </div>
   </div>
@@ -249,10 +249,14 @@
   </div>
   <div class="step-box">
     <span class="step-num">5</span>
-    (Opcional) Pulsa 🎨 para elegir un color
+    (Opcional) <strong>📧 Email:</strong> correo del profesor (se usa en el calendario ICS)
   </div>
   <div class="step-box">
     <span class="step-num">6</span>
+    (Opcional) Pulsa 🎨 para elegir un color
+  </div>
+  <div class="step-box">
+    <span class="step-num">7</span>
     Pulsa <strong>➕ Añadir profe</strong>
   </div>
 </section>
@@ -515,7 +519,7 @@
 
 <section>
   <h2>8g. Duplicar día 📋</h2>
-  <p>Botón <span class="tag">📋 Duplicar día</span> en el toolbar del cuadrante:</p>
+  <p>Botón <span class="tag-beige">📋 Duplicar día</span> en el grupo <strong>Acciones</strong> del toolbar del cuadrante (justo después de Regenerar Bloqueos):</p>
   <p>Copia las necesidades y asignaciones de una fecha a otra. Luego puedes ajustar y regenerar.</p>
 </section>
 
@@ -526,13 +530,14 @@
     <tr><th>Grupo</th><th>Botones (orden)</th><th>Qué hace</th></tr>
     <tr><td rowspan="2"><strong>Generar HTML</strong></td><td><span class="tag-beige">🌐 Generar HTML</span></td><td>Genera el HTML y lo abre en el navegador</td></tr>
     <tr><td>📅 Vista (combo)</td><td>Elige vista: Cuadrante / Profesor / Tarea / Word / Para imprimir (por defecto)</td></tr>
-    <tr><td rowspan="4"><strong>Acciones</strong></td><td><span class="tag-beige">🔒 Regenerar Bloqueos</span></td><td>Recalcula respetando asignaciones bloqueadas</td></tr>
+    <tr><td rowspan="5"><strong>Acciones</strong></td><td><span class="tag-beige">🔒 Regenerar Bloqueos</span></td><td>Recalcula respetando asignaciones bloqueadas</td></tr>
+    <tr><td><span class="tag-beige">📋 Duplicar día</span></td><td>Copia necesidades y asignaciones de un día a otro</td></tr>
     <tr><td>📂 Carpeta</td><td>Abre la carpeta de exportaciones</td></tr>
-    <tr><td>📊 Stats</td><td>Panel de estadísticas detalladas</td></tr>
+    <tr><td>📊 Stats</td><td>Abre estadísticas detalladas en el navegador</td></tr>
     <tr><td>📅 Compacta</td><td>Alterna vista normal / compacta</td></tr>
     <tr><td rowspan="3"><strong>Exportar</strong></td><td><span class="tag-beige">📄 DOCX</span></td><td>Exporta como documento Word (.doc) — solo cuadrantes</td></tr>
     <tr><td>📅 Calendario ICS</td><td>Exporta asignaciones a Google Calendar/Outlook</td></tr>
-    <tr><td>🖼️ PNG</td><td>Captura el cuadrante como imagen</td></tr>
+    <tr><td>📝 MD</td><td>Exporta el cuadrante como Markdown (tablas por día)</td></tr>
   </table>
   <p>Los botones <span class="tag-beige">beige</span> destacan las acciones principales.</p>
   <p>El botón <span class="tag-green">❌</span> junto a ◀ ▶ elimina todas las opciones generadas y limpia el cuadrante.</p>
@@ -547,8 +552,8 @@
     <tr><th>Formato</th><th>Cómo</th><th>Para qué</th></tr>
     <tr><td>🌐 HTML</td><td>Grupo "Generar HTML" → elige vista → pulsa el botón beige</td><td>Página interactiva con 5 vistas + correos. Imprimir, PDF, enviar.</td></tr>
     <tr><td>📄 DOCX</td><td>Grupo "Exportar" → botón beige "DOCX"</td><td>Documento Word con solo los cuadrantes (tablas limpias, sin extras)</td></tr>
-    <tr><td>📅 Calendario ICS</td><td>Grupo "Exportar" → "Calendario ICS"</td><td>Exporta asignaciones a Google Calendar, Outlook</td></tr>
-    <tr><td>🖼️ PNG</td><td>Grupo "Exportar" → "PNG"</td><td>Imagen del cuadrante para informes</td></tr>
+    <tr><td>📅 Calendario ICS</td><td>Grupo "Exportar" → "Calendario ICS"</td><td>Exporta asignaciones a Google Calendar, Outlook. Incluye el email del profesor como ATTENDEE si lo tiene.</td></tr>
+    <tr><td>📝 MD</td><td>Grupo "Exportar" → "MD"</td><td>Markdown con tablas por día</td></tr>
     <tr><td>📊 CSV</td><td>En Proyecto → "CSV"</td><td>Excel/LibreOffice</td></tr>
     <tr><td>📤 JSON</td><td>En cada pestaña</td><td>Copias de seguridad, compartir</td></tr>
   </table>
@@ -750,7 +755,7 @@
     <p>☐ 5. Configuré el nº de opciones</p>
     <p>☐ 6. Pulsé 🚀 Generar Cuadrante</p>
     <p>☐ 7. Navegué entre opciones con ◀ ▶</p>
-    <p>☐ 8. Exporté el resultado (🌐 HTML o 🖼️ PNG)</p>
+    <p>☐ 8. Exporté el resultado (🌐 HTML o 📝 Markdown)</p>
     <p>☐ 9. 🎉 ¡Cuadrante listo!</p>
   </div>
 </section>

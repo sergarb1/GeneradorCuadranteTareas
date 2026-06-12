@@ -26,6 +26,11 @@ def _color_for_teacher(name, names):
     idx = names.index(name) % len(TEACHER_COLORS)
     return TEACHER_COLORS[idx]
 
+def _teacher_bullets(names):
+    names = sorted(names)
+    items = "".join(f'<div>• {n}</div>' for n in names)
+    return items
+
 
 # Nombres de días y meses en español para formateo de fechas
 DAYS_ES = ["lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo"]
@@ -65,12 +70,14 @@ def _build_data(teachers, needs, assignment):
     # Mapa nombre -> colores
     tcolors = {n: _color_for_teacher(n, teacher_names) for n in teacher_names}
 
-    # Agrupa asignaciones por índice de necesidad
+    # Agrupa asignaciones por índice de necesidad (salta índices inválidos)
     need_map = {}
     for a in assignment:
         key = a["need_idx"]
+        if key < 0 or key >= len(needs):
+            continue
         if key not in need_map:
-            need_map[key] = {"need": a["need"], "teachers": []}
+            need_map[key] = {"need": needs[key], "teachers": []}
         need_map[key]["teachers"].append(a["teacher"]["name"])
 
     # Índices de necesidades ordenados por fecha y hora de inicio
@@ -107,7 +114,6 @@ def _view_schedule(project_name, teachers, needs, assignment, teacher_names, tco
             entry = need_map.get(ni)
             label = f"{n['start']} - {n['end']}"
             need_name = n["name"]
-            req = f"(min {n['min']}, max {n['max']})"
 
             if entry and entry["teachers"]:
                 # Genera etiqueta de color para cada profesor asignado
@@ -115,10 +121,10 @@ def _view_schedule(project_name, teachers, needs, assignment, teacher_names, tco
                 for tname in sorted(entry["teachers"]):
                     fg, bg = tcolors[tname]
                     tags += f'<span class="teacher-tag" style="background:{bg};color:{fg};border:1px solid {fg};">{tname}</span> '
-                html += f"<tr><td>{label}</td><td>{need_name} <span style='color:#94a3b8;font-size:11px;'>{req}</span></td><td>{tags}</td></tr>\n"
+                html += f"<tr><td>{label}</td><td>{need_name}</td><td>{tags}</td></tr>\n"
             else:
                 # Muestra guión si no hay profesores asignados
-                html += f"<tr><td>{label}</td><td>{need_name} <span style='color:#94a3b8;font-size:11px;'>{req}</span></td><td><span class='empty-cell'>—</span></td></tr>\n"
+                html += f"<tr><td>{label}</td><td>{need_name}</td><td><span class='empty-cell'>—</span></td></tr>\n"
 
         html += "</tbody>\n</table>\n</div>\n"
     return html
@@ -139,8 +145,8 @@ def _view_by_teacher(project_name, teachers, needs, assignment, teacher_names, t
             assigns_by_day.setdefault(d, []).append(a)
 
         fg, bg = tcolors[tname]
-        html += f'<div class="day-section">\n<div class="day-title" style="background:{fg};">👤 {tname}  ·  {_fmt_mins(total_mins)}</div>\n'
-        html += """<table>
+        html += f'<div class="print-day">\n<h3 style="background:{fg};color:#fff;padding:6px 12px;border-radius:6px;">👤 {tname}  ·  {_fmt_mins(total_mins)}</h3>\n'
+        html += """<table class="print-table">
 <thead><tr><th>Día</th><th>Hora</th><th>Tarea</th></tr></thead>
 <tbody>
 """
@@ -156,31 +162,30 @@ def _view_by_teacher(project_name, teachers, needs, assignment, teacher_names, t
 def _view_by_task(project_name, teachers, needs, assignment, teacher_names, tcolors, need_map, sorted_need_idxs, dates, work_sums, teacher_assignments):
     """Genera la vista agrupada por tarea, listando los profesores asignados a cada necesidad."""
     html = ""
+    # Agrupa necesidades por nombre
+    tasks = {}
     for ni in sorted_need_idxs:
         n = needs[ni]
-        entry = need_map.get(ni)
-        day_label = _short_day(n["date"])
-        label = f"{n['start']} - {n['end']}"
-        req = f"(min {n['min']}, max {n['max']})"
+        tasks.setdefault(n["name"], []).append(ni)
 
-        if entry and entry["teachers"]:
-            # Construye etiquetas de color para los profesores asignados
-            tags = ""
-            for tname in sorted(entry["teachers"]):
-                fg, bg = tcolors[tname]
-                tags += f'<span class="teacher-tag" style="background:{bg};color:{fg};border:1px solid {fg};">{tname}</span> '
-        else:
-            tags = '<span class="empty-cell">—</span>'
-
-        html += f'<div class="day-section">\n<div class="day-title" style="background:#475569;">📋 {n["name"]}</div>\n'
-        html += f"""<table>
-<thead><tr><th>Día</th><th>Hora</th><th>Requisito</th><th>Profesores asignados</th></tr></thead>
+    for task_name in sorted(tasks.keys()):
+        nis = tasks[task_name]
+        html += f'<div class="print-day">\n<h3 style="background:#475569;color:#fff;padding:6px 12px;border-radius:6px;">📋 {task_name}</h3>\n'
+        html += """<table class="print-table">
+<thead><tr><th>Día</th><th>Hora</th><th>Profesores asignados</th></tr></thead>
 <tbody>
-<tr><td>{day_label}</td><td>{label}</td><td>{req}</td><td>{tags}</td></tr>
-</tbody>
-</table>
-</div>
 """
+        for ni in nis:
+            n = needs[ni]
+            entry = need_map.get(ni)
+            day_label = _short_day(n["date"])
+            label = f"{n['start']} - {n['end']}"
+            if entry and entry["teachers"]:
+                tags = _teacher_bullets(entry["teachers"])
+            else:
+                tags = "—"
+            html += f"<tr><td>{day_label}</td><td>{label}</td><td>{tags}</td></tr>\n"
+        html += "</tbody>\n</table>\n</div>\n"
     return html
 
 
@@ -204,7 +209,7 @@ def _view_word(project_name, teachers, needs, assignment, teacher_names, tcolors
             need_name = n["name"]
 
             if entry and entry["teachers"]:
-                teachers_str = ", ".join(sorted(entry["teachers"]))
+                teachers_str = _teacher_bullets(entry["teachers"])
             else:
                 teachers_str = "—"
 
@@ -232,7 +237,7 @@ def _view_print(project_name, teachers, needs, assignment, teacher_names, tcolor
             label = f"{n['start']} - {n['end']}"
 
             if entry and entry["teachers"]:
-                teachers_str = ", ".join(sorted(entry["teachers"]))
+                teachers_str = _teacher_bullets(entry["teachers"])
             else:
                 teachers_str = "—"
 
@@ -260,7 +265,7 @@ def _view_docx(project_name, teachers, needs, assignment, teacher_names, tcolors
             label = f"{n['start']} - {n['end']}"
 
             if entry and entry["teachers"]:
-                teachers_str = ", ".join(sorted(entry["teachers"]))
+                teachers_str = _teacher_bullets(entry["teachers"])
             else:
                 teachers_str = "—"
 
@@ -380,7 +385,7 @@ def generate_html(project_name, teachers, needs, assignment, view="all"):
   @page {{ size: landscape; margin: 1cm; }}
   * {{ margin: 0; padding: 0; box-sizing: border-box; }}
   body {{
-    font-family: 'Segoe UI', -apple-system, Helvetica, Arial, sans-serif;
+    font-family: 'Inter', 'Segoe UI', -apple-system, Helvetica, Arial, sans-serif;
     color: #1e293b; background: #f8fafc; padding: 20px;
   }}
   h1 {{ font-size: 22px; font-weight: 700; color: {GVA_BLUE}; margin-bottom: 2px; }}
@@ -395,16 +400,16 @@ def generate_html(project_name, teachers, needs, assignment, view="all"):
   .tab-btn.active {{ background: {GVA_BLUE}; color: #fff; }}
   .tab-content {{ display: none; }}
   .day-section {{ margin-bottom: 20px; }}
-  .day-title {{ font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 8px;
-                padding: 7px 12px; background: {GVA_BLUE}; border-radius: 6px; }}
-  table {{ border-collapse: collapse; width: 100%; margin-bottom: 4px; }}
-  th, td {{ border: 1px solid #d0d5dd; padding: 6px 10px; text-align: center; vertical-align: middle; font-size: 12px; }}
-  th {{ background: {GVA_BLUE}; color: #fff; font-weight: 600; font-size: 12px; padding: 8px 8px; }}
-  td:first-child {{ font-weight: 600; background: #f1f5f9; color: #0f172a; white-space: nowrap; font-size: 11px; }}
+  .day-title {{ font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 8px;
+                padding: 6px 12px; background: {GVA_BLUE}; border-radius: 6px; }}
+  table {{ border-collapse: collapse; width: 100%; }}
+  th, td {{ border: 1px solid #e2e8f0; padding: 6px 10px; text-align: center; vertical-align: middle; font-size: 12px; }}
+  th {{ background: {GVA_BLUE}; color: #fff; font-weight: 600; font-size: 11px; padding: 7px 8px; letter-spacing: 0.3px; text-transform: uppercase; }}
+  td:first-child {{ font-weight: 600; background: #f8fafc; color: #0f172a; white-space: nowrap; font-size: 11px; }}
   td:nth-child(2) {{ text-align: left; font-weight: 500; }}
   .teacher-tag {{
-    display: inline-block; margin: 2px 3px; padding: 3px 10px;
-    border-radius: 12px; font-size: 11px; font-weight: 600;
+    display: inline-block; margin: 2px 2px; padding: 3px 10px;
+    border-radius: 10px; font-size: 11px; font-weight: 600; letter-spacing: 0.2px;
   }}
   .empty-cell {{ color: #94a3b8; font-style: italic; font-size: 11px; }}
   .workload {{ margin-top: 20px; }}

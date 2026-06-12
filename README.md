@@ -30,7 +30,7 @@
 | 🎨 **Colores y turnos** | Color HEX personalizado + turno (mañana/tarde/cualquiera) por profesor |
 | 📧 **Correos integrados** | Genera correo **general** para el equipo y **correos individuales** para cada profesor |
 | 📅 **Vista calendario** | Visualización por días con tarjetas de tareas — modo compacto y normal |
-| 🖼️ **Exportar PNG** | Captura el cuadrante como imagen PNG |
+| 📝 **Exportar Markdown** | Exporta el cuadrante como Markdown (tablas por día) |
 | 📄 **Exportar DOCX** | Documento Word con solo los cuadrantes (tablas limpias, sin extras) |
 | 📅 **Exportar ICS** | Calendario para Google Calendar / Outlook |
 | 🌓 **Tema claro/oscuro/alto contraste** | 3 modos: claro → oscuro → ♿ alto contraste |
@@ -38,7 +38,7 @@
 | 🔍 **Búsqueda y filtros** | Filtra profesores y necesidades por texto |
 | 📥📤 **Importar / Exportar JSON** | Profesores, necesidades o proyectos completos desde cualquier pestaña |
 | 📊 **Exportar CSV** | Exporta asignaciones a CSV |
-| 📈 **Panel de estadísticas** | Carga por profesor, cobertura, horas totales |
+| 📈 **Estadísticas** | Genera HTML y abre en navegador — carga por profesor, cobertura, horas totales |
 | ✅ **Validación previa** | Antes de generar, avisa si hay necesidades sin cobertura |
 | 💾 **Auto-guardado** | Cada 2 minutos si hay cambios sin guardar |
 | 🗃️ **Plantillas de horarios** | Guarda/carga patrones de disponibilidad de un profesor |
@@ -62,24 +62,37 @@
 | 🎉 **Diálogo de bienvenida** | Guía inicial interactiva para nuevos usuarios al abrir la app |
 | 🖱️ **Asignación manual** | Menú contextual (clic derecho) en las tareas del cuadrante para añadir o quitar profesores manualmente |
 | 🔄 **Arrastrar profesor** | Arrastra el nombre de un profesor de una tarea a otra para reasignarlo al instante |
+| 📧 **Email del profesor** | Campo opcional en el formulario del profesor — se usa como ATTENDEE en cada evento al exportar ICS |
 
 ---
 
 ## 🚀 Instalación
 
+### Requisitos previos
+
+- **Python 3.11 o superior** ([descargar](https://python.org/downloads))
+- **pip** (incluido con Python; si no, `python -m ensurepip`)
+
+### Pasos
+
 ```bash
-# Clona el repositorio
+# 1. Clona el repositorio
 git clone https://github.com/tu-usuario/GeneradorCuadranteTareasProfesorado.git
 cd GeneradorCuadranteTareasProfesorado
 
-# Instala dependencias
+# 2. Instala dependencias
 pip install -r requirements.txt
 
-# Ejecuta
+# 3. Ejecuta
 python main.py
 ```
 
-O haz doble clic en `lanzar.bat` (Windows).
+### Lanzadores rápidos
+
+| Sistema | Cómo ejecutar |
+|---|---|
+| **Windows** | Doble clic en `lanzar.bat` |
+| **Linux / macOS** | Doble clic en `lanzar.sh` (o `bash lanzar.sh` desde terminal) |
 
 ### Dependencias
 
@@ -98,7 +111,7 @@ O haz doble clic en `lanzar.bat` (Windows).
 3. 📋 Necesidades  →  Añade tareas con fecha, hora y mínimo/máximo (o importa JSON)
 4. ⚙️ Generar      →  Configura 1-50 opciones, el solver calcula (con loading animado y validación previa)
 5. 🔒 Cuadrante    →  Bloquea profes a tareas (clic) y regenera si es necesario
-6. 📅 Navega       →  Cambia entre opciones con ◀ ▶, exporta HTML/PNG/DOCX/ICS
+6. 📅 Navega       →  Cambia entre opciones con ◀ ▶, exporta HTML/MD/DOCX/ICS
 ```
 
 ### Atajos de teclado
@@ -120,7 +133,7 @@ El proyecto incluye datos ficticios del proceso **XarxaLlibres** (recogida y dis
 - **15 profesores** con distinta disponibilidad (mañana, tarde, mixto, jornada partida, reducida)
 - **50 tareas** a lo largo de 5 días (22–26 de junio de 2026) con solapamientos densos
 - Límites individuales de 10h–25h total y 4h–8h por día
-- Cada profesor con turno preferente y color HEX personalizado
+- Cada profesor con turno preferente, color HEX personalizado y email ficticio (@ies.edu)
 
 Para cargarlos: pulsa **"📦 Cargar datos ficticios"** en la pestaña Proyecto (o Ctrl+D).
 
@@ -166,8 +179,9 @@ GeneradorCuadranteTareasProfesorado/
 ├── AGENTS.md           # 🤖 Guía para IA y esquemas de datos
 ├── projects/           # 📂 Proyectos guardados + opciones generadas
 ├── output/             # 📁 HTML generados
-├── lanzar.bat          # 🏃 Lanzador Windows
-├── index.html          # 🌐 Página del proyecto
+├── lanzar.bat           # 🏃 Lanzador Windows
+├── lanzar.sh            # 🏃 Lanzador Linux/macOS
+├── index.html           # 🌐 Página del proyecto
 ├── requirements.txt    # 📦 Dependencias Python
 └── README.md           # 📖 Este archivo
 ```
