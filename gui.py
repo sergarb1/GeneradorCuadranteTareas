@@ -306,6 +306,7 @@ class ClickFrame(QFrame):
 class DropFrame(QFrame):
     """Frame que acepta drops de profesores arrastrados y emite señal con los índices (origen, destino, profesor)."""
     dropped = pyqtSignal(int, int, int)
+    dblclick = pyqtSignal(int)
     def __init__(self, need_idx, parent=None):
         super().__init__(parent)
         self.need_idx = need_idx  # Índice de la necesidad destino
@@ -332,6 +333,10 @@ class DropFrame(QFrame):
         data = json.loads(e.mimeData().data("application/x-teacher").data().decode())
         src_need_idx, teacher_idx = data
         self.dropped.emit(src_need_idx, self.need_idx, teacher_idx)
+    def mouseDoubleClickEvent(self, e):
+        """Doble clic → emite señal con el índice de la necesidad."""
+        self.dblclick.emit(self.need_idx)
+        super().mouseDoubleClickEvent(e)
 
 # ── Diálogo de carga animado ──────────────────────────────────────────
 class LoadingDialog(QDialog):
@@ -729,6 +734,10 @@ class App(QMainWindow):
             f"QStatusBar::item {{ border: none; }} "
         )
         self.status_bar.showMessage("💡 F1 Ayuda  ·  Ctrl+D Datos ejemplo  ·  Ctrl+S Guardar  ·  Ctrl+Z Deshacer  ·  Ctrl+Y Rehacer")
+        self._dirty_dot = QLabel("")
+        self._dirty_dot.setFixedWidth(16)
+        self._dirty_dot.setToolTip("● verde = guardado  ·  ● rojo = cambios sin guardar")
+        self.status_bar.addPermanentWidget(self._dirty_dot)
         main_v.addWidget(self.status_bar)
 
         # Toast overlay
@@ -1379,6 +1388,13 @@ class App(QMainWindow):
         tb2.addWidget(self.clear_opts_btn)
 
         tb2.addStretch()
+
+        self.cal_filter = QLineEdit()
+        self.cal_filter.setPlaceholderText("🔍 Filtrar necesidades...")
+        self.cal_filter.setFixedWidth(180)
+        self.cal_filter.setToolTip("Filtra las necesidades del cuadrante por nombre o profesor asignado")
+        self.cal_filter.textChanged.connect(self._update_schedule_tab)
+        tb2.addWidget(self.cal_filter)
 
         self.cal_summary = QLabel("")
         self.cal_summary.setToolTip("Resumen del cuadrante actual: necesidades, cobertura y asignaciones")
@@ -2518,6 +2534,7 @@ class App(QMainWindow):
         self._locked_assignments = {}
         self._dirty = False
         self._dirty_label.setText("")
+        self._dirty_dot.setText("🟢")
         self._rebuild_need_list()
         self._update_stats()
         self._update_schedule_tab()
@@ -2542,6 +2559,7 @@ class App(QMainWindow):
         _save_project(name, self.needs)
         self._dirty = False
         self._dirty_label.setText("")
+        self._dirty_dot.setText("🟢")
         self._refresh_project_list()
         if not silent:
             self.toast.show(f"Proyecto «{name}» guardado")
@@ -2570,6 +2588,7 @@ class App(QMainWindow):
         self.needs = [dict(n) for n in data.get("needs", [])]
         self._dirty = False
         self._dirty_label.setText("")
+        self._dirty_dot.setText("🟢")
         self._rebuild_need_list()
         self._update_stats()
 
@@ -2593,6 +2612,7 @@ class App(QMainWindow):
         if not self._dirty:
             self._dirty = True
             self._dirty_label.setText("⚠️ Sin guardar")
+            self._dirty_dot.setText("🔴")
         self._update_stats()
 
     def _load_seed(self):
@@ -3447,10 +3467,17 @@ class App(QMainWindow):
             col_v.addWidget(hdr_frame)
 
             # Necesidades del día ordenadas por hora de inicio
+            filtro = self.cal_filter.text().strip().lower()
             day_needs = sorted(
                 [(i, g) for i, g in groups.items() if g["need"]["date"] == day],
                 key=lambda x: x[1]["need"]["start"]
             )
+            if filtro:
+                day_needs = [
+                    (i, g) for i, g in day_needs
+                    if filtro in g["need"]["name"].lower()
+                    or any(filtro in t.lower() for t in g["teachers"])
+                ]
 
             if not day_needs:
                 empty = QLabel("—")
@@ -3470,8 +3497,9 @@ class App(QMainWindow):
                     card.customContextMenuRequested.connect(
                         lambda pos, ni2=ni, n2=n, c=card: self._need_context_menu(ni2, n2, c.mapToGlobal(pos))
                     )
-                    card.setToolTip("Suelta aquí un profesor para asignarlo manualmente")
+                    card.setToolTip("Suelta aquí un profesor para asignarlo manualmente · Doble clic para editar")
                     card.dropped.connect(self._move_teacher_drop)
+                    card.dblclick.connect(lambda ni2=ni: self._edit_need_from_schedule(ni2))
                     card_v = QVBoxLayout(card)
                     card_v.setContentsMargins(6, 4, 6, 4)
                     card_v.setSpacing(2)
@@ -3569,6 +3597,8 @@ class App(QMainWindow):
             _save_project(name, self.needs)
             self._dirty = False
             self._dirty_label.setText("")
+            self._dirty_dot.setText("🟢")
+            self.status_bar.showMessage("💾 Auto-guardado", 3000)
 
     # ── Validación previa ──────────────────────────────────────────────
     def _validate_coverage(self):
