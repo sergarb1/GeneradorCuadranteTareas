@@ -8,7 +8,7 @@ Características recientes de UX pulida:
 - **Tooltips** en todos los botones, inputs y labels
 - **Barra de estado** inferior con mensajes contextuales y atajos
 - **Atajos de teclado**: Ctrl+S, Ctrl+Z, Ctrl+Y, Ctrl+N, Ctrl+D, F1
-- **Diálogo de bienvenida** interactivo en primer inicio
+- **Diálogo de bienvenida** interactivo en primer inicio (con checkbox "No mostrar al inicio")
 - **Botón 📖 Ayuda** en la cabecera que abre el manual
 - **Toolbar agrupada**: 3 grupos con supertítulo (Generar HTML, Acciones, Exportar)
 - **Botones CTA** con fondo beige claro (#ece5da): Generar HTML, Regenerar Bloqueos, Duplicar día, DOCX
@@ -28,6 +28,7 @@ Características recientes de UX pulida:
     "color": str,                   # Color HEX (ej: "#6366f1") — opcional
     "email": str,                   # Correo electrónico (opcional, se usa en ICS como ATTENDEE)
     "preferred_tasks": [str],       # Nombres de tareas preferidas — opcional
+    "groups": [str],                # Grupos/clases que enseña (ej: ["1ESO A", "2ESO B"]) — opcional
     "time_slots": [                  # Lista de franjas de disponibilidad
         {
             "date": str,            # "YYYY-MM-DD"
@@ -44,6 +45,7 @@ Reglas para `time_slots`:
 - Una necesidad que va de 09:00 a 11:00 puede cubrirse con una franja 09:00-14:00, pero NO con 09:30-11:00
 - Los slots pueden solaparse entre sí para un mismo profesor (se usan como "disponibilidad total" ese día)
 - Si no hay slot para un día concreto, el profesor no está disponible ese día
+- `groups`: lista de grupos/clases que enseña (ej: `["1ESO A", "2ESO B"]`). Si está vacía o ausente, el profesor puede cubrir cualquier necesidad.
 
 ### Necesidad (tarea)
 
@@ -54,7 +56,8 @@ Reglas para `time_slots`:
     "start": str,          # "HH:MM"
     "end": str,            # "HH:MM"
     "min": int,            # Mínimo de profesores requeridos (>= 1)
-    "max": int             # Máximo de profesores que pueden asignarse (>= min)
+    "max": int,            # Máximo de profesores que pueden asignarse (>= min)
+    "groups": str          # Expresión de grupos requeridos (opcional, ver reglas abajo)
 }
 ```
 
@@ -63,6 +66,15 @@ Reglas para necesidades:
 - `start < end`
 - La duración se calcula automáticamente como `end - start` en minutos
 - Una necesidad puede requerir varios profesores simultáneamente (min 2, max 4)
+
+Reglas para `groups` en necesidades:
+- Vacío `""` → cualquier profesor con disponibilidad horaria puede cubrirla
+- `"1ESO A"` → el profesor debe enseñar 1ESO A
+- `"1ESO A, 2ESO B"` → el profesor debe enseñar 1ESO A O 2ESO B (separador `,` = OR)
+- `"1ESO A+2ESO B"` → el profesor debe enseñar 1ESO A Y 2ESO B (separador `+` = AND)
+- `"1ESO A+2ESO B, 3ESO A"` → el profesor debe enseñar (1ESO A Y 2ESO B) O 3ESO A
+- El solver filtra automáticamente por grupos en `_teacher_available()`
+- Compatibilidad hacia atrás: datos antiguos sin `groups` funcionan correctamente
 
 ### Proyecto (archivo en `projects/`)
 
@@ -99,6 +111,7 @@ Archivo JSON con un array de objetos profesor:
         "turno": "Cualquiera",
         "color": "#6366f1",
         "preferred_tasks": [],
+        "groups": [],
         "time_slots": [
             {"date": "2026-06-22", "start": "09:00", "end": "14:00"},
             {"date": "2026-06-22", "start": "15:30", "end": "18:30"}
@@ -119,7 +132,8 @@ Archivo JSON con un array de objetos necesidad:
         "start": "09:00",
         "end": "11:00",
         "min": 2,
-        "max": 4
+        "max": 4,
+        "groups": ""
     }
 ]
 ```
@@ -144,13 +158,15 @@ Archivo JSON con un array de objetos necesidad:
 
 4. **Solapamiento de necesidades**: Si dos necesidades ocurren el mismo día y sus horarios se cruzan, un mismo profesor no puede estar en ambas. El solver lo maneja automáticamente.
 
-5. **Distribución realista**: Los datos semilla incluyen 15 profesores con distintos perfiles (mañanas, tardes, mixto, jornada partida, reducida) y ~50 necesidades distribuidas en 5 días con solapamientos densos. Es un buen punto de partida para estresar el solver.
+5. **Distribución realista**: Hay 2 proyectos de datos ficticios para elegir desde un selector al pulsar "📦 Cargar datos ficticios": "🧹 Apoyo limpieza aulas" (8 profesores, sin grupos, 2 días) y "🏫 Acompañamiento alumnos" (12 profesores, con grupos AND/OR, 2 días). Ambos llevan "(DATOS FICTICIOS)" en el nombre. Son un buen punto de partida para probar la aplicación y estresar el solver.
 
 6. **Límite de tiempo**: El solver tiene 10 segundos por opción. Con 15 profesores y 50 necesidades, puede tardar hasta 2 minutos en generar las 10 opciones. La interfaz muestra un loading animado mientras resuelve.
 
 7. **Perfiles variados**: Los profesores deberían tener distintos `turno` y `max_hours` para que el solver tenga combinaciones interesantes. Mezcla perfiles de mañana, tarde, y mixtos.
 
 8. **Colores**: Se recomienda usar colores HEX distintos para cada profesor. Si no se especifica `color`, se asigna automáticamente.
+
+9. **Grupos**: Los profesores deben tener grupos variados (1-4 grupos cada uno). Las necesidades deben usar la sintaxis AND/OR para requerir grupos específicos. Asegúrate de que al menos un profesor tenga cada grupo requerido por alguna necesidad. El proyecto "🏫 Acompañamiento alumnos" incluye restricciones de grupos AND/OR como ejemplo.
 
 ## Funcionalidades actuales
 
@@ -167,6 +183,7 @@ Archivo JSON con un array de objetos necesidad:
 | 📋 **Duplicar día desde cuadrante** | Botón "📋 Duplicar día" en toolbar del cuadrante (copia necesidades de una fecha a otra) |
 | 📥 **Importar JSON** | Cada pestaña tiene su botón de importación |
 | 📤 **Exportar JSON** | Profesores, necesidades o proyecto completo |
+| 📦 **Cargar datos ficticios** | Botón en pestaña Proyecto → selector con 2 proyectos: "🧹 Apoyo limpieza aulas" (8 profes, sin grupos) y "🏫 Acompañamiento alumnos" (12 profes, con grupos AND/OR) |
 | 📊 **Exportar CSV** | Botón en pestaña Proyecto |
 | 📈 **Estadísticas** | Botón 📊 Stats — genera HTML y abre en navegador |
 | 📅 **Vista compacta/normal** | Botón "Cambiar a vista compacta/normal" en pestaña Cuadrante |
@@ -195,6 +212,7 @@ Archivo JSON con un array de objetos necesidad:
 | 📄 **Exportar DOCX** | Botón "📄 DOCX" en grupo Exportar (plantilla dedicada solo cuadrantes) |
 | 📝 **Exportar Markdown** | Botón "📝 MD" en grupo Exportar |
 | 📅 **Exportar ICS** | Botón "📅 Calendario ICS" en grupo Exportar |
+| 🏫 **Grupos/Clases** | Campos "🏫 Grupos" en formularios de profesor y necesidad. Profesor: lista separada por comas. Necesidad: sintaxis AND/OR (`,` = OR, `+` = AND). El solver filtra automáticamente |
 
 ## Archivos del proyecto
 

@@ -195,7 +195,7 @@
     <tr><td>📋 Duplicar</td><td>Copia el proyecto con otro nombre</td></tr>
     <tr><td>💾 Guardar</td><td>Guarda el proyecto (también auto-guardado cada 2 min)</td></tr>
     <tr><td>🗑️ Eliminar</td><td>Borra el proyecto</td></tr>
-    <tr><td>📦 Cargar datos ficticios</td><td>Carga 15 profes y 50 tareas de ejemplo</td></tr>
+    <tr><td>📦 Cargar datos ficticios</td><td>Muestra un selector para elegir entre 2 proyectos: "🧹 Apoyo limpieza aulas" (8 profes, sin grupos) o "🏫 Acompañamiento alumnos" (12 profes, con grupos AND/OR)</td></tr>
     <tr><td>📥 Importar / 📤 Exportar</td><td>Compartir proyectos en JSON</td></tr>
     <tr><td>📊 Exportar CSV</td><td>Exporta asignaciones a Excel</td></tr>
     <tr><td>↩️ / 🔁</td><td>Deshacer / Rehacer (hasta 50 cambios)</td></tr>
@@ -253,10 +253,14 @@
   </div>
   <div class="step-box">
     <span class="step-num">6</span>
-    (Opcional) Pulsa 🎨 para elegir un color
+    (Opcional) <strong>🏫 Grupos:</strong> clases que enseña separadas por coma (ej: "1ESO A, 2ESO B")
   </div>
   <div class="step-box">
     <span class="step-num">7</span>
+    (Opcional) Pulsa 🎨 para elegir un color
+  </div>
+  <div class="step-box">
+    <span class="step-num">8</span>
     Pulsa <strong>➕ Añadir profe</strong>
   </div>
 </section>
@@ -307,8 +311,9 @@
   <ul>
     <li><strong>Doble clic</strong> en el nombre del profesor → editar nombre</li>
     <li><strong>Doble clic</strong> en una franja → editar fecha/hora</li>
-    <li><strong>📋</strong> junto al nombre → duplicar profesor (con franjas, turno y color)</li>
+    <li><strong>📋</strong> junto al nombre → duplicar profesor (con franjas, turno, color y grupos)</li>
     <li><strong>📋</strong> junto a la franja → duplicar franja</li>
+    <li><strong>🏫 Grupos</strong> — se muestran con icono 🏫 al lado del nombre; se editan con ✏️ en el diálogo de edición del profesor</li>
   </ul>
 </section>
 
@@ -338,6 +343,14 @@
     <li><code>inicio &lt; fin</code></li>
     <li>El solver intenta llegar al máximo, pero nunca baja del mínimo</li>
   </ul>
+  <p><strong>🏫 Grupos (opcional):</strong> puedes restringir qué profesores pueden cubrir esta necesidad:</p>
+  <ul>
+    <li><code>""</code> → cualquier profesor</li>
+    <li><code>"1ESO A"</code> → solo profes que enseñan 1ESO A</li>
+    <li><code>"1ESO A, 2ESO B"</code> → 1ESO A O 2ESO B (<code>,</code> = OR)</li>
+    <li><code>"1ESO A+2ESO B"</code> → 1ESO A Y 2ESO B (<code>+</code> = AND)</li>
+    <li><code>"1ESO A+2ESO B, 3ESO A"</code> → (1ESO A Y 2ESO B) O 3ESO A</li>
+  </ul>
 </section>
 
 <section>
@@ -347,6 +360,7 @@
     📋 50 necesidades     [📋 Duplicar necesidades a otro día]     🔍 Filtrar por nombre, fecha o etiqueta... [       ]
   </div>
   <p>Junto a cada necesidad hay botones 📋 (duplicar) y ❌ (eliminar).</p>
+  <p>Los grupos requeridos se muestran con el icono 🏫 o como "cualquiera" si no tienen restricción.</p>
 </section>
 
 <section>
@@ -640,7 +654,7 @@
     <tr><td>Ctrl+Z</td><td>Deshacer</td></tr>
     <tr><td>Ctrl+Y</td><td>Rehacer</td></tr>
     <tr><td>Ctrl+N</td><td>Nuevo proyecto</td></tr>
-    <tr><td>Ctrl+D</td><td>Cargar datos ficticios</td></tr>
+    <tr><td>Ctrl+D</td><td>Cargar datos ficticios (elige entre 2 proyectos)</td></tr>
     <tr><td>Esc</td><td>Limpiar barra de estado</td></tr>
   </table>
 </section>
@@ -652,7 +666,7 @@
 
 <section>
   <h2>Diálogo de bienvenida 🎉</h2>
-  <p>La primera vez que abres la aplicación, aparece una guía interactiva con los pasos básicos. Puedes cerrarla y siempre acceder a ella desde el botón 📖 Ayuda.</p>
+  <p>La primera vez que abres la aplicación, aparece una guía interactiva con los pasos básicos. Tiene un checkbox <strong>"No mostrar al inicio"</strong> marcado por defecto. Si lo desmarcas, la próxima vez no aparecerá. Puedes reabrirla desde el botón 📖 Ayuda o pulsando F1.</p>
 </section>
 
 <!-- ═══════════════════════════════════════════════ -->

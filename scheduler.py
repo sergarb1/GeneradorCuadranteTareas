@@ -121,28 +121,51 @@ class TeacherScheduler:
     # VERIFICACIÓN DE DISPONIBILIDAD
     # =========================================================================
     
+    def _parse_group_expr(self, expr):
+        """Parsea expresión de grupos con AND/OR.
+
+        '2ESO A+1ESO A, 3ESO B' → [{2ESO A, 1ESO A}, {3ESO B}]
+        Cada conjunto interno es AND, la lista externa es OR.
+        Cadena vacía → None (sin restricción).
+        """
+        if not expr:
+            return None
+        if isinstance(expr, list):
+            # Backward compat: formato antiguo como lista → cada elemento es OR simple
+            return [set([g]) for g in expr if g]
+        or_clauses = [c.strip() for c in expr.split(",")]
+        return [set(g.strip() for g in c.split("+") if g.strip()) for c in or_clauses if c.strip()]
+
     def _teacher_available(self, teacher, need):
         """Comprueba si un profesor está disponible para una necesidad.
-        
-        Un profesor está disponible si existe al menos una franja horaria
-        en su lista de time_slots que contenga completamente el intervalo
-        de la necesidad (misma fecha, start <= need.start, end >= need.end).
-        
+
+        Un profesor está disponible si:
+        1. Existe al menos una franja horaria que cubra la necesidad.
+        2. Si la necesidad especifica grupos, el profesor da clase en alguno.
+
         Parámetros:
-            teacher (dict): Datos del profesor (contiene "time_slots").
-            need (dict): Datos de la necesidad (contiene "date", "start", "end").
-        
+            teacher (dict): Datos del profesor.
+            need (dict): Datos de la necesidad.
+
         Retorna:
             bool: True si el profesor puede cubrir la necesidad.
         """
         # Recorre todas las franjas del profesor buscando una que cubra la necesidad
-        return any(
-            # Condición: misma fecha y franja que contiene a la necesidad
+        if not any(
             s["date"] == need["date"]
             and s["start"] <= need["start"]
             and s["end"] >= need["end"]
-            for s in teacher.get("time_slots", [])  # time_slots por defecto []
-        )
+            for s in teacher.get("time_slots", [])
+        ):
+            return False
+        # Si la necesidad tiene grupos asignados, comprobar con AND/OR
+        need_groups = self._parse_group_expr(need.get("groups", ""))
+        if need_groups:
+            teacher_groups = set(teacher.get("groups", []))
+            # Debe cumplir al menos una cláusula OR (cada cláusula es un AND)
+            if not any(clause.issubset(teacher_groups) for clause in need_groups):
+                return False
+        return True
     
     # =========================================================================
     # CONSTRUCCIÓN DEL MODELO

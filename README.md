@@ -56,13 +56,14 @@
 | 📄 **Estilo Word** | Tabla con bordes negros y Calibri para copiar/pegar directamente en Word |
 | 🖨️ **Vista para imprimir** | Diseño minimalista con tabla de resumen de carga, consume menos tinta |
 | 💬 **Tooltips descriptivos** | Todos los botones e inputs tienen tooltips explicativos al pasar el ratón |
-| ⌨️ **Atajos de teclado** | Ctrl+S guardar, Ctrl+Z deshacer, Ctrl+Y rehacer, Ctrl+N nuevo, Ctrl+D datos ejemplo, F1 ayuda |
+| ⌨️ **Atajos de teclado** | Ctrl+S guardar, Ctrl+Z deshacer, Ctrl+Y rehacer, Ctrl+N nuevo, Ctrl+D datos ejemplo (elige entre 2 proyectos), F1 ayuda |
 | 📖 **Ayuda integrada** | Botón 📖 Ayuda en cabecera + F1 abre el manual completo en el navegador |
 | ℹ️ **Barra de estado** | Barra inferior con mensajes contextuales y recordatorio de atajos |
 | 🎉 **Diálogo de bienvenida** | Guía inicial interactiva para nuevos usuarios al abrir la app |
 | 🖱️ **Asignación manual** | Menú contextual (clic derecho) en las tareas del cuadrante para añadir o quitar profesores manualmente |
 | 🔄 **Arrastrar profesor** | Arrastra el nombre de un profesor de una tarea a otra para reasignarlo al instante |
 | 📧 **Email del profesor** | Campo opcional en el formulario del profesor — se usa como ATTENDEE en cada evento al exportar ICS |
+| 🏫 **Grupos/Clases** | Los profesores tienen un campo "🏫 Grupos" (lista de clases que enseñan separada por comas). Las necesidades pueden requerir grupos con sintaxis AND/OR: `,` para OR, `+` para AND (ej: `"1ESO A+2ESO B, 3ESO A"`). El solver filtra automáticamente |
 
 ---
 
@@ -123,19 +124,18 @@ python main.py
 | `Ctrl+Z` | Deshacer |
 | `Ctrl+Y` | Rehacer |
 | `Ctrl+N` | Nuevo proyecto |
-| `Ctrl+D` | Cargar datos ficticios |
+| `Ctrl+D` | Cargar datos ficticios (elige entre 2 proyectos) |
 | `Esc` | Limpiar barra de estado |
 
 ### Datos de ejemplo
 
-El proyecto incluye datos ficticios de un proceso de recogida y distribución de libros de texto:
+La aplicación incluye **2 proyectos de datos ficticios** para elegir desde un selector al pulsar **"📦 Cargar datos ficticios"** (o Ctrl+D):
 
-- **15 profesores** con distinta disponibilidad (mañana, tarde, mixto, jornada partida, reducida)
-- **50 tareas** a lo largo de 5 días (22–26 de junio de 2026) con solapamientos densos
-- Límites individuales de 10h–25h total y 4h–8h por día
-- Cada profesor con turno preferente, color HEX personalizado y email ficticio (@ies.edu)
+- **🧹 Apoyo limpieza aulas (DATOS FICTICIOS)** — 8 profesores, sin grupos, 2 días (22–23 junio 2026). Tareas de limpieza y ordenación de aulas.
+- **🏫 Acompañamiento alumnos (DATOS FICTICIOS)** — 12 profesores, con grupos AND/OR, 2 días (22–23 junio 2026). Tareas de acompañamiento con restricciones de grupos.
 
-Para cargarlos: pulsa **"📦 Cargar datos ficticios"** en la pestaña Proyecto (o Ctrl+D).
+Cada profesor tiene turno preferente, color HEX personalizado y email ficticio (@ies.edu).
+Ambos proyectos llevan "(DATOS FICTICIOS)" en el nombre para dejar claro que son datos inventados.
 
 ---
 

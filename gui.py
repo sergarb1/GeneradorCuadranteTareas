@@ -14,14 +14,14 @@ from PyQt6.QtWidgets import (
     QButtonGroup, QRadioButton, QFileDialog, QStatusBar, QMenu, QCheckBox,
     QListWidget, QListWidgetItem, QSpinBox
 )
-from PyQt6.QtCore import Qt, QTimer, QDate, pyqtSignal, QMimeData, QThread, QObject, QRect, QPoint
+from PyQt6.QtCore import Qt, QTimer, QDate, QSettings, pyqtSignal, QMimeData, QThread, QObject, QRect, QPoint
 from PyQt6.QtGui import QFont, QAction, QColor, QShortcut, QKeySequence, QPixmap, QPainter, QIcon, QDrag, QRegion
 from PyQt6.QtWidgets import QColorDialog, QInputDialog
 
 from ortools.sat.python import cp_model
 from scheduler import TeacherScheduler, duration_min
 from html_exporter import export_html_file
-from seed_data import get_seed_teachers, get_seed_needs
+from seed_data import get_seed_projects, get_seed_project
 
 # ── Colores ──────────────────────────────────────────────────────────────
 C_PRI    = "#16a34a"
@@ -627,8 +627,9 @@ class App(QMainWindow):
         # Icono de la ventana
         self.setWindowIcon(self._make_icon())
 
-        # Diálogo de bienvenida si no hay profesores (primera ejecución)
-        if not self.teachers:
+        # Diálogo de bienvenida solo en primer inicio o si el usuario no lo desactivó
+        settings = QSettings("GeneradorCuadrante", "TareasProfesorado")
+        if not self.teachers or settings.value("show_welcome", True, type=bool):
             QTimer.singleShot(300, self._show_welcome)
 
     # ── Tema (claro / oscuro / alto contraste) ───────────────────────
@@ -810,7 +811,7 @@ class App(QMainWindow):
 
         bf = QHBoxLayout()
         bf.setSpacing(6)
-        btn("📦 Cargar datos ficticios", "Carga 15 profesores de ejemplo y 50 necesidades para probar", self._load_seed, "secondary")
+        btn("📦 Cargar datos ficticios", "Carga un proyecto de ejemplo ficticio para probar la aplicación", self._load_seed, "secondary")
         btn_imp_proj = QPushButton("📥 Importar proyecto...")
         btn_imp_proj.setToolTip("Importar proyecto completo desde archivo JSON (profesores + necesidades)")
         btn_imp_proj.setObjectName("secondary")
@@ -922,6 +923,13 @@ class App(QMainWindow):
         self.t_email.setFixedWidth(140)
         self.t_email.setToolTip("Correo electrónico del profesor (opcional, se usa en exportación ICS)")
         f.addWidget(self.t_email)
+        f.addSpacing(4)
+        f.addWidget(QLabel("🏫 Grupos:"))
+        self.t_groups = QLineEdit()
+        self.t_groups.setPlaceholderText("1ESO A, 2ESO B, 1BAT X...")
+        self.t_groups.setFixedWidth(180)
+        self.t_groups.setToolTip("Grupos/clases a los que da clase (separados por coma). Se usa para filtrar tareas por grupo.")
+        f.addWidget(self.t_groups)
         f.addSpacing(4)
         self.t_color_btn = QPushButton("🎨")
         self.t_color_btn.setFixedWidth(32)
@@ -1126,6 +1134,12 @@ class App(QMainWindow):
         self.nd_tags.setFixedWidth(120)
         self.nd_tags.setToolTip("Etiquetas separadas por coma (ej: mañana, 1ºESO, urgencia)")
         f.addWidget(self.nd_tags)
+        f.addSpacing(4)
+        self.nd_groups = QLineEdit()
+        self.nd_groups.setPlaceholderText("🏫 ej: 2ESO A+1ESO A, 2ESO B")
+        self.nd_groups.setFixedWidth(200)
+        self.nd_groups.setToolTip("Grupos requeridos. Vacío = cualquier profe vale. , = OR, + = AND. Ej: '2ESO A, 2ESO B' (A o B), '2ESO A+1ESO A' (A y 1A juntos)")
+        f.addWidget(self.nd_groups)
         f.addSpacing(4)
         b = QPushButton("➕➕ Añadir necesidad")
         b.setToolTip("Añadir esta tarea a la lista de necesidades del proyecto")
@@ -1483,6 +1497,12 @@ class App(QMainWindow):
         tip.setStyleSheet(f"color: {C_ACCENT}; font-size: 11px; padding: 6px; background: #fef3c7; border-radius: 4px;")
         v.addWidget(tip)
 
+        cb = QCheckBox("No mostrar al inicio (puedes volver desde 📖 Ayuda)")
+        cb.setChecked(True)
+        cb.setToolTip("Si desmarcas, el diálogo no se mostrará al iniciar la app. Puedes reabrirlo desde el botón 📖 Ayuda.")
+        cb.setStyleSheet(f"color: {C_SLATE}; font-size: 11px;")
+        v.addWidget(cb)
+
         btn_lay = QHBoxLayout()
         btn_lay.addStretch()
         close_btn = QPushButton("✅ ¡Entendido!")
@@ -1492,6 +1512,9 @@ class App(QMainWindow):
         v.addLayout(btn_lay)
 
         d.exec()
+        if not cb.isChecked():
+            settings = QSettings("GeneradorCuadrante", "TareasProfesorado")
+            settings.setValue("show_welcome", False)
 
     def _sep(self):
         """Crea una línea separadora horizontal estilizada."""
@@ -1559,10 +1582,18 @@ class App(QMainWindow):
             pref_str = f"  ⭐ {len(pref)} pref." if pref else ""
             email = t.get("email")
             email_str = f"  📧 {email}" if email else ""
-            txt = QLabel(f"👤 {t['name']:16s}  ⏱ {t['max_hours']}h  📅 {t['max_hours_per_day']}h/d  🗓 {n_slots} franjas  {turno_icon.get(turno, '⏰')} {turno}{email_str}{pref_str}")
-            txt.setToolTip("Doble clic para editar nombre")
-            txt.mouseDoubleClickEvent = lambda e, idx=i: self._edit_teacher_name(idx)
+            groups = t.get("groups", [])
+            groups_str = f"  🏫 {', '.join(groups[:3])}" + ("..." if len(groups) > 3 else "") if groups else ""
+            txt = QLabel(f"👤 {t['name']:16s}  ⏱ {t['max_hours']}h  📅 {t['max_hours_per_day']}h/d  🗓 {n_slots} franjas  {turno_icon.get(turno, '⏰')} {turno}{email_str}{groups_str}{pref_str}")
+            txt.setToolTip("Doble clic para editar profesor")
+            txt.mouseDoubleClickEvent = lambda e, idx=i: self._edit_teacher(idx)
             row.addWidget(txt, 1)
+            # Botón de editar profesor
+            edit_btn = QPushButton("✏️")
+            edit_btn.setFixedSize(28, 28)
+            edit_btn.setToolTip("Editar todos los datos del profesor (nombre, grupos, turno...)")
+            edit_btn.clicked.connect(lambda checked, idx=i: self._edit_teacher(idx))
+            row.addWidget(edit_btn)
             # Botón de duplicar profesor
             dup_btn = QPushButton("📋")
             dup_btn.setFixedSize(28, 28)
@@ -1668,10 +1699,11 @@ class App(QMainWindow):
         turno = self.t_turno.currentText()
         color = self._teacher_color_pick
         email = self.t_email.text().strip()
-        # Crea el objeto profesor y lo añade a la lista global
+        groups = [g.strip() for g in self.t_groups.text().split(",") if g.strip()]
         self.teachers.append({
             "name": name, "max_hours": mx, "max_hours_per_day": mxd,
-            "time_slots": [], "turno": turno, "color": color, "email": email or None
+            "time_slots": [], "turno": turno, "color": color,
+            "email": email or None, "groups": groups
         })
         _save_teachers(self.teachers)
         self._selected_teacher_idx = len(self.teachers) - 1
@@ -1680,6 +1712,7 @@ class App(QMainWindow):
         self._update_stats()
         self.t_name.clear()
         self.t_email.clear()
+        self.t_groups.clear()
         self._teacher_color_pick = TEACHER_COLORS[len(self.teachers) % len(TEACHER_COLORS)]
         self.toast.show(f"Profe «{name}» añadido")
 
@@ -1708,19 +1741,54 @@ class App(QMainWindow):
         self._update_stats()
         self.toast.show(f"Profe «{t['name']}» duplicado como «{new_name}»")
 
-    def _edit_teacher_name(self, idx):
-        """Abre un diálogo para renombrar un profesor existente."""
+    def _edit_teacher(self, idx):
+        """Abre un diálogo completo para editar todos los datos de un profesor."""
         if idx >= len(self.teachers): return
         t = self.teachers[idx]
-        name, ok = QInputDialog.getText(self, "Editar nombre", "Nombre del profesor:",
-                                        text=t["name"])
-        if ok and name.strip() and name.strip() != t["name"]:
-            self.teachers[idx]["name"] = name.strip()
-            _save_teachers(self.teachers)
-            self._rebuild_teacher_list()
+        d = QDialog(self)
+        d.setWindowTitle(f"Editar profesor: {t['name']}")
+        d.setMinimumWidth(420)
+        fl = QFormLayout(d)
+        name_ed = QLineEdit(t["name"])
+        fl.addRow("👤 Nombre:", name_ed)
+        max_ed = QLineEdit(str(t["max_hours"]))
+        fl.addRow("⏱ Max total h:", max_ed)
+        maxd_ed = QLineEdit(str(t["max_hours_per_day"]))
+        fl.addRow("📅 Max/día:", maxd_ed)
+        turno_ed = QComboBox()
+        turno_ed.addItems(["Cualquiera", "Mañana", "Tarde"])
+        turno_ed.setCurrentText(t.get("turno", "Cualquiera"))
+        fl.addRow("🕰 Turno:", turno_ed)
+        email_ed = QLineEdit(t.get("email", ""))
+        fl.addRow("📧 Email:", email_ed)
+        groups_ed = QLineEdit(", ".join(t.get("groups", [])))
+        fl.addRow("🏫 Grupos:", groups_ed)
+        bb = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel)
+        bb.accepted.connect(d.accept)
+        bb.rejected.connect(d.reject)
+        fl.addRow(bb)
+        if d.exec() != QDialog.DialogCode.Accepted:
+            return
+        name = name_ed.text().strip()
+        if not name:
+            self.toast.show("Nombre obligatorio", "warning"); return
+        try:
+            mx, mxd = int(max_ed.text()), int(maxd_ed.text())
+        except ValueError:
+            self.toast.show("Límites deben ser enteros", "warning"); return
+        t["name"] = name
+        t["max_hours"] = mx
+        t["max_hours_per_day"] = mxd
+        t["turno"] = turno_ed.currentText()
+        t["email"] = email_ed.text().strip() or None
+        t["groups"] = [g.strip() for g in groups_ed.text().split(",") if g.strip()]
+        _save_teachers(self.teachers)
+        # Si el profesor editado es el seleccionado, refresca el panel de franjas
+        if self._selected_teacher_idx == idx:
             self._refresh_tslot_panel()
-            self._update_stats()
-            self.toast.show(f"Nombre actualizado a «{name.strip()}»")
+        self._rebuild_teacher_list()
+        self._update_stats()
+        self.toast.show(f"Profesor «{name}» actualizado")
 
     def _delete_teacher(self, idx):
         """Elimina un profesor de la lista y ajusta la selección si era el actual."""
@@ -2143,12 +2211,14 @@ class App(QMainWindow):
         if mn < 1 or mx < mn:
             self.toast.show("Min/Max inválidos", "warning"); return
         tags = self.nd_tags.text().strip()
-        self.needs.append({"name": name, "date": date, "start": start, "end": end, "min": mn, "max": mx, "tags": tags})
+        groups = self.nd_groups.text().strip()
+        self.needs.append({"name": name, "date": date, "start": start, "end": end, "min": mn, "max": mx, "tags": tags, "groups": groups})
         self._rebuild_need_list()
         self._mark_dirty()
         self._update_stats()
         self.nd_name.clear()
         self.nd_tags.clear()
+        self.nd_groups.clear()
         self.toast.show(f"Necesidad «{name}» añadida")
 
     def _duplicate_need(self, n):
@@ -2329,6 +2399,8 @@ class App(QMainWindow):
         fl.addRow("👤 Max:", max_ed)
         tags_ed = QLineEdit(n.get("tags", ""))
         fl.addRow("🏷️ Etiquetas:", tags_ed)
+        groups_ed = QLineEdit(n.get("groups", ""))
+        fl.addRow("🏫 Grupos:", groups_ed)
         bb = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel)
         bb.accepted.connect(d.accept)
         bb.rejected.connect(d.reject)
@@ -2344,6 +2416,7 @@ class App(QMainWindow):
             "min": int(min_ed.text()),
             "max": int(max_ed.text()),
             "tags": tags_ed.text().strip(),
+            "groups": groups_ed.text().strip(),
         }
         # Actualiza referencias obsoletas en last_assignment
         if self.last_assignment:
@@ -2372,8 +2445,9 @@ class App(QMainWindow):
 
         shown = 0
         for n in self.needs:
-            # Filtra por nombre, fecha o etiqueta
-            if filtro and filtro not in n["name"].lower() and filtro not in n.get("date", "") and filtro not in n.get("tags", "").lower():
+            # Filtra por nombre, fecha, etiqueta o grupo
+            grp_str = n.get("groups", "").lower()
+            if filtro and filtro not in n["name"].lower() and filtro not in n.get("date", "") and filtro not in n.get("tags", "").lower() and filtro not in grp_str:
                 continue
             shown += 1
             # Crea una fila visual para cada necesidad
@@ -2382,7 +2456,9 @@ class App(QMainWindow):
             row = QHBoxLayout(frame)
             row.setContentsMargins(10, 4, 10, 4)
             tags_str = f"  🏷️ {n.get('tags','')}" if n.get("tags") else ""
-            dsp = f"{_fmt_slot(n)}  |  👤 [{n['min']}-{n['max']}] profes{tags_str}"
+            groups = n.get("groups", "")
+            groups_str = f"  🏫 {groups}" if groups else "  🏫 cualquiera"
+            dsp = f"{_fmt_slot(n)}  |  👤 [{n['min']}-{n['max']}] profes{tags_str}{groups_str}"
             lbl = QLabel(f"📋 <b>{n['name']}</b>  —  {dsp}")
             lbl.setTextFormat(Qt.TextFormat.RichText)
             lbl.setToolTip("Doble clic para editar")
@@ -2520,12 +2596,48 @@ class App(QMainWindow):
         self._update_stats()
 
     def _load_seed(self):
-        """Carga los datos ficticios de demostración (15 profesores + 50 necesidades)."""
-        self.teachers = get_seed_teachers()
+        """Muestra un diálogo para elegir qué proyecto ficticio cargar."""
+        projects = get_seed_projects()
+        if not projects:
+            self.toast.show("No hay proyectos ficticios disponibles", "error"); return
+        names = [p["name"] for p in projects]
+        d = QDialog(self)
+        d.setWindowTitle("📦 Cargar datos ficticios")
+        d.setMinimumWidth(480)
+        v = QVBoxLayout(d)
+        lbl = QLabel("Elige un proyecto de demostración con datos ficticios:")
+        lbl.setStyleSheet("font-size: 13px;")
+        v.addWidget(lbl)
+        list_w = QListWidget()
+        list_w.addItems(names)
+        list_w.setCurrentRow(0)
+        desc_lbl = QLabel()
+        desc_lbl.setWordWrap(True)
+        desc_lbl.setStyleSheet("color: gray; font-size: 11px; padding: 6px;")
+        v.addWidget(desc_lbl)
+
+        def on_row_change(row):
+            if 0 <= row < len(projects):
+                n_needs = len(projects[row]["needs"])
+                n_teachers = len(projects[row]["teachers"])
+                desc_lbl.setText(f"👨‍🏫 {n_teachers} profesores  ·  📋 {n_needs} necesidades")
+        list_w.currentRowChanged.connect(on_row_change)
+        on_row_change(0)
+        v.addWidget(list_w)
+        bb = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel)
+        bb.accepted.connect(d.accept)
+        bb.rejected.connect(d.reject)
+        v.addWidget(bb)
+        if d.exec() != QDialog.DialogCode.Accepted:
+            return
+        idx = list_w.currentRow()
+        if idx < 0:
+            return
+        p = projects[idx]
+        self.teachers = [dict(t) for t in p["teachers"]]
         _save_teachers(self.teachers)
-        ndata = get_seed_needs()
-        self.project_name_input.setText("Recogida y distribución 2026")
-        self.needs = [dict(n) for n in ndata]
+        self.project_name_input.setText(p["name"])
+        self.needs = [dict(n) for n in p["needs"]]
         self.generated_options = []
         self.generated_html_paths = []
         self.current_option_index = 0
@@ -2537,7 +2649,9 @@ class App(QMainWindow):
         self._rebuild_need_list()
         self._mark_dirty()
         self._update_schedule_tab()
-        self.toast.show("✅ Datos de ejemplo: 15 profes con horarios + 50 necesidades (5 días)")
+        n_t = len(self.teachers)
+        n_n = len(self.needs)
+        self.toast.show(f"✅ Datos ficticios: {n_t} profes + {n_n} necesidades")
 
     # ── Importación / Exportación ────────────────────────────────────
     def _import_teachers(self):
@@ -3378,6 +3492,11 @@ class App(QMainWindow):
                     req_lbl = QLabel(f"min {n['min']} · max {n['max']}")
                     req_lbl.setStyleSheet(f"color: {C_SLATE}; font-size: 9px;")
                     card_v.addWidget(req_lbl)
+                    ng = n.get("groups", "")
+                    if ng:
+                        gl = QLabel(f"🏫 {ng}")
+                        gl.setStyleSheet(f"color: {C_SLATE}; font-size: 8px;")
+                        card_v.addWidget(gl)
 
                     if assigned:
                         for tname in assigned:
